@@ -1,8 +1,7 @@
 Release Notes (Beta 1.0)
 ==============
 
-New Features
-============
+### New Features
 	1. Animation Editor.
 	2. Navigation Editor.
 	3. Windows C++ support with SDL.
@@ -11,8 +10,7 @@ New Features
 		1. Added game object hierarchy
 		2. Added project file viewer.
 
-Fixes
-=====
+### Fixes
 	1. Multi-threaded Animation not supported anymore.
 	2. Added a save level message for preventing progress loss.
 	3. Build system made more reliable by adding support to paths with spaces.
