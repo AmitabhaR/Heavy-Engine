@@ -15,8 +15,8 @@ For more information , please contact us at help.reostudio@yahoo.com .
 # Platforms
 	1. Windows PC (Managed)
 	2. Windows PC Native (x86)
-	2. Java Desktop
-	3. Java Mobiles 	
+	3. Java Desktop
+	4. Java Mobiles 	
 
 # Building the Engine
 
@@ -39,7 +39,7 @@ For more information , please contact us at help.reostudio@yahoo.com .
 	1. Create a visual studio class library project .
 	2. Add Runtime.cs file .
 	3. Create a dll project.
-	2. Compile and get the dll file.
+	4. Compile and get the dll file.
 
 ### Compile Java Runtime
 	1. Create a java class library project.
