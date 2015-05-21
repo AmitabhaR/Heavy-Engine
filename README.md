@@ -13,10 +13,10 @@ We give you the source code with a strict aggrement that you will remove the nam
 For more information , please contact us at help.reostudio@yahoo.com .
 
 # Platforms
-1. Windows PC (Managed)
-2. Windows PC Native (x86)
-2. Java Desktop
-3. Java Mobiles 	
+	1. Windows PC (Managed)
+	2. Windows PC Native (x86)
+	2. Java Desktop
+	3. Java Mobiles 	
 
 # Building the Engine
 
@@ -26,34 +26,34 @@ For more information , please contact us at help.reostudio@yahoo.com .
 	 3. Java ME SDK.
 	
 ### Setup Environment Variables
-1. Open Environment Variables Editor.
-2. Select PATH variable and add MSBuild bin folder path , add Java SDK bin folder path , add Java ME SDK bin folder path.
-3. Restart your system.		
-	
+	1. Open Environment Variables Editor.
+	2. Select PATH variable and add MSBuild bin folder path , add Java SDK bin folder path , add Java ME SDK bin folder path.
+	3. Restart your system.		
+		
 ### Compile BosCompiler
-1. For compiling BosCompiler , download Orwell Dev-Cpp (http://sourceforge.net/projects/orwelldevcpp/files/latest/download) or download CodeBlocks (http://sourceforge.net/projects/codeblocks/files/Binaries/13.12/Windows/codeblocks-13.12mingw-setup.exe/download).
-2. Create a new project and all the source files.
-3. Build the Exe and compiling is finished.
+	1. For compiling BosCompiler , download Orwell Dev-Cpp (http://sourceforge.net/projects/orwelldevcpp/files/latest/download) or download CodeBlocks (http://sourceforge.net/projects/codeblocks/files/Binaries/13.12/Windows/codeblocks-13.12mingw-setup.exe/download).
+	2. Create a new project and all the source files.
+	3. Build the Exe and compiling is finished.
 
 ### Compile C# Runtime
-1. Create a visual studio class library project .
-2. Add Runtime.cs file .
-3. Create a dll project.
-2. Compile and get the dll file.
+	1. Create a visual studio class library project .
+	2. Add Runtime.cs file .
+	3. Create a dll project.
+	2. Compile and get the dll file.
 
 ### Compile Java Runtime
-1. Create a java class library project.
-2. Add the folder / package jruntime to your project for proper compile.
-3. Compile and get the jar file.
+	1. Create a java class library project.
+	2. Add the folder / package jruntime to your project for proper compile.
+	3. Compile and get the jar file.
 
 ### Compile Java ME Runtime
-1. Create a java mobile class library project 
-2. Add the folder / package jruntime to your project for proper compile.
-3. Compile an get the jar file.
+	1. Create a java mobile class library project 
+	2. Add the folder / package jruntime to your project for proper compile.
+	3. Compile an get the jar file.
 
 ### Compile Engine
-1. Open the Heavy-Engine.sln in the visual studio editor.
-2. Click re-build to re-make the exe file.
+	1. Open the Heavy-Engine.sln in the visual studio editor.
+	2. Click re-build to re-make the exe file.
 
 # Other Options
 In the pre-compiled folder , we have compiled and given you the latest build . You can download that if you don't want to re-compile the engine.
