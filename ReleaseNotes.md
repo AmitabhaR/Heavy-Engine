@@ -1,5 +1,5 @@
 Release Notes (Beta 1.0)
-==============
+========================
 
 ### New Features
 	1. Animation Editor.
@@ -9,6 +9,9 @@ Release Notes (Beta 1.0)
 	   =========
 		1. Added game object hierarchy
 		2. Added project file viewer.
+		3. Editor skin changed.
+	5. Sprite Baker for breaking frames from sprite. 
+	6. Non-Threaded Navigator and Animation.
 
 ### Fixes
 	1. Multi-threaded Animation not supported anymore.
