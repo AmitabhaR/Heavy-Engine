@@ -58,6 +58,9 @@ For more information , please contact us at help.reostudio@yahoo.com .
 # Other Options
 In the pre-compiled folder , we have compiled and given you the latest build . You can download that if you don't want to re-compile the engine.
 
+# Protection
+For protection from decompilation , you can use Esiriz .NET Reactor for encryting / encoding the source code . This is only for official purposes only.
+
 Release Version : 2.0 Beta 1.0
 
 #### 															Reo Studio 2014 - 2015
