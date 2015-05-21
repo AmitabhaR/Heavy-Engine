@@ -60,4 +60,4 @@ In the pre-compiled folder , we have compiled and given you the latest build . Y
 
 Release Version : 2.0 Beta 1.0
 
-Owned by Reo Studio 2014 - 2015.
+#### 															Reo Studio 2014 - 2015
