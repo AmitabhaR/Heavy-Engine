@@ -84,15 +84,12 @@
             this.btn_right = new System.Windows.Forms.Button();
             this.lbl_editor_movement = new System.Windows.Forms.Label();
             this.lbl_zoom = new System.Windows.Forms.Label();
-            this.btn_inside = new System.Windows.Forms.Button();
-            this.btn_outside = new System.Windows.Forms.Button();
-            this.lbl_view_x = new System.Windows.Forms.Label();
-            this.lbl_view_y = new System.Windows.Forms.Label();
             this.btn_cancel = new System.Windows.Forms.Button();
             this.contpane_base = new System.Windows.Forms.TableLayoutPanel();
             this.contpane_tools = new System.Windows.Forms.Panel();
             this.contpane_tabs = new System.Windows.Forms.TableLayoutPanel();
             this.contpane_camerazoom = new System.Windows.Forms.Panel();
+            this.tb_zoom = new System.Windows.Forms.TrackBar();
             this.contpane_movement = new System.Windows.Forms.Panel();
             this.contpane_canvas = new System.Windows.Forms.Panel();
             this.contpane_buttons = new System.Windows.Forms.Panel();
@@ -100,6 +97,8 @@
             this.list_div = new System.Windows.Forms.TableLayoutPanel();
             this.file_tree = new System.Windows.Forms.TreeView();
             this.lb_objects = new System.Windows.Forms.ListBox();
+            this.lbl_view_x = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lbl_view_y = new System.Windows.Forms.ToolStripStatusLabel();
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).BeginInit();
             this.bottom_dataview.SuspendLayout();
             this.top_menu_container.SuspendLayout();
@@ -107,6 +106,7 @@
             this.contpane_tools.SuspendLayout();
             this.contpane_tabs.SuspendLayout();
             this.contpane_camerazoom.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.tb_zoom)).BeginInit();
             this.contpane_movement.SuspendLayout();
             this.contpane_canvas.SuspendLayout();
             this.contpane_buttons.SuspendLayout();
@@ -148,7 +148,9 @@
             this.bottom_dataview.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.bottom_dataview.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mouse_positionX,
-            this.mouse_positionY});
+            this.mouse_positionY,
+            this.lbl_view_x,
+            this.lbl_view_y});
             this.bottom_dataview.Location = new System.Drawing.Point(0, 589);
             this.bottom_dataview.Name = "bottom_dataview";
             this.bottom_dataview.Size = new System.Drawing.Size(1391, 22);
@@ -575,53 +577,6 @@
             this.lbl_zoom.TabIndex = 10;
             this.lbl_zoom.Text = "Zoom";
             // 
-            // btn_inside
-            // 
-            this.btn_inside.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_inside.Location = new System.Drawing.Point(0, 25);
-            this.btn_inside.Name = "btn_inside";
-            this.btn_inside.Size = new System.Drawing.Size(93, 25);
-            this.btn_inside.TabIndex = 11;
-            this.btn_inside.Text = "&Inside";
-            this.btn_inside.UseVisualStyleBackColor = true;
-            this.btn_inside.Click += new System.EventHandler(this.btn_inside_Click);
-            // 
-            // btn_outside
-            // 
-            this.btn_outside.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_outside.Location = new System.Drawing.Point(99, 25);
-            this.btn_outside.Name = "btn_outside";
-            this.btn_outside.Size = new System.Drawing.Size(93, 25);
-            this.btn_outside.TabIndex = 12;
-            this.btn_outside.Text = "&Outside";
-            this.btn_outside.UseVisualStyleBackColor = true;
-            this.btn_outside.Click += new System.EventHandler(this.btn_outside_Click);
-            // 
-            // lbl_view_x
-            // 
-            this.lbl_view_x.AutoSize = true;
-            this.lbl_view_x.BackColor = System.Drawing.Color.Gray;
-            this.lbl_view_x.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_view_x.ForeColor = System.Drawing.Color.Red;
-            this.lbl_view_x.Location = new System.Drawing.Point(365, 0);
-            this.lbl_view_x.Name = "lbl_view_x";
-            this.lbl_view_x.Size = new System.Drawing.Size(73, 16);
-            this.lbl_view_x.TabIndex = 13;
-            this.lbl_view_x.Text = "Camera X :";
-            // 
-            // lbl_view_y
-            // 
-            this.lbl_view_y.AutoSize = true;
-            this.lbl_view_y.BackColor = System.Drawing.Color.Gray;
-            this.lbl_view_y.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_view_y.ForeColor = System.Drawing.Color.Red;
-            this.lbl_view_y.Location = new System.Drawing.Point(365, 25);
-            this.lbl_view_y.Name = "lbl_view_y";
-            this.lbl_view_y.Size = new System.Drawing.Size(74, 16);
-            this.lbl_view_y.TabIndex = 14;
-            this.lbl_view_y.Text = "Camera Y :";
-            this.lbl_view_y.Click += new System.EventHandler(this.lbl_view_y_Click);
-            // 
             // btn_cancel
             // 
             this.btn_cancel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -677,16 +632,24 @@
             // 
             // contpane_camerazoom
             // 
+            this.contpane_camerazoom.Controls.Add(this.tb_zoom);
             this.contpane_camerazoom.Controls.Add(this.lbl_zoom);
-            this.contpane_camerazoom.Controls.Add(this.btn_inside);
-            this.contpane_camerazoom.Controls.Add(this.lbl_view_y);
-            this.contpane_camerazoom.Controls.Add(this.lbl_view_x);
-            this.contpane_camerazoom.Controls.Add(this.btn_outside);
             this.contpane_camerazoom.Dock = System.Windows.Forms.DockStyle.Fill;
             this.contpane_camerazoom.Location = new System.Drawing.Point(526, 3);
             this.contpane_camerazoom.Name = "contpane_camerazoom";
             this.contpane_camerazoom.Size = new System.Drawing.Size(517, 73);
             this.contpane_camerazoom.TabIndex = 16;
+            // 
+            // tb_zoom
+            // 
+            this.tb_zoom.Location = new System.Drawing.Point(0, 20);
+            this.tb_zoom.Minimum = 2;
+            this.tb_zoom.Name = "tb_zoom";
+            this.tb_zoom.Size = new System.Drawing.Size(104, 45);
+            this.tb_zoom.SmallChange = 5;
+            this.tb_zoom.TabIndex = 15;
+            this.tb_zoom.Value = 2;
+            this.tb_zoom.Scroll += new System.EventHandler(this.tb_zoom_Scroll);
             // 
             // contpane_movement
             // 
@@ -778,6 +741,18 @@
             this.lb_objects.TabIndex = 1;
             this.lb_objects.SelectedIndexChanged += new System.EventHandler(this.lb_objects_SelectedIndexChanged);
             // 
+            // lbl_view_x
+            // 
+            this.lbl_view_x.Name = "lbl_view_x";
+            this.lbl_view_x.Size = new System.Drawing.Size(64, 17);
+            this.lbl_view_x.Text = "Camera X :";
+            // 
+            // lbl_view_y
+            // 
+            this.lbl_view_y.Name = "lbl_view_y";
+            this.lbl_view_y.Size = new System.Drawing.Size(64, 17);
+            this.lbl_view_y.Text = "Camera Y :";
+            // 
             // Editor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -795,7 +770,7 @@
             this.Name = "Editor";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Heavy Engine";
+            this.Text = "Heavy Engine 2";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.Editor_Load);
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).EndInit();
@@ -808,6 +783,7 @@
             this.contpane_tabs.ResumeLayout(false);
             this.contpane_camerazoom.ResumeLayout(false);
             this.contpane_camerazoom.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.tb_zoom)).EndInit();
             this.contpane_movement.ResumeLayout(false);
             this.contpane_movement.PerformLayout();
             this.contpane_canvas.ResumeLayout(false);
@@ -871,10 +847,6 @@
         private System.Windows.Forms.Button btn_right;
         private System.Windows.Forms.Label lbl_editor_movement;
         private System.Windows.Forms.Label lbl_zoom;
-        private System.Windows.Forms.Button btn_inside;
-        private System.Windows.Forms.Button btn_outside;
-        private System.Windows.Forms.Label lbl_view_x;
-        private System.Windows.Forms.Label lbl_view_y;
         private System.Windows.Forms.ToolStripMenuItem menuItem_open_editor;
         private System.Windows.Forms.ToolStripMenuItem menuItem_ObjectEditor;
         private System.Windows.Forms.ToolStripMenuItem menuItem_BuildOptions;
@@ -895,5 +867,8 @@
         private System.Windows.Forms.ToolStripMenuItem menuContainer_Animation;
         private System.Windows.Forms.ToolStripMenuItem menuItem_AOpenEditor;
         private System.Windows.Forms.ToolStripMenuItem menuItem_ImportHeader;
+        private System.Windows.Forms.TrackBar tb_zoom;
+        private System.Windows.Forms.ToolStripStatusLabel lbl_view_x;
+        private System.Windows.Forms.ToolStripStatusLabel lbl_view_y;
     }
 }

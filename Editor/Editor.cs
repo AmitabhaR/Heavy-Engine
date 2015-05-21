@@ -167,12 +167,12 @@ namespace Heavy_Engine
 
         void short_menu_zoomingout_Click(object sender, EventArgs e)
         {
-            btn_outside_Click(null, null);
+            zoomOut_Checked();
         }
 
         void short_menu_zoomingin_Click(object sender, EventArgs e)
         {
-            btn_inside_Click(null, null);
+            zoomIn_Checked();
         }
 
         void short_menu_openObjectEditor_Click(object sender, EventArgs e)
@@ -1588,54 +1588,84 @@ namespace Heavy_Engine
             cam_x += 5;
         }
 
-        private void btn_inside_Click(object sender, EventArgs e)
+        private void zoomIn(int rate)
         {
-            if (zoom_rate < 50)
-            {
-                zoom_rate += 5;
-
-                if (zoom_rate > 50)
-                {
-                    zoom_rate = 50;
-                }
-
                 for (int cnt = 0; cnt < gameObjectScene_list.Count; cnt++)
                 {
                     GameObject_Scene handle = gameObjectScene_list[cnt];
 
-                    handle.position_scene_x -= 5;
-                    handle.position_scene_y -= 5;
+                    handle.position_scene_x -= 5 * rate;
+                    handle.position_scene_y -= 5 * rate;
 
                     gameObjectScene_list[cnt] = handle;
                 }
 
                 calculateLines();
+        }
+
+        private void zoomIn_Checked()
+        {
+                if (zoom_rate < 50)
+           {
+               zoom_rate += 5;
+            
+              if (zoom_rate > 50)
+               {
+                   zoom_rate = 50;
+               } 
+
+            for (int cnt = 0; cnt < gameObjectScene_list.Count; cnt++)
+            {
+                GameObject_Scene handle = gameObjectScene_list[cnt];
+
+                handle.position_scene_x -= 5;
+                handle.position_scene_y -= 5;
+
+                gameObjectScene_list[cnt] = handle;
+            }
+
+            calculateLines();
             }
         }
 
-        private void btn_outside_Click(object sender, EventArgs e)
+        private void zoomOut_Checked()
         {
-            if (zoom_rate > 10)
+             if (zoom_rate > 10)
+             {
+                 zoom_rate -= 5;
+
+              if (zoom_rate < 10)
+               {
+                   zoom_rate = 10;
+               } 
+
+            for (int cnt = 0; cnt < gameObjectScene_list.Count; cnt++)
             {
-                zoom_rate -= 5;
+                GameObject_Scene handle = gameObjectScene_list[cnt];
 
-                if (zoom_rate < 10)
-                {
-                    zoom_rate = 10;
-                }
+                handle.position_scene_x += 5;
+                handle.position_scene_y += 5;
 
+                gameObjectScene_list[cnt] = handle;
+            }
+
+            calculateLines();
+               }
+        }
+
+        private void zoomOut(int rate)
+        {
                 for (int cnt = 0; cnt < gameObjectScene_list.Count; cnt++)
                 {
                     GameObject_Scene handle = gameObjectScene_list[cnt];
 
-                    handle.position_scene_x += 5;
-                    handle.position_scene_y += 5;
+                    handle.position_scene_x += 5 * rate;
+                    handle.position_scene_y += 5 * rate;
 
                     gameObjectScene_list[cnt] = handle;
                 }
 
                 calculateLines();
-            }
         }
 
         private void menuItem_open_editor_Click(object sender, EventArgs e)
@@ -1775,6 +1805,22 @@ namespace Heavy_Engine
                 {
                      File.Copy(open_file_dlg.FileName, project_default_dir + "\\Game-Scripts\\" + Path.GetFileName(open_file_dlg.FileName));
                 }
+           }
+       }
+
+       private void tb_zoom_Scroll(object sender, EventArgs e)
+       {
+           int cp = zoom_rate;
+
+           zoom_rate = tb_zoom.Value * 5;
+
+           if (cp < tb_zoom.Value * 5)
+           {
+               zoomIn(tb_zoom.Value - (cp / 5));
+           }
+           else
+           {
+               zoomOut((cp / 5) - tb_zoom.Value);
            }
        }
     }

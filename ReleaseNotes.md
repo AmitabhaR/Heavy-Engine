@@ -10,6 +10,8 @@ Release Notes (Beta 1.0)
 		1. Added game object hierarchy
 		2. Added project file viewer.
 		3. Editor skin changed.
+		4. Replaced Zooming buttons with track bar for smooth working.
+		5. Camera X and Y are found on the status strip at the bottom.
 	5. Sprite Baker for breaking frames from sprite. 
 	6. Non-Threaded Navigator and Animation.
 
