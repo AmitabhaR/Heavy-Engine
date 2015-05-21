@@ -1,0 +1,67 @@
+F:\Projects\Heavy Engine\bin\Debug\Heavy Engine.exe
+F:\Projects\Heavy Engine\bin\Debug\Heavy Engine.pdb
+F:\Projects\Heavy Engine\obj\Debug\Heavy Engine.csprojResolveAssemblyReference.cache
+F:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.MenuScreen.resources
+F:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.Properties.Resources.resources
+F:\Projects\Heavy Engine\obj\Debug\Heavy Engine.csproj.GenerateResource.Cache
+F:\Projects\Heavy Engine\obj\Debug\Heavy Engine.exe
+F:\Projects\Heavy Engine\obj\Debug\Heavy Engine.pdb
+F:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.NewProjectScreen.resources
+F:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.Editor.resources
+F:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.LoadProjectScreen.resources
+F:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.LevelManager.resources
+F:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.ProjectManager.resources
+F:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.CreateObject.resources
+F:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.AddObject.resources
+F:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.ObjectManager.resources
+F:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.ResourceManager.resources
+F:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.NewScript.resources
+F:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.ScriptManager.resources
+F:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.AboutHeavyEngine.resources
+F:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.PluginManager.resources
+F:\Projects\Heavy Engine\bin\Debug\2xEngine.dll
+F:\Projects\Heavy Engine\bin\Debug\Interop.WMPLib.dll
+C:\Users\Amit\Desktop\Projects\Heavy Engine\obj\Debug\Heavy Engine.exe
+C:\Users\Amit\Desktop\Projects\Heavy Engine\obj\Debug\Heavy Engine.pdb
+C:\Users\Amit\Desktop\Projects\Heavy Engine\bin\Debug\Heavy Engine.exe
+C:\Users\Amit\Desktop\Projects\Heavy Engine\bin\Debug\Heavy Engine.pdb
+C:\Users\Amit\Desktop\Projects\Heavy Engine\obj\Debug\Heavy Engine.csprojResolveAssemblyReference.cache
+C:\Users\Amit\Desktop\Projects\Heavy Engine\obj\Debug\Heavy_Engine.AboutHeavyEngine.resources
+C:\Users\Amit\Desktop\Projects\Heavy Engine\obj\Debug\Heavy_Engine.AddObject.resources
+C:\Users\Amit\Desktop\Projects\Heavy Engine\obj\Debug\Heavy_Engine.CreateObject.resources
+C:\Users\Amit\Desktop\Projects\Heavy Engine\obj\Debug\Heavy_Engine.Editor.resources
+C:\Users\Amit\Desktop\Projects\Heavy Engine\obj\Debug\Heavy_Engine.LevelManager.resources
+C:\Users\Amit\Desktop\Projects\Heavy Engine\obj\Debug\Heavy_Engine.LoadProjectScreen.resources
+C:\Users\Amit\Desktop\Projects\Heavy Engine\obj\Debug\Heavy_Engine.MenuScreen.resources
+C:\Users\Amit\Desktop\Projects\Heavy Engine\obj\Debug\Heavy_Engine.NewProjectScreen.resources
+C:\Users\Amit\Desktop\Projects\Heavy Engine\obj\Debug\Heavy_Engine.NewScript.resources
+C:\Users\Amit\Desktop\Projects\Heavy Engine\obj\Debug\Heavy_Engine.ObjectManager.resources
+C:\Users\Amit\Desktop\Projects\Heavy Engine\obj\Debug\Heavy_Engine.PluginManager.resources
+C:\Users\Amit\Desktop\Projects\Heavy Engine\obj\Debug\Heavy_Engine.ProjectManager.resources
+C:\Users\Amit\Desktop\Projects\Heavy Engine\obj\Debug\Heavy_Engine.Properties.Resources.resources
+C:\Users\Amit\Desktop\Projects\Heavy Engine\obj\Debug\Heavy_Engine.ResourceManager.resources
+C:\Users\Amit\Desktop\Projects\Heavy Engine\obj\Debug\Heavy_Engine.ScriptManager.resources
+C:\Users\Amit\Desktop\Projects\Heavy Engine\obj\Debug\Heavy Engine.csproj.GenerateResource.Cache
+E:\Projects\Heavy Engine\obj\Debug\Heavy Engine.exe
+E:\Projects\Heavy Engine\obj\Debug\Heavy Engine.pdb
+E:\Projects\Heavy Engine\bin\Debug\Heavy Engine.exe
+E:\Projects\Heavy Engine\bin\Debug\Heavy Engine.pdb
+E:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.AboutHeavyEngine.resources
+E:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.AddObject.resources
+E:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.CreateObject.resources
+E:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.Editor.resources
+E:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.LevelManager.resources
+E:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.LoadProjectScreen.resources
+E:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.MenuScreen.resources
+E:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.NewProjectScreen.resources
+E:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.NewScript.resources
+E:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.ObjectManager.resources
+E:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.PluginManager.resources
+E:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.ProjectManager.resources
+E:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.Properties.Resources.resources
+E:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.ResourceManager.resources
+E:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.ScriptManager.resources
+E:\Projects\Heavy Engine\obj\Debug\Heavy Engine.csproj.GenerateResource.Cache
+E:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.ErrorViewer.resources
+E:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.ObjectEditor.resources
+E:\Projects\Heavy Engine\obj\Debug\Heavy_Engine.BuildOptions.resources
