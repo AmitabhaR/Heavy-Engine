@@ -1,65 +1,74 @@
 # Heavy-Engine 2
-Heavy-Engine is a open-source and multi-platform game engine developed in C#  . It's main aim is to reduce the task of game making . The game engine is licensed under GNU GPL v2.0 . Please see the LICENSE file for more information .
-We give you the source code with a strict aggrement that you will remove the name of the original author of the program . 
 
-# Features
+This is the official site of Heavy-Engine 2 .
 
-List of features.
+# Contents
+ ========
+1. Source Code.
+2. Downloadable Binaries.
+3. Help Centre.
+4. Documentation.
 
-1. Level Editor.
-2. Multi - Platform.
-3. Free and open - source.
-4. Friendly UI.
-5. Quick Designing.
+The project is licensed under GNU GPL v2.0 . Please see the LICENSE file for more information .
+We give you the source code with a strict aggrement that you will remove the name of the original author of the program .
+For more information , please contact us at help.reostudio@yahoo.com .
 
 # Platforms
-
-List of current and up-coming platforms.
-
-1. Windows PC.
+  =========
+1. Windows PC (Managed).
+2. Windows PC Native (x86).
 2. Java Desktop.
 3. Java Mobiles. 	
-4. Java Web.      	(Under Development)
-5. HTML5.  			(Under Confirmation)
-
-From the above , the platforms which are marked 'Under Development' are being developed and the one which are marked 'Under Confirmation' are yet not confirmed.
 
 # Building the Engine
+  ===================
 
-Building the engine requires .NET Framework , lastest version is preferred.
-Note : Read all the steps before building the engine is recommended.
+#### Requirements
+	 ============
+	 1. MSBuild 2013 + Visual Studio 2013.
+	 2. Java SDK.
+	 3. Java ME SDK.
+	
+### Setup Environment Variables
+	===========================
+1. Open Environment Variables Editor.
+2. Select PATH variable and add MSBuild bin folder path , add Java SDK bin folder path , add Java ME SDK bin folder path.
+3. Restart your system.		
+	
+### Compile BosCompiler
+    ===================
+1. For compiling BosCompiler , download Orwell Dev-Cpp (http://sourceforge.net/projects/orwelldevcpp/files/latest/download) or download CodeBlocks (http://sourceforge.net/projects/codeblocks/files/Binaries/13.12/Windows/codeblocks-13.12mingw-setup.exe/download).
+2. Create a new project and all the source files.
+3. Build the Exe and compiling is finished.
 
-Compile BosCompiler
-===================
-1. Open Makefile in BosCompiler and change the .../ paths with the compiler default paths.
-2. Run make in command line.
-
-Compile C# Runtime
-==================
-1. Create a visual studio project and add Runtime.cs file . Create a dll project.
+### Compile C# Runtime
+	==================
+1. Create a visual studio class library project .
+2. Add Runtime.cs file .
+3. Create a dll project.
 2. Compile and get the dll file.
 
-Compile Java Runtime
-====================
-1. Create a java class library project and add the folder / package jruntime to your project for proper compile.
-2. Compile and get the jar file.
+### Compile Java Runtime
+	====================
+1. Create a java class library project.
+2. Add the folder / package jruntime to your project for proper compile.
+3. Compile and get the jar file.
 
-Compile Java ME Runtime
-==================
-1. Create a java mobile class library project and the folder / package jruntime to your project for proper compile.
-2. Compile an get the jar file.
+### Compile Java ME Runtime
+	==================
+1. Create a java mobile class library project 
+2. Add the folder / package jruntime to your project for proper compile.
+3. Compile an get the jar file.
 
-Compile Engine
-==============
-1. Setup the PATH environment variable with the path of the .net framework directory.
-2. Setup the PATH environment variable with the path of the JDK directory.
-3. Setup the PATH environment variable with the path of the JavaME SDK directory.
-4. Create a visual studio C# project and add all the files and folders in Engine directory.
-5. Build the exe file.
-6. Copy all the binaries you compile before to the directory of the exe file.
-7. Copy also midp_2.0.jar and cldc_1.0.jar and all other jar files form the pre-compiled directory.
-6. Run the Engine.
+### Compile Engine
+	==============
+1. Open the Heavy-Engine.sln in the visual studio editor.
+2. Click re-build to re-make the exe file.
 
-Now we also provide pre-compiled binaries , if you don't want to re-build it , you can use the pre-compiled binaries .
+# Other Options
+  =============
+In the pre-compiled folder , we have compiled and given you the latest build . You can download that if you don't want to re-compile the engine.
 
-Release Version : 1.4 (Late Release).
+Release Version : 2.0 Beta 1.0
+
+Owned by Reo Studio 2014 - 2015.
