@@ -14,7 +14,8 @@ Release Notes (Beta 1.0)
 		5. Camera X and Y are found on the status strip at the bottom.
 	5. Sprite Baker for breaking frames from sprite. 
 	6. Non-Threaded Navigator and Animation.
-
+	7. File Name Encryption during Build Supported.
+	
 ### Fixes
 	1. Multi-threaded Animation not supported anymore.
 	2. Added a save level message for preventing progress loss.
@@ -26,4 +27,5 @@ Release Notes (Beta 1.0)
 	8. Bosch Scripts Code Generation problem fixed while using scene_activate.
 	9. Added Build Log Support for all platforms.
 	10. Added build progress window for more better build visulaization.
+	
  
