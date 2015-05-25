@@ -721,9 +721,9 @@ namespace Runtime
 		{
 			if (name != null)
 			{
-				if (Resources.getResource(name) != "")
+				if (ResourceManager.getResource(name) != "")
 				{
-					images.Add(Image.FromFile( Resources.getResource( name ) ));
+					images.Add(Image.FromFile( ResourceManager.getResource( name ) ));
 				}
 			}
 		}
@@ -871,14 +871,14 @@ namespace Runtime
 		 }
 	}
 	
-	public class Resources
+	public class ResourceManager
 	{
 		public static Image findImage(string file_name)
 		{
 		
-			if (File.Exists(Application.StartupPath + "\\Data\\" + file_name + ".X"))
+			if (File.Exists(Application.StartupPath + "\\Data\\" + encryptFileName(file_name) + ".X"))
 			{
-				return Image.FromFile(Application.StartupPath + "\\Data\\" + file_name + ".X");
+				return Image.FromFile(Application.StartupPath + "\\Data\\" + encryptFileName(file_name) + ".X");
 			}
 			else
 			{
@@ -888,9 +888,9 @@ namespace Runtime
 		
 		public static StreamReader getResourceAsStream(string file_name)
 		{
-			if (File.Exists(Application.StartupPath + "\\Data\\" + file_name + ".X"))
+			if (File.Exists(Application.StartupPath + "\\Data\\" + encryptFileName(file_name) + ".X"))
 			{
-				return new StreamReader(Application.StartupPath + "\\Data\\" + file_name + ".X");
+				return new StreamReader(Application.StartupPath + "\\Data\\" + encryptFileName(file_name) + ".X");
 			}
 			else
 			{
@@ -900,15 +900,110 @@ namespace Runtime
 		
 		public static string getResource(string file_name)
 		{
-			if (File.Exists(Application.StartupPath + "\\Data\\" + file_name + ".X"))
+			if (File.Exists(Application.StartupPath + "\\Data\\" + encryptFileName(file_name) + ".X"))
 			{
-				return Application.StartupPath + "\\Data\\" + file_name + ".X";
+				return Application.StartupPath + "\\Data\\" + encryptFileName(file_name) + ".X";
 			}
 			else
 			{
 				return "";
 			}
 		}
+
+        public static string decryptFileName(string base_string)
+        {
+            string out_string = "";
+            int skip_count = 0;
+
+            if (String.IsNullOrEmpty(base_string)) return "";
+
+            for (int cnt = 0; cnt < base_string.Length; cnt++)
+            {
+                if (skip_count > 0 && skip_count <= 3)
+                {
+                    skip_count++;
+                    continue;
+                }
+                else
+                {
+                    skip_count = 0;
+                }
+
+                char cur_ch = base_string[cnt];
+
+                if (Char.IsLetter(cur_ch))
+                {
+                    if (base_string[cnt - 1] == '0')
+                    {
+                        out_string += (char)(cur_ch - 10);
+                    }
+                    else
+                    {
+                        out_string += (char)(cur_ch + 10);
+                    }
+
+                    skip_count = 1;
+                }
+                else
+                {
+                    if (cnt == 0) continue;
+
+                    if (base_string[cnt - 1] == '2')
+                    {
+                        out_string += cur_ch; // Avoid Digits.
+                        skip_count = 3;
+                    }
+                }
+            }
+
+            return out_string;
+        }
+
+        public static String encryptFileName(String base_string)
+        {
+            string out_string = "";
+
+            if (String.IsNullOrEmpty(base_string)) return "";
+
+            base_string = base_string.ToUpper();
+
+            for (int cnt = 0; cnt < base_string.Length; cnt++)
+            {
+                char cur_ch = base_string[cnt];
+
+                if (cur_ch < 65 || cur_ch > 91)
+                {
+                    out_string += (int)2;
+                    out_string += cur_ch; // Avoid Digits.
+                }
+                else if (cur_ch + 10 <= 91)
+                {
+                    out_string += (int)0;
+                    out_string += (char)(cur_ch + 10);
+                    out_string += (int)(91 - (cur_ch + 10));
+
+                    if (91 - (cur_ch + 10) < 10)
+                    {
+                        out_string += (int)0;
+                    }
+                }
+                else if (cur_ch - 10 >= 65)
+                {
+                    out_string += (int)1;
+                    out_string += (char)(cur_ch - 10);
+                    out_string += (int)((cur_ch - 10) - 65);
+
+                    if ((cur_ch - 10) - 65 < 10)
+                    {
+                        out_string += (int)0;
+                    }
+                }
+            }
+
+            //  out_string = out_string.toUpperCase();
+
+            return out_string;
+        }
 	}
 
     public class HApplication

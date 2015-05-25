@@ -1,4 +1,5 @@
 #include "HApplication.h"
+#include <SDL_mixer.h>
 
 static Scene * cur_scene;
 static Window mainWindow;
@@ -62,6 +63,7 @@ void HApplication::Initialize(std::string project_name)
 	SDL_Init(SDL_INIT_EVERYTHING);
 	IMG_Init(IMG_INIT_PNG);
 	TTF_Init();
+	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
 
 	mainWindow = SDL_CreateWindow(project_name.c_str(), 100, 100, 600, 640, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 

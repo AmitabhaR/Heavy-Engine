@@ -10,15 +10,15 @@
        <Types>
         <Type Name="GameBuilder" Kind="Class" Accessibility="Assembly" ExternallyVisible="False">
          <Messages>
-          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2015-05-21 18:13:17Z" FixCategory="NonBreaking">
+          <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Active" Created="2015-05-25 09:47:26Z" FixCategory="NonBreaking">
            <Issue Name="NonBreaking" Certainty="95" Level="CriticalError">Implement IDisposable on 'GameBuilder' because it creates members of the following IDisposable types: 'LogWindow'.</Issue>
           </Message>
          </Messages>
          <Members>
           <Member Name="#BuildGame(Heavy_Engine.Editor)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="False">
            <Messages>
-            <Message TypeName="Do not dispose objects multiple times" Category="Microsoft.Usage" CheckId="CA2202" Status="Active" Created="2015-05-21 18:13:17Z" FixCategory="DependsOnFix">
-             <Issue Certainty="75" Level="Warning" Path="e:\Projects\Heavy Engine" File="Editor.cs" Line="2977">Object 'build_progress' can be disposed more than once in method 'GameBuilder.BuildGame(Editor)'. To avoid generating a System.ObjectDisposedException you should not call Dispose more than one time on an object.: Lines: 2977, 3172, 3368</Issue>
+            <Message TypeName="Do not dispose objects multiple times" Category="Microsoft.Usage" CheckId="CA2202" Status="Active" Created="2015-05-25 09:47:26Z" FixCategory="DependsOnFix">
+             <Issue Certainty="75" Level="Warning" Path="e:\Projects\Heavy Engine" File="Editor.cs" Line="3014">Object 'build_progress' can be disposed more than once in method 'GameBuilder.BuildGame(Editor)'. To avoid generating a System.ObjectDisposedException you should not call Dispose more than one time on an object.: Lines: 3014, 3208, 3414</Issue>
             </Message>
            </Messages>
           </Member>
@@ -35,7 +35,7 @@
   <Rule TypeName="Do not dispose objects multiple times" Category="Microsoft.Usage" CheckId="CA2202">
    <Name>Do not dispose objects multiple times</Name>
    <Description>A correctly implemented Dispose method can be called multiple times without throwing an exception. However, this is not guaranteed and to avoid generating a System.ObjectDisposedException you should not call Dispose more than one time on an object.</Description>
-   <Resolution Name="Default">Object {0} can be disposed more than once in method {1}. To avoid generating a System.ObjectDisposedException you should not call Dispose more than one time on an object.: Lines: 2977, 3172, 3368</Resolution>
+   <Resolution Name="Default">Object {0} can be disposed more than once in method {1}. To avoid generating a System.ObjectDisposedException you should not call Dispose more than one time on an object.: Lines: 3014, 3208, 3414</Resolution>
    <Owner>RuleOwner</Owner>
    <Url>http://msdn.microsoft.com/library/ms182334.aspx</Url>
    <Email />

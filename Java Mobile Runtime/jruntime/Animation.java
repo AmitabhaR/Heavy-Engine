@@ -57,11 +57,11 @@ public class Animation
 	{
 		if (name != null)
 		{
-			if (Resources.getResource(name) != "")
+			if (ResourceManager.getResource(name) != "")
 			{
                             try
                             {
-				images.addElement(Image.createImage( Resources.getResourceAsStream( name ) ));
+				images.addElement(Image.createImage( ResourceManager.getResourceAsStream( name ) ));
                             }
                             catch(IOException ax)
                             {

@@ -1,6 +1,6 @@
 package jruntime;
 
-import jruntime.Resources;
+import jruntime.ResourceManager;
 import java.util.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.*;
@@ -60,11 +60,11 @@ public class Animation
 	{
 		if (name != null)
 		{
-			if (Resources.getResource(name) != "")
+			if (ResourceManager.getResource(name) != "")
 			{
                             try
                             {
-				images.add(ImageIO.read( Resources.getResourceAsStream( name ) ));
+				images.add(ImageIO.read(ResourceManager.getResourceAsStream( name ) ));
                             }
                             catch(IOException ax)
                             {

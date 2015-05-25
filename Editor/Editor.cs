@@ -2062,6 +2062,50 @@ namespace Heavy_Engine
             return ret_anim;
         }
 
+        string encryptFileName(string base_string)
+        {
+            string out_string = "";
+
+            if (String.IsNullOrEmpty(base_string)) return "";
+
+            base_string = base_string.ToUpper();
+            
+            for (int cnt = 0; cnt < base_string.Length; cnt++)
+            {
+                char cur_ch = base_string[cnt];
+
+                if (cur_ch < 65 || cur_ch > 91)
+                {
+                    out_string += (int)2;
+                    out_string += cur_ch; // Avoid Digits.
+                }
+                else if (cur_ch + 10 <= 91)
+                {
+                    out_string += (int)0;
+                    out_string += (char)(cur_ch + 10);
+                    out_string += (int)(91 - (cur_ch + 10));
+
+                    if (91 - (cur_ch + 10) < 10)
+                    {
+                        out_string += (int)0;
+                    }
+                }
+                else if (cur_ch - 10 >= 65)
+                {
+                    out_string += (int)1;
+                    out_string += (char)(cur_ch - 10);
+                    out_string += (int)((cur_ch - 10) - 65);
+
+                    if ((cur_ch - 10) - 65 < 10)
+                    {
+                        out_string += (int)0;
+                    }
+                }
+            }
+
+            return out_string;
+        }
+
         delegate void processLine(string line); 
         public bool BuildGame(Editor editor_handle)
         {
@@ -2204,7 +2248,7 @@ namespace Heavy_Engine
 
                         foreach (string anim_file in baseAnim.frame_list)
                         {
-                            file_writer.WriteLine("this.addFrame(Image.FromFile(Application.StartupPath + \"\\\\Data\\\\" + Path.GetFileNameWithoutExtension(anim_file)  + ".X" +"\"));");
+                            file_writer.WriteLine("this.addFrame(Image.FromFile(Application.StartupPath + \"\\\\Data\\\\" + encryptFileName(Path.GetFileNameWithoutExtension(anim_file))  + ".X" +"\"));");
                         }
                     }
                     else if (editor_handle.platform_id == 2 || editor_handle.platform_id == 3)
@@ -2220,7 +2264,7 @@ namespace Heavy_Engine
                         
                         foreach (string anim_file in baseAnim.frame_list)
                         {
-                            if (editor_handle.platform_id == 3) file_writer.WriteLine("this.addFrame(Image.createImage(\"/Data/" + Path.GetFileNameWithoutExtension(anim_file) + ".X" + "\"));"); else file_writer.WriteLine("this.addFrame(ImageIO.read(new File(\"/Data/" + Path.GetFileNameWithoutExtension(anim_file) + ".X" + "\")));");
+                            if (editor_handle.platform_id == 3) file_writer.WriteLine("this.addFrame(Image.createImage(\"/Data/" + encryptFileName(Path.GetFileNameWithoutExtension(anim_file)) + ".X" + "\"));"); else file_writer.WriteLine("this.addFrame(ImageIO.read(new File(\"/Data/" + encryptFileName(Path.GetFileNameWithoutExtension(anim_file)) + ".X" + "\")));");
                         }
                     }
                     else if (editor_handle.platform_id == 4)
@@ -2249,7 +2293,7 @@ namespace Heavy_Engine
 
                         foreach (string anim_file in baseAnim.frame_list)
                         {
-                            file_writer.WriteLine("this->addFrame(\"/Data/" + Path.GetFileNameWithoutExtension(anim_file) + ".X" + "\");");
+                            file_writer.WriteLine("this->addFrame(\"./Data/" + encryptFileName(Path.GetFileNameWithoutExtension(anim_file)) + ".X" + "\");");
                         }
                     }
 
@@ -2527,21 +2571,21 @@ namespace Heavy_Engine
             {
                 if (editor_handle.platform_id == 1)
                 {
-                    stm_wr.WriteLine("ObjectManager.loadObject(\"" + editor_handle.gameObject_list[cntr].object_name + "\",\"" + editor_handle.gameObject_list[cntr].object_text + "\",Application.StartupPath + \"\\\\Data\\\\" + Path.GetFileNameWithoutExtension(editor_handle.gameObject_list[cntr].path) + ".X" + "\"," + editor_handle.gameObject_list[cntr].object_tag + "," + editor_handle.gameObject_list[cntr].isStatic.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_physics.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_rigid.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_collider.ToString().ToLower() + ");");
+                    stm_wr.WriteLine("ObjectManager.loadObject(\"" + editor_handle.gameObject_list[cntr].object_name + "\",\"" + editor_handle.gameObject_list[cntr].object_text + "\",Application.StartupPath + \"\\\\Data\\\\" + encryptFileName(Path.GetFileNameWithoutExtension(editor_handle.gameObject_list[cntr].path)) + ".X" + "\"," + editor_handle.gameObject_list[cntr].object_tag + "," + editor_handle.gameObject_list[cntr].isStatic.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_physics.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_rigid.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_collider.ToString().ToLower() + ");");
                 }
                 else if (editor_handle.platform_id == 2 || editor_handle.platform_id == 3)
                 {
-                    stm_wr.WriteLine("ObjectManager.loadObject(\"" + editor_handle.gameObject_list[cntr].object_name + "\",\"" + editor_handle.gameObject_list[cntr].object_text + "\",\"" + "/Data/" + Path.GetFileNameWithoutExtension(editor_handle.gameObject_list[cntr].path) + ".X" + "\"," + editor_handle.gameObject_list[cntr].object_tag + "," + editor_handle.gameObject_list[cntr].isStatic.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_physics.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_rigid.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_collider.ToString().ToLower() + ");");
+                    stm_wr.WriteLine("ObjectManager.loadObject(\"" + editor_handle.gameObject_list[cntr].object_name + "\",\"" + editor_handle.gameObject_list[cntr].object_text + "\",\"" + "/Data/" + encryptFileName(Path.GetFileNameWithoutExtension(editor_handle.gameObject_list[cntr].path)) + ".X" + "\"," + editor_handle.gameObject_list[cntr].object_tag + "," + editor_handle.gameObject_list[cntr].isStatic.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_physics.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_rigid.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_collider.ToString().ToLower() + ");");
                 }
                 else if (editor_handle.platform_id == 4)
                 {
                     if (editor_handle.gameObject_list[cntr].object_img != null)
                     {
-                        stm_wr.WriteLine("ObjectManager::loadObject(\"" + editor_handle.gameObject_list[cntr].object_name + "\",\"" + editor_handle.gameObject_list[cntr].object_text + "\",\"" + "./Data/" + Path.GetFileNameWithoutExtension(editor_handle.gameObject_list[cntr].path) + ".X" + "\"," + editor_handle.gameObject_list[cntr].object_tag + "," + editor_handle.gameObject_list[cntr].isStatic.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_physics.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_rigid.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_collider.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_img.Width + "," + editor_handle.gameObject_list[cntr].object_img.Height + ");");
+                        stm_wr.WriteLine("ObjectManager::loadObject(\"" + editor_handle.gameObject_list[cntr].object_name + "\",\"" + editor_handle.gameObject_list[cntr].object_text + "\",\"" + "./Data/" + encryptFileName(Path.GetFileNameWithoutExtension(editor_handle.gameObject_list[cntr].path)) + ".X" + "\"," + editor_handle.gameObject_list[cntr].object_tag + "," + editor_handle.gameObject_list[cntr].isStatic.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_physics.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_rigid.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_collider.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_img.Width + "," + editor_handle.gameObject_list[cntr].object_img.Height + ");");
                     }
                     else
                     {
-                        stm_wr.WriteLine("ObjectManager::loadObject(\"" + editor_handle.gameObject_list[cntr].object_name + "\",\"" + editor_handle.gameObject_list[cntr].object_text + "\",\"" + "./Data/" + Path.GetFileNameWithoutExtension(editor_handle.gameObject_list[cntr].path) + ".X" + "\"," + editor_handle.gameObject_list[cntr].object_tag + "," + editor_handle.gameObject_list[cntr].isStatic.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_physics.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_rigid.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_collider.ToString().ToLower() + ",0,0);");
+                        stm_wr.WriteLine("ObjectManager::loadObject(\"" + editor_handle.gameObject_list[cntr].object_name + "\",\"" + editor_handle.gameObject_list[cntr].object_text + "\",\"" + "./Data/" + encryptFileName(Path.GetFileNameWithoutExtension(editor_handle.gameObject_list[cntr].path)) + ".X" + "\"," + editor_handle.gameObject_list[cntr].object_tag + "," + editor_handle.gameObject_list[cntr].isStatic.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_physics.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_rigid.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_collider.ToString().ToLower() + ",0,0);");
                     }
                 }
             }
@@ -2765,7 +2809,10 @@ jmp:
                     build_progress.Close();
                     log_window.Show();
 
-                    return false;
+                    foreach (string path in rem_files)
+                    {
+                        File.Delete(path);
+                    }
                 }
                 else
                 {
@@ -2776,12 +2823,7 @@ jmp:
 
                     foreach (string file in Directory.GetFiles(editor_handle.project_default_dir + "\\Game-Resouces"))
                     {
-                        if (File.Exists(editor_handle.project_default_dir + "\\Build\\Data\\" + Path.GetFileNameWithoutExtension(file) + ".X"))
-                        {
-                            File.Delete(editor_handle.project_default_dir + "\\Build\\Data\\" + Path.GetFileNameWithoutExtension(file) + ".X");
-                        }
-
-                        File.Copy(file, editor_handle.project_default_dir + "\\Build\\Data\\" + Path.GetFileNameWithoutExtension(file) + ".X");
+                        File.Copy(file, editor_handle.project_default_dir + "\\Build\\Data\\" + encryptFileName(Path.GetFileNameWithoutExtension(file)) + ".X");
                     }
 
                     File.Copy(Application.StartupPath + "\\Runtime.dll", editor_handle.project_default_dir + "\\Build\\Runtime.dll");
@@ -2930,12 +2972,7 @@ jmp:
 
                         foreach (string file in Directory.GetFiles(editor_handle.project_default_dir + "\\Game-Resouces"))
                         {
-                            if (File.Exists(editor_handle.project_default_dir + "\\Build\\Data\\" + Path.GetFileNameWithoutExtension(file) + ".X"))
-                            {
-                                File.Delete(editor_handle.project_default_dir + "\\Build\\Data\\" + Path.GetFileNameWithoutExtension(file) + ".X");
-                            }
-
-                            File.Copy(file, editor_handle.project_default_dir + "\\Build\\Data\\" + Path.GetFileNameWithoutExtension(file) + ".X");
+                            File.Copy(file, editor_handle.project_default_dir + "\\Build\\Data\\" + encryptFileName(Path.GetFileNameWithoutExtension(file)) + ".X");
                         }
 
                         File.Delete(editor_handle.project_default_dir + "\\AppMain.java");
@@ -2976,7 +3013,11 @@ jmp:
                     log_window.addLog("Build Failed...");
                     build_progress.Close();
                     log_window.Show();
-                    return false;
+                }
+
+                foreach (string path in rem_files)
+                {
+                    File.Delete(path);
                 }
 
             }
@@ -3125,12 +3166,7 @@ jmp:
 
                         foreach (string file in Directory.GetFiles(editor_handle.project_default_dir + "\\Game-Resouces"))
                         {
-                            if (File.Exists(editor_handle.project_default_dir + "\\Build\\Data\\" + Path.GetFileNameWithoutExtension(file) + ".X"))
-                            {
-                                File.Delete(editor_handle.project_default_dir + "\\Build\\Data\\" + Path.GetFileNameWithoutExtension(file) + ".X");
-                            }
-
-                            File.Copy(file, editor_handle.project_default_dir + "\\Build\\Data\\" + Path.GetFileNameWithoutExtension(file) + ".X");
+                            File.Copy(file, editor_handle.project_default_dir + "\\Build\\Data\\" + encryptFileName(Path.GetFileNameWithoutExtension(file)) + ".X");
                         }
 
                         File.Delete(editor_handle.project_default_dir + "\\AppMain.java");
@@ -3171,7 +3207,11 @@ jmp:
                     log_window.addLog("Build Failed...");
                     build_progress.Close();
                     log_window.Show();
-                    return false;
+                }
+
+                foreach (string path in rem_files)
+                {
+                    File.Delete(path);
                 }
             }
             else if (editor_handle.platform_id == 4)
@@ -3207,7 +3247,7 @@ jmp:
 
                  foreach (string file in Directory.GetFiles(editor_handle.project_default_dir + "\\Game-Resouces"))
                  {
-                     File.Copy(file, editor_handle.project_default_dir + "\\Build\\Data\\" + Path.GetFileNameWithoutExtension(file) + ".X");
+                     File.Copy(file, editor_handle.project_default_dir + "\\Build\\Data\\" + encryptFileName(Path.GetFileNameWithoutExtension(file)) + ".X");
                  }
 
                 // Copy DLL / Runtime Libraries.
@@ -3295,8 +3335,8 @@ jmp:
 
                     Process process_handle = Process.Start(pinfo);
 
-                    log_window.addLog(process_handle.StandardError.ReadToEnd());
                     log_window.addLog(process_handle.StandardOutput.ReadToEnd());
+                    log_window.addLog(process_handle.StandardError.ReadToEnd());
 
                 re:
                     if (!process_handle.HasExited) goto re;
@@ -3314,6 +3354,12 @@ jmp:
                         flushDirectories(editor_handle.project_default_dir + "\\Build");
                         log_window.Show();
                         build_progress.Close();
+
+                        foreach (string path in rem_files)
+                        {
+                            File.Delete(path);
+                        }
+
                         return false;
                     }
 

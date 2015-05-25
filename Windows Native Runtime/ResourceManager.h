@@ -14,6 +14,10 @@ public:
 	static File getResourceAsStream(std::string);
 
 	static std::string getResource(std::string);
+
+	static std::string decryptFileName(std::string);
+
+	static std::string encryptFileName(std::string);
 };
 
 #endif
