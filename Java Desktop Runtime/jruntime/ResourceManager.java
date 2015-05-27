@@ -144,7 +144,7 @@ public class ResourceManager
                  out_string += (int) 2;
                  out_string += cur_ch; // Avoid Digits.
             }
-            else if (cur_ch + 10 <= 91)
+            else if (cur_ch + 10 < 91)
             {
                 out_string += (int) 0;
                 out_string += (char) (cur_ch + 10);

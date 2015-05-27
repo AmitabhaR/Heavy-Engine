@@ -237,6 +237,13 @@ namespace Heavy_Engine
                         ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).X = e.X + cam_x;
                         ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).Y = e.Y + cam_y;
 
+                        GameObject_Scene obj_handle = ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj;
+
+                        obj_handle.position_scene_x = e.X;
+                        obj_handle.position_scene_y = e.Y;
+
+                        ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj = obj_handle;
+                       
                         break;
                     }
                 }
@@ -618,6 +625,16 @@ namespace Heavy_Engine
                     else if (gameObjectScene_list[cntr].mainObject.object_text != "")
                     {
                         e.Graphics.DrawString(gameObjectScene_list[cntr].mainObject.object_text, new Font("Verdana", 12), Brushes.Black, new Point(gameObjectScene_list[cntr].position_scene_x, gameObjectScene_list[cntr].position_scene_y));
+                    }
+                }
+
+                if (gameObject_editor.SelectedObject != null)
+                {
+                    if (((GameObject_Scene_EDTIOR) gameObject_editor.SelectedObject).obj.mainObject.object_img != null)
+                    {
+                        GameObject_Scene_EDTIOR handle = (GameObject_Scene_EDTIOR)  gameObject_editor.SelectedObject;
+
+                        e.Graphics.DrawEllipse(Pens.White, new Rectangle(((handle.obj.mainObject.object_img.Width / 2) + handle.obj.position_scene_x) - handle.obj.mainObject.object_img.Width, ((handle.obj.mainObject.object_img.Height / 2) + handle.obj.position_scene_y) - handle.obj.mainObject.object_img.Height, (2 * handle.obj.mainObject.object_img.Width) + 2 * zoom_rate, (2 * handle.obj.mainObject.object_img.Height) + 2 * zoom_rate));
                     }
                 }
         }
@@ -1527,6 +1544,18 @@ namespace Heavy_Engine
 
                     handle.position_scene_y += 5;
 
+                    if (gameObject_editor.SelectedObject != null)
+                    {
+                        if (((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
+                        {
+                            GameObject_Scene obj_handle = ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj;
+
+                            obj_handle.position_scene_y += 5;
+
+                            ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj = obj_handle;
+                        }
+                    }
+
                     gameObjectScene_list[cnt] = handle;
                 }
             }
@@ -1544,6 +1573,18 @@ namespace Heavy_Engine
                     GameObject_Scene handle = gameObjectScene_list[cnt];
 
                     handle.position_scene_y -= 5;
+
+                    if (gameObject_editor.SelectedObject != null)
+                    {
+                        if (((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
+                        {
+                            GameObject_Scene obj_handle = ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj;
+
+                            obj_handle.position_scene_y -= 5;
+
+                            ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj = obj_handle;
+                        }
+                    }
 
                     gameObjectScene_list[cnt] = handle;
                 }
@@ -1563,6 +1604,18 @@ namespace Heavy_Engine
 
                     handle.position_scene_x += 5;
 
+                    if (gameObject_editor.SelectedObject != null)
+                    {
+                        if (((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
+                        {
+                            GameObject_Scene obj_handle = ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj;
+
+                            obj_handle.position_scene_x += 5;
+                            
+                            ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj = obj_handle;
+                        }
+                    }
+
                     gameObjectScene_list[cnt] = handle;
                 }
             }
@@ -1581,6 +1634,18 @@ namespace Heavy_Engine
 
                     handle.position_scene_x -= 5;
 
+                    if (gameObject_editor.SelectedObject != null)
+                    {
+                        if (((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
+                        {
+                            GameObject_Scene obj_handle = ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj;
+
+                            obj_handle.position_scene_x -= 5;
+                            
+                            ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj = obj_handle;
+                        }
+                    }
+
                     gameObjectScene_list[cnt] = handle;
                 }
             }
@@ -1596,6 +1661,19 @@ namespace Heavy_Engine
 
                     handle.position_scene_x -= 5 * rate;
                     handle.position_scene_y -= 5 * rate;
+
+                    if (gameObject_editor.SelectedObject != null)
+                    {
+                        if (((GameObject_Scene_EDTIOR) gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
+                        {
+                            GameObject_Scene obj_handle = ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj;
+
+                            obj_handle.position_scene_x -= 5 * rate;
+                            obj_handle.position_scene_y -= 5 * rate;
+
+                            ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj = obj_handle;
+                        }
+                    }
 
                     gameObjectScene_list[cnt] = handle;
                 }
@@ -1620,6 +1698,19 @@ namespace Heavy_Engine
 
                 handle.position_scene_x -= 5;
                 handle.position_scene_y -= 5;
+
+                if (gameObject_editor.SelectedObject != null)
+                {
+                    if (((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
+                    {
+                        GameObject_Scene obj_handle = ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj;
+
+                        obj_handle.position_scene_x -= 5;
+                        obj_handle.position_scene_y -= 5;
+
+                        ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj = obj_handle;
+                    }
+                }
 
                 gameObjectScene_list[cnt] = handle;
             }
@@ -1646,6 +1737,19 @@ namespace Heavy_Engine
                 handle.position_scene_x += 5;
                 handle.position_scene_y += 5;
 
+                if (gameObject_editor.SelectedObject != null)
+                {
+                    if (((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
+                    {
+                        GameObject_Scene obj_handle = ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj;
+
+                        obj_handle.position_scene_x += 5;
+                        obj_handle.position_scene_y += 5;
+
+                        ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj = obj_handle;
+                    }
+                }
+
                 gameObjectScene_list[cnt] = handle;
             }
 
@@ -1661,6 +1765,19 @@ namespace Heavy_Engine
 
                     handle.position_scene_x += 5 * rate;
                     handle.position_scene_y += 5 * rate;
+
+                    if (gameObject_editor.SelectedObject != null)
+                    {
+                        if (((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
+                        {
+                            GameObject_Scene obj_handle = ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj;
+
+                            obj_handle.position_scene_x += 5 * rate;
+                            obj_handle.position_scene_y += 5 * rate;
+
+                            ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj = obj_handle;
+                        }
+                    }
 
                     gameObjectScene_list[cnt] = handle;
                 }
@@ -2079,7 +2196,7 @@ namespace Heavy_Engine
                     out_string += (int)2;
                     out_string += cur_ch; // Avoid Digits.
                 }
-                else if (cur_ch + 10 <= 91)
+                else if (cur_ch + 10 < 91)
                 {
                     out_string += (int)0;
                     out_string += (char)(cur_ch + 10);

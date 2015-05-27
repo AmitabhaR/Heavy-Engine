@@ -15,6 +15,7 @@ Release Notes (Beta 1.0)
 	5. Sprite Baker for breaking frames from sprite. 
 	6. Non-Threaded Navigator and Animation.
 	7. File Name Encryption during Build Supported.
+	8. Object selection highlighting supported.
 	
 ### Fixes
 	1. Multi-threaded Animation not supported anymore.
