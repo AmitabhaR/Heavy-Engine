@@ -2332,7 +2332,7 @@ namespace Heavy_Engine
 
                     file_writer.Close();
 
-                    rem_files.Add(editor_handle.project_default_dir + "\\Game-Scripts\\" + Path.GetFileNameWithoutExtension(path) + platform_ext);
+                    rem_files.Add(editor_handle.project_default_dir + "\\Game-Scripts\\" + Path.GetFileNameWithoutExtension(path) + "_Navigator" + platform_ext);
                     if (editor_handle.platform_id == 4) rem_files.Add(editor_handle.project_default_dir + "\\Game-Scripts\\" + Path.GetFileNameWithoutExtension(path).Replace(" " , "") + "_Navigator.h");
                 }
             }
@@ -2378,11 +2378,15 @@ namespace Heavy_Engine
                         file_writer.WriteLine("public class " + Path.GetFileNameWithoutExtension(path) + "_Animation extends Animation {");
                         file_writer.WriteLine("public " + Path.GetFileNameWithoutExtension(path) + "_Animation(GameObject_Scene baseObject,boolean isRepeating) { ");
                         file_writer.WriteLine("super(baseObject," + baseAnim.animation_speed.ToString( ) + ",isRepeating);");
-                        
+                        file_writer.WriteLine("try {");
+
                         foreach (string anim_file in baseAnim.frame_list)
                         {
                             if (editor_handle.platform_id == 3) file_writer.WriteLine("this.addFrame(Image.createImage(\"/Data/" + encryptFileName(Path.GetFileNameWithoutExtension(anim_file)) + ".X" + "\"));"); else file_writer.WriteLine("this.addFrame(ImageIO.read(new File(\"/Data/" + encryptFileName(Path.GetFileNameWithoutExtension(anim_file)) + ".X" + "\")));");
                         }
+
+                        file_writer.WriteLine("} \n catch (IOException ex) {");
+                        file_writer.WriteLine("}");
                     }
                     else if (editor_handle.platform_id == 4)
                     {
@@ -2421,7 +2425,7 @@ namespace Heavy_Engine
 
                     file_writer.Close();
 
-                    rem_files.Add(editor_handle.project_default_dir + "\\Game-Scripts\\" + Path.GetFileNameWithoutExtension(path) + platform_ext);
+                    rem_files.Add(editor_handle.project_default_dir + "\\Game-Scripts\\" + Path.GetFileNameWithoutExtension(path) + "_Animation" + platform_ext);
                     if (editor_handle.platform_id == 4) rem_files.Add(editor_handle.project_default_dir + "\\Game-Scripts\\" + Path.GetFileNameWithoutExtension(path).Replace(" ","") + "_Animation.h");
                 }
             }
@@ -3022,6 +3026,11 @@ jmp:
 
                         log_window.addLog("Build Failed...");
                         build_progress.Close();
+
+                        foreach (string path in rem_files)
+                        {
+                            File.Delete(path);
+                        }
 
                         log_window.Show();
 

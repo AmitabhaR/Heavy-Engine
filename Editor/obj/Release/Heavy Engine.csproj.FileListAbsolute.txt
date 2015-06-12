@@ -55,3 +55,4 @@ E:\Projects\Heavy Engine\obj\Release\Heavy_Engine.AnimationEditor.resources
 E:\Projects\Heavy Engine\obj\Release\Heavy_Engine.SpriteBaker.resources
 E:\Projects\Heavy Engine\obj\Release\Heavy_Engine.BuildProgress.resources
 E:\Projects\Heavy Engine\obj\Release\Heavy_Engine.LogWindow.resources
+E:\Projects\Heavy Engine\obj\Release\Heavy Engine.csprojResolveAssemblyReference.cache

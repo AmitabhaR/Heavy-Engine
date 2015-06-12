@@ -102,7 +102,7 @@ namespace Heavy_Engine
         {
             OpenFileDialog file_browser = new OpenFileDialog();
 
-            file_browser.InitialDirectory = editor_handle.project_default_dir + "\\Game-Resources";
+            file_browser.InitialDirectory = editor_handle.project_default_dir + "\\Game-Resouces";
 
             file_browser.ShowDialog();
 
@@ -113,7 +113,15 @@ namespace Heavy_Engine
 
             if (Path.GetExtension(file_browser.FileName) == ".png" || Path.GetExtension(file_browser.FileName) == "png")
             {
-                txt_object_img.Text = file_browser.FileName;
+                if (Path.GetDirectoryName(file_browser.FileName) != editor_handle.project_default_dir + "\\Game-Resouces") // Auto resource import.
+                {
+                    File.Copy(file_browser.FileName, editor_handle.project_default_dir + "\\Game-Resouces\\" + Path.GetFileName(file_browser.FileName));
+                    txt_object_img.Text = editor_handle.project_default_dir + "\\Game-Resouces\\" + Path.GetFileName(file_browser.FileName);
+                }
+                else
+                {
+                    txt_object_img.Text = file_browser.FileName;
+                }
             }
             else
             {

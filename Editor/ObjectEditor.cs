@@ -107,7 +107,7 @@ namespace Heavy_Engine
         {
             OpenFileDialog fld_dialog = new OpenFileDialog();
 
-            fld_dialog.InitialDirectory = editor_handle.project_default_dir + "\\Game-Resources";
+            fld_dialog.InitialDirectory = editor_handle.project_default_dir + "\\Game-Resouces";
 
             fld_dialog.ShowDialog();
 
@@ -115,7 +115,16 @@ namespace Heavy_Engine
             {
                 if (Path.GetExtension(fld_dialog.FileName) == ".png" || Path.GetExtension(fld_dialog.FileName) == "png")
                 {
-                    txt_image.Text = fld_dialog.FileName;
+                    if (Path.GetDirectoryName(fld_dialog.FileName) != editor_handle.project_default_dir + "\\Game-Resouces") // Auto resource import.
+                    {
+                        File.Copy(fld_dialog.FileName, editor_handle.project_default_dir + "\\Game-Resouces\\" + Path.GetFileName(fld_dialog.FileName));
+                       
+                        txt_image.Text = editor_handle.project_default_dir + "\\Game-Resouces\\" + Path.GetFileName(fld_dialog.FileName);
+                    }
+                    else
+                    {
+                        txt_image.Text = fld_dialog.FileName;
+                    }
                 }
             }
         }
