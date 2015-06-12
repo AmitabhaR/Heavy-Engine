@@ -28,5 +28,6 @@ Release Notes (Beta 1.0)
 	8. Bosch Scripts Code Generation problem fixed while using scene_activate.
 	9. Added Build Log Support for all platforms.
 	10. Added build progress window for more better build visulaization.
+	11. Added Auto-Resource Import Support.
 	
  
