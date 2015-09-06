@@ -70,6 +70,6 @@ In the pre-compiled folder , we have compiled and given you the latest build . Y
 # Protection
 For protection from decompilation , you can use Esiriz .NET Reactor for encryting / encoding the source code . This is only for official purposes only.
 
-Release Version : 2.0 Beta 1.0
+Release Version : 2.0 Beta 1.1
 
 #### 															Reo Studio 2014 - 2015
