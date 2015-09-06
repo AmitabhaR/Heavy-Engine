@@ -72,4 +72,4 @@ For protection from decompilation , you can use Esiriz .NET Reactor for encrytin
 
 Release Version : 2.0 Beta 1.1
 
-#### 															Reo Studio 2014 - 2015
+#### 															Reo Studio 2015 - 2016
