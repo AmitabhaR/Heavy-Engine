@@ -1,32 +1,29 @@
-package jruntime;
-
-import jruntime.CollisionHandler;
-import javax.swing.*;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+package jruntime;
 
+import java.util.*;
+import javax.microedition.lcdui.*;
+import javax.microedition.lcdui.game.*;
 /**
  *
  * @author Riju
  */
-public class Scene implements Runnable , Cloneable
+public class Scene extends GameCanvas implements CommandListener,Runnable
 {
-    ArrayList object_array;
-    JPanel canvas;        
+    Vector object_array;  
     public int A = 0,R = 0,G = 0,B = 0;
     public int speed = 1;
     public int gravity = 0;
     public String name = "";
     private boolean isRunning = false;
-    public ArrayList collision_handlers;	
+    private Vector collision_handlers;	
+    private Vector touch_handlers;
     DrawableGameObject[] sortedArray;
+    Command exit_com;
     
     class DrawableGameObject
     {
@@ -36,14 +33,19 @@ public class Scene implements Runnable , Cloneable
     
     public Scene( )
     {
-        object_array = new ArrayList( );
-        collision_handlers = new ArrayList( );
+        super(false);
+        object_array = new Vector( );
+        collision_handlers = new Vector( );
+        touch_handlers = new Vector( );
         sortedArray = new DrawableGameObject[0];
+        exit_com = new Command("Exit",Command.BACK,0);
+        
+        this.addCommand(exit_com);
+        this.setCommandListener(this);
     }
     
-    public void startScene(JPanel canvas)
+    public void startScene()
     {
-         this.canvas = canvas;
          isRunning = true;
          makeSorting( );
          
@@ -51,12 +53,49 @@ public class Scene implements Runnable , Cloneable
          t.start();
     }
     
-    @Override
+    private Image resizeImage(Image img , int width , int height)
+    {
+        int[] rawInput = new int[img.getHeight() * img.getWidth()];
+        img.getRGB(rawInput, 0, img.getWidth(), 0, 0, img.getWidth(), img.getHeight());
+
+        int[] rawOutput = new int[width * height];
+
+        // YD compensates for the x loop by subtracting the width back out
+        int YD = (img.getHeight() / height) * img.getWidth() - img.getWidth();
+        int YR = img.getHeight() % height;
+        int XD = img.getWidth() / width;
+        int XR = img.getWidth() % width;
+        int outOffset = 0;
+        int inOffset = 0;
+
+        for (int y = height, YE = 0; y > 0; y--) {
+          for (int x = width, XE = 0; x > 0; x--) {
+            rawOutput[outOffset++] = rawInput[inOffset];
+            inOffset += XD;
+            XE += XR;
+            if (XE >= width) {
+              XE -= width;
+              inOffset++;
+            }
+          }
+          inOffset += YD;
+          YE += YR;
+          if (YE >= height) {
+            YE -= height;
+            inOffset += img.getWidth();
+          }
+        }
+        rawInput = null;
+        return Image.createRGBImage(rawOutput, width, height, true);
+    }
+    
     public void run( )
     {
         while(isRunning)
         {
             updateScene( );
+            drawScene(getGraphics( ));
+            flushGraphics( );
             
             try
             {
@@ -68,7 +107,15 @@ public class Scene implements Runnable , Cloneable
             }
         }
     }
-		
+	
+    public void commandAction(Command com,Displayable dis)
+    {
+        if (exit_com == com)
+        {
+          HApplication.exitApp();
+        }
+    }
+    
 		private void updateScene()
 		{
                    boolean hasDeleted = false,hasDel = false; 
@@ -79,9 +126,9 @@ public class Scene implements Runnable , Cloneable
                        
                        for(int cnt = 0;cnt < object_array.size();cnt++)
                        {
-                           if (((GameObject_Scene) object_array.get(cnt)).isDestroyed)
+                           if (((GameObject_Scene) object_array.elementAt(cnt)).isDestroyed)
                            {
-                               object_array.remove(cnt);
+                               object_array.removeElementAt(cnt);
                                hasDeleted = true;
                                hasDel = true;
                                break;
@@ -94,14 +141,14 @@ public class Scene implements Runnable , Cloneable
                    
                    
 		   for (int cnt = 0;cnt < object_array.size();cnt++)
-                   {
-			     if (((GameObject_Scene) object_array.get(cnt)).obj_instance._static == false)
+           {
+			     if (((GameObject_Scene) object_array.elementAt(cnt)).obj_instance._static == false)
 				 {
-					if (((GameObject_Scene) object_array.get(cnt)).obj_instance.physics)
+					if (((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.physics)
 					{
-						if (((GameObject_Scene) object_array.get(cnt)).obj_instance.rigidbody)
+						if (((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.rigidbody)
 						{
-							((GameObject_Scene) object_array.get(cnt)).Translate(0,gravity);
+							((GameObject_Scene) object_array.elementAt(cnt)).Translate(0,gravity);
 						}
 						
 						for(int cnt0 = 0;cnt0 < object_array.size( );cnt0++)
@@ -112,14 +159,14 @@ public class Scene implements Runnable , Cloneable
 							  }
 							  else
 						      {
-							    if (((GameObject_Scene) object_array.get(cnt)).obj_instance.img != null && ((GameObject_Scene) object_array.get(cnt0)).obj_instance.img != null && ((GameObject_Scene) object_array.get(cnt)).obj_instance.physics && ((GameObject_Scene) object_array.get(cnt0)).obj_instance.physics && ((GameObject_Scene) object_array.get(cnt)).obj_instance.collider && ((GameObject_Scene) object_array.get(cnt0)).obj_instance.collider)
+							    if (((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.img != null && ((GameObject_Scene) object_array.elementAt(cnt0)).obj_instance.img != null && ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.physics && ((GameObject_Scene) object_array.elementAt(cnt0)).obj_instance.physics && ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.collider && ((GameObject_Scene) object_array.elementAt(cnt0)).obj_instance.collider)
 								{
-									if (((GameObject_Scene) object_array.get(cnt)).pos_x + ((GameObject_Scene) object_array.get(cnt)).obj_instance.img.getWidth( ) > ((GameObject_Scene) object_array.get(cnt0)).pos_x && ((GameObject_Scene) object_array.get(cnt)).pos_x < ((GameObject_Scene) object_array.get(cnt0)).pos_x + ((GameObject_Scene) object_array.get(cnt0)).obj_instance.img.getWidth( ) && ((GameObject_Scene) object_array.get(cnt)).pos_y + ((GameObject_Scene) object_array.get(cnt)).obj_instance.img.getHeight( ) > ((GameObject_Scene) object_array.get(cnt0)).pos_y && ((GameObject_Scene) object_array.get(cnt)).pos_y < ((GameObject_Scene) object_array.get(cnt0)).pos_y + ((GameObject_Scene) object_array.get(cnt0)).obj_instance.img.getHeight( ))
+									if (((GameObject_Scene) object_array.elementAt(cnt)).pos_x + ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.img.getWidth( ) > ((GameObject_Scene) object_array.elementAt(cnt0)).pos_x && ((GameObject_Scene) object_array.elementAt(cnt)).pos_x < ((GameObject_Scene) object_array.elementAt(cnt0)).pos_x + ((GameObject_Scene) object_array.elementAt(cnt0)).obj_instance.img.getWidth( ) && ((GameObject_Scene) object_array.elementAt(cnt)).pos_y + ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.img.getHeight( ) > ((GameObject_Scene) object_array.elementAt(cnt0)).pos_y && ((GameObject_Scene) object_array.elementAt(cnt)).pos_y < ((GameObject_Scene) object_array.elementAt(cnt0)).pos_y + ((GameObject_Scene) object_array.elementAt(cnt0)).obj_instance.img.getHeight( ) && ((GameObject_Scene) object_array.elementAt(cnt)).depth == ((GameObject_Scene) object_array.elementAt(cnt0)).depth)
 									{
                                                                             
                                                                             for(int c = 0;c < collision_handlers.size( );c++)
                                                                             {
-                                                                                ((CollisionHandler) collision_handlers.get(c)).onCollision((GameObject_Scene) object_array.get(cnt),(GameObject_Scene) object_array.get(cnt0));
+                                                                                ((CollisionHandler) collision_handlers.elementAt(c)).onCollision((GameObject_Scene) object_array.elementAt(cnt),(GameObject_Scene) object_array.elementAt(cnt0));
                                                                             }
 									}
 								}
@@ -127,9 +174,9 @@ public class Scene implements Runnable , Cloneable
 						}
 					}
                                  }
-                       
-                             ((GameObject_Scene) object_array.get(cnt)).processScripts();
-		   }	
+                           
+                           ((GameObject_Scene) object_array.elementAt(cnt)).processScripts();
+		   }
                    
                    NavigationManager.updateNavigation();
                    AnimationManager.updateAnimation();
@@ -174,11 +221,11 @@ public class Scene implements Runnable , Cloneable
         private void makeSorting()
         {
             sortedArray = new DrawableGameObject[object_array.size()];
-
+            
             for (int cnt = 0; cnt < object_array.size( ); cnt++)
             {
                 sortedArray[cnt] = new DrawableGameObject( );
-                sortedArray[cnt].depth = ((GameObject_Scene) object_array.get(cnt)).depth;
+                sortedArray[cnt].depth = ((GameObject_Scene) object_array.elementAt(cnt)).depth;
                 sortedArray[cnt].index = cnt;
             }
 
@@ -190,21 +237,21 @@ public class Scene implements Runnable , Cloneable
                 
 		public void drawScene(Graphics g)
 		{
-                    g.setColor(new Color(R,G,B,A));
-		    g.fillRect(0,0,canvas.getWidth(),canvas.getHeight());
+                    g.setColor(R,G,B);
+		    g.fillRect(0,0,getWidth( ),getHeight( ));
 			
 		    for(int cnt = 0;cnt < object_array.size();cnt++)
 			{
-               if (((GameObject_Scene) object_array.get(cnt)).obj_instance.img != null)
+               if (((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.img != null)
 			   {
                                
-                   g.drawImage(((GameObject_Scene) object_array.get(cnt)).obj_instance.img,((GameObject_Scene) object_array.get(cnt)).pos_x,((GameObject_Scene) object_array.get(cnt)).pos_y,null);				   
+                            g.drawImage(resizeImage(((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.img,((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.img.getWidth() + ((GameObject_Scene) object_array.elementAt(cnt)).GetScale(),((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.img.getHeight() + ((GameObject_Scene) object_array.elementAt(cnt)).GetScale()),((GameObject_Scene) object_array.elementAt(cnt)).pos_x,((GameObject_Scene) object_array.elementAt(cnt)).pos_y,Graphics.TOP | Graphics.LEFT);				   
 			   }			   
-			   else if (((GameObject_Scene) object_array.get(cnt)).obj_instance.text != "")
+			   else if (((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.text != "")
 			   {
-                               g.setFont(new Font(((GameObject_Scene) object_array.get(cnt)).obj_instance.font_name,Font.PLAIN,((GameObject_Scene) object_array.get(cnt)).obj_instance.font_size));
-                               g.setColor(((GameObject_Scene)  object_array.get(cnt)).obj_instance.color);
-                  g.drawString(((GameObject_Scene) object_array.get(cnt)).obj_instance.text,((GameObject_Scene) object_array.get(cnt)).pos_x,((GameObject_Scene) object_array.get(cnt)).pos_y);				  
+                               g.setFont(((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.font);
+                               g.setColor(((GameObject_Scene)  object_array.elementAt(cnt)).obj_instance.txt_R,((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.txt_G,((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.txt_B);
+                               g.drawString(((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.text,((GameObject_Scene) object_array.elementAt(cnt)).pos_x,((GameObject_Scene) object_array.elementAt(cnt)).pos_y,Graphics.TOP | Graphics.LEFT);				  
 			   }
 			}
 		}
@@ -223,13 +270,14 @@ public class Scene implements Runnable , Cloneable
                    
                    for(int cnt = 0;cnt < object_array.size();cnt++)
                    {
-                       if (((GameObject_Scene) object_array.get(cnt)).instance_name == gameObject.instance_name)
+                       if (((GameObject_Scene) object_array.elementAt(cnt)).instance_name == gameObject.instance_name)
                        {
                            return false;
                        }
                    }
                    
-                   object_array.add(gameObject);
+                    
+                   object_array.addElement(gameObject);
                    makeSorting( );
                    
                    return true;
@@ -239,9 +287,9 @@ public class Scene implements Runnable , Cloneable
                 { 
                     for(int cnt = 0;cnt < object_array.size( );cnt++)
                     {
-                        if (((GameObject_Scene) object_array.get(cnt)).instance_name == instance_name)
+                        if (((GameObject_Scene) object_array.elementAt(cnt)).instance_name == instance_name)
                         {
-                            ((GameObject_Scene) object_array.get(cnt)).isDestroyed = true;
+                            ((GameObject_Scene) object_array.elementAt(cnt)).isDestroyed = true;
                             return;
                         }
                     }
@@ -251,38 +299,39 @@ public class Scene implements Runnable , Cloneable
 		{
 			for(int cnt = 0;cnt < object_array.size( );cnt++)
 			{
-                            if ( ((GameObject_Scene) object_array.get(cnt)).instance_name == name)
+                            if ( ((GameObject_Scene) object_array.elementAt(cnt)).instance_name == name)
 			   {
-					return (GameObject_Scene) object_array.get(cnt);
+					return (GameObject_Scene) object_array.elementAt(cnt);
 			   }			   
 			}
 			
 			return null;
 		}
                 
-                 public  ArrayList<GameObject> findGameObject(int tag)
+           public Vector findGameObject(int tag)
            {
-               ArrayList<GameObject> ret_list = new ArrayList<GameObject>( );
+               Vector ret_list = new Vector( );
                
           for(int cnt = 0;cnt < object_array.size( );cnt++)
           {
-		      if (((GameObject_Scene) object_array.get(cnt)).obj_instance.tag == tag)
+		      if (((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.tag == tag)
 			  {
                               GameObject null_obj = new GameObject( );
                               
-                              null_obj.name = ((GameObject_Scene) object_array.get(cnt)).obj_instance.name;
-                              null_obj.tag = ((GameObject_Scene) object_array.get(cnt)).obj_instance.tag;
-                              null_obj.text =  ((GameObject_Scene)  object_array.get(cnt)).obj_instance.text;
-                              null_obj.img = ((GameObject_Scene) object_array.get(cnt)).obj_instance.img;
-                              null_obj._static = ((GameObject_Scene)  object_array.get(cnt)).obj_instance._static;
-                              null_obj.collider = ((GameObject_Scene) object_array.get(cnt)).obj_instance.collider;
-                              null_obj.color  = ((GameObject_Scene) object_array.get(cnt)).obj_instance.color;
-                              null_obj.rigidbody = ((GameObject_Scene) object_array.get(cnt)).obj_instance.rigidbody;
-                              null_obj.physics = ((GameObject_Scene) object_array.get(cnt)).obj_instance.physics;
-                              null_obj.font_name = ((GameObject_Scene) object_array.get(cnt)).obj_instance.font_name;
-                              null_obj.font_size = ((GameObject_Scene) object_array.get(cnt)).obj_instance.font_size;
+                              null_obj.name = ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.name;
+                              null_obj.tag = ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.tag;
+                              null_obj.text =  ((GameObject_Scene)  object_array.elementAt(cnt)).obj_instance.text;
+                              null_obj.img = ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.img;
+                              null_obj._static = ((GameObject_Scene)  object_array.elementAt(cnt)).obj_instance._static;
+                              null_obj.collider = ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.collider;
+                              null_obj.txt_R  = ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.txt_R;
+                              null_obj.txt_G = ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.txt_G;
+                              null_obj.txt_B = ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.txt_R;
+                              null_obj.rigidbody = ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.rigidbody;
+                              null_obj.physics = ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.physics;
+                              null_obj.font = ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.font;
                               
-                              ret_list.add(null_obj);
+                              ret_list.addElement(null_obj);
 			  }
 		  }		  
 		  
@@ -291,12 +340,36 @@ public class Scene implements Runnable , Cloneable
                 
                 public void registerCollisionHandler(CollisionHandler handle)
                 {
-                    collision_handlers.add(handle);
+                    collision_handlers.addElement(handle);
                 }
                 
-                @Override
-                protected Object clone( ) throws CloneNotSupportedException
+                public void registerTouchHandler(TouchHandler handler)
                 {
-                    return super.clone();
+                    touch_handlers.addElement(handler);
                 }
-	}
+                
+                  protected void pointerPressed(int x ,int y)
+                 {
+                     for(int cnt = 0;cnt < touch_handlers.size();cnt++)
+                     {
+                         ((TouchHandler) touch_handlers.elementAt(cnt)).onTouch(x, y);
+                     }
+                  }
+      
+                 protected void pointerDragged(int x,int y)
+                {
+                      for(int cnt = 0;cnt < touch_handlers.size();cnt++)
+                     {
+                         ((TouchHandler) touch_handlers.elementAt(cnt)).onTouchMoved(x, y);
+                     }
+                }
+      
+                protected void pointerReleased(int x , int y )
+                {
+                    for(int cnt = 0;cnt < touch_handlers.size();cnt++)
+                     {
+                         ((TouchHandler) touch_handlers.elementAt(cnt)).onTouchReleased(x, y);
+                     }
+                }
+                
+}

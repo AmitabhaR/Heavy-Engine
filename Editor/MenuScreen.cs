@@ -25,13 +25,13 @@ namespace Heavy_Engine
                 Application.Exit();
             }
 
-            if (!File.Exists(Application.StartupPath + "\\cldc_1.0.jar")) 
+            if (!File.Exists(Application.StartupPath + "\\cldc_1.1.jar")) 
             {
                 MessageBox.Show("Java Mobile Library (cldc_1.0.jar) not found in the home directory!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Application.Exit();
             }
 
-            if (!File.Exists(Application.StartupPath + "\\midp_2.0.jar"))
+            if (!File.Exists(Application.StartupPath + "\\midp_2.1.jar"))
             {
                 MessageBox.Show("Java Mobile Library (midp_2.0.jar) not found in the home directory!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Application.Exit();
@@ -54,6 +54,31 @@ namespace Heavy_Engine
                 MessageBox.Show("JMRuntime.jar not found in the home directory!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Application.Exit();
             }
+
+            if (!File.Exists(Application.StartupPath + "\\PackageManager.HeavyEngine.dll"))
+            {
+                MessageBox.Show("PackageManager.dll not found in the home directory!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+            }
+
+            if (!File.Exists(Application.StartupPath + "\\jl1.0.1.jar"))
+            {
+                MessageBox.Show("jl1.0.1.jar not found in the home directory!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+            }
+
+            if (!File.Exists(Application.StartupPath + "\\thumbnailator-0.4.8.jar"))
+            {
+                MessageBox.Show("thumbnailator-0.4.8.jar not found in the home directory!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+            }
+
+            if (!File.Exists(Application.StartupPath + "\\JVLIB.dll"))
+            {
+                MessageBox.Show("JVLIB.dll not found in the home directory!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+            }
+
 
             if (!Directory.Exists(Application.StartupPath + "\\header_includes"))
             {

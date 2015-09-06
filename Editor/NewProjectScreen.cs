@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using PackageManager;
 
 namespace Heavy_Engine
 {
@@ -53,6 +54,7 @@ namespace Heavy_Engine
                stm_wr.WriteLine("Project_Version: @");
                stm_wr.WriteLine("Project_About: @");
                stm_wr.WriteLine("Project_FirstLevel: Game-Levels\\Demo.hvl");
+               stm_wr.WriteLine("Project_Platform: 1");
 
                stm_wr.Close();
 
@@ -65,6 +67,14 @@ namespace Heavy_Engine
 
                stm_wr.Close( );
 
+                // Import all packages
+               for (int cnt = 0; cnt < clb_importable_packages.CheckedItems.Count;cnt++ )
+               {
+                   PackageManager.PackageManager pak_manager = new PackageManager.PackageManager(Application.StartupPath, project_dir);
+                   PackageManager.Package pak = pak_manager.ReadPackage(Application.StartupPath + "\\Packages\\" + (string)clb_importable_packages.CheckedItems[cnt] + ".pak"); 
+                   
+                   if (pak != null) pak_manager.ExtractPackage(pak);               
+               }
 
                menu_view.Visible = false;
                Form editor_window = new Editor(menu_view, project_dir,txt_project_name.Text);
@@ -94,6 +104,14 @@ namespace Heavy_Engine
             txt_project_path.Text = folder_browser.SelectedPath;
             txt_project_path.Text += "\\";
 
+        }
+
+        private void NewProjectScreen_Load(object sender, EventArgs e)
+        {
+            foreach(string file in (new PackageManager.PackageManager(Application.StartupPath,"")).GetPackages())
+            {
+                clb_importable_packages.Items.Add(file);
+            }
         }
     }
 }

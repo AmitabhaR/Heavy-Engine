@@ -21,6 +21,18 @@ public:
 	int depth;
 	bool isDestroyed = false;
 
+	void Initialize();
+
+	double GetRotationAngle();
+
+	void SetRotationAngle(double);
+
+	double GetScale();
+
+	void SetScale(double);
+
+	void Rotate(double );
+
 	void Translate(int , int );
 
 	void setText(std::string );
@@ -44,6 +56,30 @@ public:
 	bool scriptsEmpty();
 
 	void processScripts();
+
+	void LoadAllChilds(GameObject_Scene * );
+	
+	GameObject_Scene * FindChildWithName(std::string child_name);
+
+	std::list<GameObject_Scene *> FindChildWithTag(int);
+
+	std::list<GameObject_Scene *> GetAllChilds();
+
+	void UpdateChildPosition(int , int , bool isParent = true);
+	
+	void UpdateChildRotation(float , bool isParent = true);
+
+	void UpdateChildScale(float , bool isParent = true);
+	
+	void AddChild(std::string child_name);
+	
+private: 
+	  double rotation_angle;
+      double scale_rate;
+	  Image source_img;
+	  void ApplyRotation(double);
+	  bool isChildReady;
+	  std::list<GameObject_Scene *> child_list;
 };
 
 typedef GameObject_Scene* GameObject_Scene_ptr;

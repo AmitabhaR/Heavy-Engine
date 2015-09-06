@@ -35,6 +35,8 @@
             this.bottom_dataview = new System.Windows.Forms.StatusStrip();
             this.mouse_positionX = new System.Windows.Forms.ToolStripStatusLabel();
             this.mouse_positionY = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lbl_view_x = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lbl_view_y = new System.Windows.Forms.ToolStripStatusLabel();
             this.top_menu_container = new System.Windows.Forms.MenuStrip();
             this.menuContainer_File = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_NewProject = new System.Windows.Forms.ToolStripMenuItem();
@@ -62,6 +64,8 @@
             this.menuItem_OpenEditor = new System.Windows.Forms.ToolStripMenuItem();
             this.menuContainer_Animation = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_AOpenEditor = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuContainer_TileMap = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItem_TOpenEditor = new System.Windows.Forms.ToolStripMenuItem();
             this.menuContainer_Scripts = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_NewScript = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_ScriptManager = new System.Windows.Forms.ToolStripMenuItem();
@@ -70,6 +74,8 @@
             this.menuItem_ImportPlugins = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_PluginsManager = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_ImportHeader = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuContainer_Packages = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItem_ImportPackage = new System.Windows.Forms.ToolStripMenuItem();
             this.menuContainer_Project = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_RunProject = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_BuildProject = new System.Windows.Forms.ToolStripMenuItem();
@@ -97,8 +103,7 @@
             this.list_div = new System.Windows.Forms.TableLayoutPanel();
             this.file_tree = new System.Windows.Forms.TreeView();
             this.lb_objects = new System.Windows.Forms.ListBox();
-            this.lbl_view_x = new System.Windows.Forms.ToolStripStatusLabel();
-            this.lbl_view_y = new System.Windows.Forms.ToolStripStatusLabel();
+            this.menuItem_CreatePackage = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).BeginInit();
             this.bottom_dataview.SuspendLayout();
             this.top_menu_container.SuspendLayout();
@@ -141,7 +146,6 @@
             this.gameObject_editor.Size = new System.Drawing.Size(187, 474);
             this.gameObject_editor.TabIndex = 1;
             this.gameObject_editor.ViewBackColor = System.Drawing.Color.Gray;
-            this.gameObject_editor.Click += new System.EventHandler(this.gameObject_editor_Click);
             // 
             // bottom_dataview
             // 
@@ -169,6 +173,18 @@
             this.mouse_positionY.Size = new System.Drawing.Size(59, 17);
             this.mouse_positionY.Text = "Mouse Y :";
             // 
+            // lbl_view_x
+            // 
+            this.lbl_view_x.Name = "lbl_view_x";
+            this.lbl_view_x.Size = new System.Drawing.Size(64, 17);
+            this.lbl_view_x.Text = "Camera X :";
+            // 
+            // lbl_view_y
+            // 
+            this.lbl_view_y.Name = "lbl_view_y";
+            this.lbl_view_y.Size = new System.Drawing.Size(64, 17);
+            this.lbl_view_y.Text = "Camera Y :";
+            // 
             // top_menu_container
             // 
             this.top_menu_container.BackColor = System.Drawing.Color.White;
@@ -179,8 +195,10 @@
             this.menuContainer_Resource,
             this.menuContainer_Navigation,
             this.menuContainer_Animation,
+            this.menuContainer_TileMap,
             this.menuContainer_Scripts,
             this.menuContainer_plugins,
+            this.menuContainer_Packages,
             this.menuContainer_Project,
             this.menuContainer_Help});
             this.top_menu_container.Location = new System.Drawing.Point(0, 0);
@@ -388,6 +406,21 @@
             this.menuItem_AOpenEditor.Text = "Open Editor";
             this.menuItem_AOpenEditor.Click += new System.EventHandler(this.menuItem_AOpenEditor_Click);
             // 
+            // menuContainer_TileMap
+            // 
+            this.menuContainer_TileMap.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItem_TOpenEditor});
+            this.menuContainer_TileMap.Name = "menuContainer_TileMap";
+            this.menuContainer_TileMap.Size = new System.Drawing.Size(62, 20);
+            this.menuContainer_TileMap.Text = "TileMap";
+            // 
+            // menuItem_TOpenEditor
+            // 
+            this.menuItem_TOpenEditor.Name = "menuItem_TOpenEditor";
+            this.menuItem_TOpenEditor.Size = new System.Drawing.Size(137, 22);
+            this.menuItem_TOpenEditor.Text = "Open Editor";
+            this.menuItem_TOpenEditor.Click += new System.EventHandler(this.menuItem_TOpenEditor_Click);
+            // 
             // menuContainer_Scripts
             // 
             this.menuContainer_Scripts.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -450,6 +483,22 @@
             this.menuItem_ImportHeader.Size = new System.Drawing.Size(190, 22);
             this.menuItem_ImportHeader.Text = "Import Library Header";
             this.menuItem_ImportHeader.Click += new System.EventHandler(this.menuItem_ImportHeader_Click);
+            // 
+            // menuContainer_Packages
+            // 
+            this.menuContainer_Packages.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItem_ImportPackage,
+            this.menuItem_CreatePackage});
+            this.menuContainer_Packages.Name = "menuContainer_Packages";
+            this.menuContainer_Packages.Size = new System.Drawing.Size(68, 20);
+            this.menuContainer_Packages.Text = "Packages";
+            // 
+            // menuItem_ImportPackage
+            // 
+            this.menuItem_ImportPackage.Name = "menuItem_ImportPackage";
+            this.menuItem_ImportPackage.Size = new System.Drawing.Size(157, 22);
+            this.menuItem_ImportPackage.Text = "Import Package";
+            this.menuItem_ImportPackage.Click += new System.EventHandler(this.menuItem_ImportPackage_Click);
             // 
             // menuContainer_Project
             // 
@@ -714,7 +763,6 @@
             this.list_div.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.list_div.Size = new System.Drawing.Size(142, 565);
             this.list_div.TabIndex = 0;
-            this.list_div.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel1_Paint);
             // 
             // file_tree
             // 
@@ -725,7 +773,6 @@
             this.file_tree.Name = "file_tree";
             this.file_tree.Size = new System.Drawing.Size(136, 277);
             this.file_tree.TabIndex = 0;
-            this.file_tree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.file_tree_AfterSelect);
             // 
             // lb_objects
             // 
@@ -739,19 +786,13 @@
             this.lb_objects.Name = "lb_objects";
             this.lb_objects.Size = new System.Drawing.Size(136, 276);
             this.lb_objects.TabIndex = 1;
-            this.lb_objects.SelectedIndexChanged += new System.EventHandler(this.lb_objects_SelectedIndexChanged);
             // 
-            // lbl_view_x
+            // menuItem_CreatePackage
             // 
-            this.lbl_view_x.Name = "lbl_view_x";
-            this.lbl_view_x.Size = new System.Drawing.Size(64, 17);
-            this.lbl_view_x.Text = "Camera X :";
-            // 
-            // lbl_view_y
-            // 
-            this.lbl_view_y.Name = "lbl_view_y";
-            this.lbl_view_y.Size = new System.Drawing.Size(64, 17);
-            this.lbl_view_y.Text = "Camera Y :";
+            this.menuItem_CreatePackage.Name = "menuItem_CreatePackage";
+            this.menuItem_CreatePackage.Size = new System.Drawing.Size(157, 22);
+            this.menuItem_CreatePackage.Text = "Create Package";
+            this.menuItem_CreatePackage.Click += new System.EventHandler(this.menuItem_CreatePackage_Click);
             // 
             // Editor
             // 
@@ -870,5 +911,10 @@
         private System.Windows.Forms.TrackBar tb_zoom;
         private System.Windows.Forms.ToolStripStatusLabel lbl_view_x;
         private System.Windows.Forms.ToolStripStatusLabel lbl_view_y;
+        private System.Windows.Forms.ToolStripMenuItem menuContainer_TileMap;
+        private System.Windows.Forms.ToolStripMenuItem menuItem_TOpenEditor;
+        private System.Windows.Forms.ToolStripMenuItem menuContainer_Packages;
+        private System.Windows.Forms.ToolStripMenuItem menuItem_ImportPackage;
+        private System.Windows.Forms.ToolStripMenuItem menuItem_CreatePackage;
     }
 }

@@ -11,19 +11,19 @@ import java.util.*;
  *
  * @author Riju
  */
-public class NavigationManager
+public class NavigationManager 
 {
-      static ArrayList<Navigator> navigator_list = new ArrayList<Navigator>();
+      static Vector navigator_list = new Vector();
         
         public static void registerNavigation(Navigator navigator)
         {
-            navigator_list.add(navigator);
+            navigator_list.addElement(navigator);
             if (!navigator.isNavigating()) navigator.start();
         }
 
         public static void updateNavigation()
         {
-            int cnt = 0;
+             int cnt = 0;
             boolean toRepeat = false;
             
             do
@@ -32,12 +32,12 @@ public class NavigationManager
                 
             for (; cnt < navigator_list.size( );cnt++ )
                 {
-                    Navigator nav = navigator_list.get(cnt);
+                    Navigator nav =(Navigator)  navigator_list.elementAt(cnt);
 
                     if (!nav.isNavigating())
                     {
                        // nav.stop();
-                        navigator_list.remove(cnt);
+                        navigator_list.removeElementAt(cnt);
                         toRepeat = true;
                         break;
                     }

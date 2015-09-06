@@ -6,18 +6,17 @@
 package jruntime;
 
 import java.util.*;
-
 /**
  *
  * @author Riju
  */
 public class AnimationManager 
 {
-     static ArrayList<Animation> animation_list = new ArrayList<Animation>();
+     static Vector animation_list = new Vector();
 
         public static void registerAnimation(Animation animation)
         {
-            animation_list.add(animation);
+            animation_list.addElement(animation);
             if (!animation.isPlaying()) animation.start();
         }
 
@@ -32,11 +31,11 @@ public class AnimationManager
            
             for(;cnt < animation_list.size( );cnt++)
             {
-                Animation anim = animation_list.get(cnt);
+                Animation anim = (Animation ) animation_list.elementAt(cnt);
 
                 if (!anim.isPlaying( ))
                 {
-                    animation_list.remove(cnt);
+                    animation_list.removeElementAt(cnt);
                     toRepeat = true;
                     break;
                 }

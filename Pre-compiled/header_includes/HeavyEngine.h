@@ -13,5 +13,6 @@
 #include "ParticleSystem.h"
 #include "HApplication.h"
 #include "HeavyScript.h"
+#include "NetworkManager.h"
 
 #endif

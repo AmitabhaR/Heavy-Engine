@@ -6,6 +6,8 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using System.Threading;
+using System.Net.Sockets;
+using System.Net;
 
 namespace Runtime
 {
@@ -33,16 +35,181 @@ namespace Runtime
         private List<HeavyScript> scripts;
         public int depth;
         public bool isDestroyed = false;
+        private float rotation_angle;
+        private float scale_rate;
+        private Image source_img;
+        private List<GameObject_Scene> child_list;
+        private bool isChildReady = false;
 
         public GameObject_Scene()
         {
             scripts = new List<HeavyScript>();
+            child_list = new List<GameObject_Scene>();
+        }
+
+        public void Initialize()
+        {
+            source_img = obj_instance.img;
+        }
+
+        private void LoadAllChilds( GameObject_Scene gameObject )
+        {
+            for (int cnt = 0; cnt < gameObject.child_list.Count;cnt++ )
+            {
+                gameObject.child_list[cnt] = HApplication.getActiveScene().findGameObject(gameObject.child_list[cnt].instance_name);
+                LoadAllChilds(gameObject.child_list[cnt]);
+            }
+
+            gameObject.isChildReady = true;
+        }
+
+        public GameObject_Scene FindChildWithName( string child_name )
+        {
+            foreach(GameObject_Scene gameObject in child_list)
+            {
+                if (gameObject.instance_name == child_name) return gameObject;
+            }
+
+            return null;
+        }
+
+        public List<GameObject_Scene> FindChildWithTag( int tag )
+        {
+            List<GameObject_Scene> gameObject_list = new List<GameObject_Scene>();
+
+            foreach (GameObject_Scene gameObject in child_list)
+            {
+                if (gameObject.obj_instance.tag == tag) gameObject_list.Add(gameObject);
+            }
+
+            return (gameObject_list.Count > 0) ? gameObject_list : null;
+        }
+
+        public void UpdateChildPosition( int rate_x , int rate_y , bool isParent = true)
+        {
+            if (!isParent)
+            {
+                pos_x += rate_x;
+                pos_y += rate_y;
+            }
+
+            foreach(GameObject_Scene gameObj in child_list)
+            {
+                gameObj.UpdateChildPosition(rate_x, rate_y, false);
+            }
+        }
+
+        public void UpdateChildRotation(float rate_angle, bool isParent = true)
+        {
+            if (!isParent)
+            {
+                ApplyRotation(-(rate_angle + rotation_angle));
+                rotation_angle += rate_angle;
+            }
+
+            foreach (GameObject_Scene gameObj in child_list)
+            {
+                double rad_angle = Math.PI * rate_angle / 180;
+                double def_x = gameObj.pos_x - (pos_x + obj_instance.img.Width / 2);
+                double def_y = gameObj.pos_y - (pos_y + obj_instance.img.Height / 2);
+
+                gameObj.pos_x +=(int) Math.Round( Math.Cos(rad_angle) * def_x - Math.Sin(rad_angle) * def_y );
+                gameObj.pos_y +=(int) Math.Round( Math.Sin(rad_angle) * def_x + Math.Cos(rad_angle) * def_y );
+
+                gameObj.UpdateChildRotation(rate_angle, false);
+            }
+        }
+
+        public void UpdateChildScale( float rate_scale , bool isParent = true)
+        {
+            if (!isParent) scale_rate += rate_scale;
+
+            foreach (GameObject_Scene gameObj in child_list)
+            {
+                gameObj.UpdateChildScale(rate_scale, false);
+            }
+        }
+
+        public void AddChild(string child_name)
+        {
+            GameObject_Scene gameObj = new GameObject_Scene();
+
+            gameObj.instance_name = child_name;
+
+            child_list.Add(gameObj);
+        }
+
+        public float GetRotationAngle( )
+        {
+            return rotation_angle;
+        }
+
+        public void SetRotationAngle(float angle)
+        {
+            float prev_angle = rotation_angle;
+
+            ApplyRotation(-angle);
+            rotation_angle = angle;
+
+            if (!isChildReady) LoadAllChilds(this);
+            UpdateChildRotation((angle - prev_angle));
+        }
+
+        public float GetScale()
+        {
+            return scale_rate;
+        }
+
+        public void SetScale(float scale)
+        {
+            float prev_scale = scale_rate;
+            if (scale > 0) scale_rate = scale;
+
+            if (!isChildReady) LoadAllChilds(this); 
+            UpdateChildScale(scale - prev_scale);
+        }
+
+        private void ApplyRotation(float angle)
+        {
+            if (obj_instance.img != null)
+            {
+                double rad_angle = angle * Math.PI / 180;
+                Bitmap new_img = new Bitmap((int)(source_img.Width * Math.Abs(Math.Cos(rad_angle)) + source_img.Height * Math.Abs(Math.Sin(rad_angle))), (int)(source_img.Width * Math.Abs(Math.Sin(rad_angle)) + source_img.Height * Math.Abs(Math.Cos(rad_angle))));
+                Graphics g = Graphics.FromImage(new_img);
+
+                new_img.SetResolution(source_img.HorizontalResolution, source_img.VerticalResolution);
+
+                g.Clear(Color.Transparent);
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                g.TranslateTransform(((new_img.Width - source_img.Width) / 2), ((new_img.Height - source_img.Height) / 2));
+                g.TranslateTransform((float)(source_img.Size.Width / 2), (float)(source_img.Size.Height / 2));
+                g.RotateTransform(angle);
+                g.TranslateTransform(-(float)(source_img.Size.Width / 2), -(float)(source_img.Size.Height / 2));
+                g.DrawImage(source_img, 0, 0);
+
+                obj_instance.img = new_img;
+            }
+        }
+
+        public void Rotate(float angle)
+        {
+            ApplyRotation(-(angle + rotation_angle));
+            rotation_angle += angle;
+
+            if (!isChildReady) LoadAllChilds(this);
+            UpdateChildRotation(angle);
         }
 
 		public void Translate(int x , int y)
 		{
 		   pos_x += x;
 		   pos_y += y;
+
+           if (!isChildReady) LoadAllChilds(this);
+           UpdateChildPosition(x, y);
 		}
 		
 		public void setText(string text)
@@ -351,7 +518,7 @@ namespace Runtime
                                     {
                                         if (object_array[cnt].obj_instance.img != null && object_array[cnt0].obj_instance.img != null && object_array[cnt].obj_instance.physics && object_array[cnt0].obj_instance.physics && object_array[cnt].obj_instance.collider && object_array[cnt0].obj_instance.collider)
                                         {
-                                            if (object_array[cnt].pos_x + object_array[cnt].obj_instance.img.Width > object_array[cnt0].pos_x && object_array[cnt].pos_x < object_array[cnt0].pos_x + object_array[cnt0].obj_instance.img.Width && object_array[cnt].pos_y + object_array[cnt].obj_instance.img.Height > object_array[cnt0].pos_y && object_array[cnt].pos_y < object_array[cnt0].pos_y + object_array[cnt0].obj_instance.img.Height)
+                                            if (object_array[cnt].pos_x + object_array[cnt].obj_instance.img.Width > object_array[cnt0].pos_x && object_array[cnt].pos_x < object_array[cnt0].pos_x + object_array[cnt0].obj_instance.img.Width && object_array[cnt].pos_y + object_array[cnt].obj_instance.img.Height > object_array[cnt0].pos_y && object_array[cnt].pos_y < object_array[cnt0].pos_y + object_array[cnt0].obj_instance.img.Height && object_array[cnt].depth == object_array[cnt0].depth)
                                             {
                                                 if (onCollision != null)
                                                 {
@@ -373,6 +540,7 @@ namespace Runtime
 
                 NavigationManager.updateNavigation();
                 AnimationManager.updateAnimation();
+                NetworkManager.updateNetwork();
 
                 canvas.Refresh();
 		}
@@ -387,11 +555,11 @@ namespace Runtime
 
                         if (object_array[cnt].obj_instance.img != null)
                         {
-                            e.Graphics.DrawImage(object_array[cnt].obj_instance.img, new Point(object_array[cnt].pos_x, object_array[cnt].pos_y));
+                            e.Graphics.DrawImage(new Bitmap(object_array[cnt].obj_instance.img, new Size(object_array[cnt].obj_instance.img.Size.Width + (int) object_array[cnt].GetScale(),object_array[cnt].obj_instance.img.Size.Height + (int) object_array[cnt].GetScale())), new Point(object_array[cnt].pos_x, object_array[cnt].pos_y));
                         }
                         else if (object_array[cnt].obj_instance.text != "")
                         {
-                            e.Graphics.DrawString(object_array[cnt].obj_instance.text, new Font(object_array[cnt].obj_instance.font_name, object_array[cnt].obj_instance.font_size), new SolidBrush(object_array[cnt].obj_instance.color), new Point(object_array[cnt].pos_x, object_array[cnt].pos_y));
+                            e.Graphics.DrawString(object_array[cnt].obj_instance.text, new Font(object_array[cnt].obj_instance.font_name, object_array[cnt].obj_instance.font_size + object_array[cnt].GetScale( )), new SolidBrush(object_array[cnt].obj_instance.color), new Point(object_array[cnt].pos_x, object_array[cnt].pos_y));
                         }
                 }
 		}
@@ -551,6 +719,544 @@ namespace Runtime
                 }
             }
 
+        }
+    }
+
+    public class NetworkPlayer
+    {
+        public Socket socket;
+        public IPAddress ip;
+        public bool isReady;
+        public byte[] data_buffer;
+    }
+
+    public enum NetworkConstants
+    {
+        MESSAGE_FLAG_SERVER_ONLY = 0xA,
+        MESSAGE_FLAG_EVERYONE = 0xB,
+        CONNECTION_SERVER = 0xC,
+        CONNECTION_CLIENT = 0xD,
+        HANDLER_MESSAGE = 0x7,
+        HANDLER_UPDATE_GAMEOBJECT = 0x10,
+        HANDLER_DESTROY_GAMEOBJECT = 0x12,
+        HANDLER_CREATE_GAMEOBJECT = 0x51,
+        HANDLER_DISCONNECT_PLAYER = 0x61,
+        HANDLER_CONNECTED = 0x30
+    }
+
+    public class NetworkManager
+    {
+        const int BUFFER_MESSAGE = 0x7;
+        const int BUFFER_UPDATE_GAMEOBJECT = 0x10;
+        const int BUFFER_CREATE_GAMEOBJECT = 0x51;
+        const int BUFFER_DISCONNECT_PLAYER = 0x61;
+        
+        static List<NetworkPlayer> client_list = new List<NetworkPlayer>( );
+        static bool isNetworkReady = false;
+        static bool isAcceptReady = true;
+        static NetworkPlayer basePlayer;
+        static int user_type = 0;
+
+        public delegate void OnConnected(NetworkPlayer netPlayer);
+        public delegate void OnCreateGameObject(GameObject_Scene gameObject);
+        public delegate void OnDestroyGameObject(GameObject_Scene gameObject);
+        public delegate void OnMessageReceived(char[] buffer, int buffer_size);
+        public delegate void OnPlayerDisconnected(NetworkPlayer net_player);
+        public delegate void OnUpdateGameObject(GameObject_Scene gameObject);
+
+
+        public static OnConnected onConnected_handler_list;
+        public static OnCreateGameObject onCreate_handler_list;
+        public static OnDestroyGameObject onDestroy_handler_list;
+        public static OnMessageReceived onMessage_handler_list;
+        public static OnPlayerDisconnected onDisconnected_handler_list;
+        public static OnUpdateGameObject onUpdate_handler_list;
+
+  
+
+        public static int getConnectionType() { return user_type; }
+        public static NetworkPlayer getNetworkPlayer() { return basePlayer; }
+        public static bool isConnected() { return isNetworkReady;  }
+
+        public static List<NetworkPlayer> getConnectedPlayers()
+        {
+	        if (user_type == (int) NetworkConstants.CONNECTION_CLIENT) return client_list;
+
+	        return null;
+        }
+
+        public static bool startServer(int port)
+        {
+            basePlayer = new NetworkPlayer();
+            basePlayer.ip = Dns.GetHostEntry(Dns.GetHostName( )).AddressList[0];
+            basePlayer.socket = new Socket(basePlayer.ip.AddressFamily,SocketType.Stream,ProtocolType.Tcp);
+            
+            try
+            {
+                basePlayer.socket.Bind(new IPEndPoint(basePlayer.ip,port));
+                basePlayer.socket.Listen(100);
+            }
+            catch(SocketException ex)
+            {
+                return false;
+            }
+           
+            user_type = (int) NetworkConstants.CONNECTION_SERVER;
+            isNetworkReady = true;
+
+	        return true;
+        }
+
+        public static bool startServer(int port,bool isTestingPurpose)
+        {
+            basePlayer = new NetworkPlayer();
+            basePlayer.ip = IPAddress.Parse("127.0.0.1");
+            basePlayer.socket = new Socket(basePlayer.ip.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            
+            try
+            {
+                basePlayer.socket.Bind(new IPEndPoint(basePlayer.ip, port));
+                basePlayer.socket.Listen(100);
+            }
+            catch (SocketException ex)
+            {
+                return false;
+            }
+
+            user_type = (int)NetworkConstants.CONNECTION_SERVER;
+            isNetworkReady = true;
+
+            return true;
+        }
+
+        public static bool connectServer(string ip, int port)
+        {
+            basePlayer = new NetworkPlayer();
+            basePlayer.ip = IPAddress.Parse(ip);
+            basePlayer.socket = new Socket(basePlayer.ip.AddressFamily,SocketType.Stream,ProtocolType.Tcp);
+
+            try
+            {
+                basePlayer.socket.Connect( basePlayer.ip , port);
+            }
+            catch(SocketException e)
+            {
+                return false;
+            }
+
+            user_type = (int) NetworkConstants.CONNECTION_CLIENT;
+            isNetworkReady = true;
+
+            return true;
+        }
+
+        public static bool connectServer(int port , bool isTestingPurpose)
+        {
+            basePlayer = new NetworkPlayer();
+            basePlayer.ip = IPAddress.Parse("127.0.0.1");
+            basePlayer.socket = new Socket(basePlayer.ip.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+
+            try
+            {
+                basePlayer.socket.Connect(basePlayer.ip, port);
+            }
+            catch (SocketException e)
+            {
+                return false;
+            }
+
+            user_type = (int)NetworkConstants.CONNECTION_CLIENT;
+            isNetworkReady = true;
+
+            return true;
+        }
+
+        static string extractString(byte[] buffer , int start_pos )
+        {
+            int cnt = start_pos;
+            string ret_string = "";
+
+            for(;buffer[cnt] != 0;cnt++)
+            {
+                ret_string += (char) buffer[cnt];
+            }
+
+            return ret_string;
+        }
+
+        static void acceptCallback(IAsyncResult res)
+        {
+            try
+            {
+                NetworkPlayer newPlayer = new NetworkPlayer();
+
+                newPlayer.socket = ((Socket)res.AsyncState).EndAccept(res);
+                newPlayer.ip = ((IPEndPoint)newPlayer.socket.RemoteEndPoint).Address;
+                newPlayer.isReady = true;
+
+                client_list.Add(newPlayer);
+
+                if (onConnected_handler_list != null) onConnected_handler_list(newPlayer);
+                isAcceptReady = true;
+            }
+            catch(Exception e)
+            {
+            }
+        }
+
+       static void receiveCallback(IAsyncResult res)
+        {
+            try
+            {
+                NetworkPlayer netplayer = (NetworkPlayer)res.AsyncState;
+                int bytesRead = netplayer.socket.EndReceive(res);
+
+                if (bytesRead > 0)
+                {
+                    if (user_type == (int)NetworkConstants.CONNECTION_SERVER)
+                    {
+                        if (netplayer.data_buffer[0] == BUFFER_MESSAGE)
+                        {
+                            int buffer_size = BitConverter.ToInt32(netplayer.data_buffer, 1);
+                            byte flag = netplayer.data_buffer[5];
+
+                            if (flag == (byte)NetworkConstants.MESSAGE_FLAG_EVERYONE)
+                            {
+                                for (int cnt = 0; cnt < client_list.Count; cnt++)
+                                {
+                                    if (client_list[cnt] != netplayer)
+                                    {
+                                        client_list[cnt].socket.BeginSend(netplayer.data_buffer, 0, 512, 0, new AsyncCallback(sendCallback), netplayer);
+                                    }
+                                }
+                            }
+
+                            if (onMessage_handler_list != null) onMessage_handler_list(extractString(netplayer.data_buffer, 6).ToCharArray(), buffer_size);
+                        }
+                        else if (netplayer.data_buffer[0] == BUFFER_CREATE_GAMEOBJECT)
+                        {
+                            string object_name = extractString(netplayer.data_buffer, 1);
+                            string baseobj_name = extractString(netplayer.data_buffer, object_name.Length + 2);
+                            int pos_x = BitConverter.ToInt32(netplayer.data_buffer, object_name.Length + baseobj_name.Length + 3);
+                            int pos_y = BitConverter.ToInt32(netplayer.data_buffer, object_name.Length + baseobj_name.Length + 7);
+                            int depth = BitConverter.ToInt32(netplayer.data_buffer, object_name.Length + baseobj_name.Length + 11);
+                            GameObject_Scene gameObject = new GameObject_Scene();
+
+                            gameObject.instance_name = object_name;
+                            gameObject.obj_instance = ObjectManager.findGameObjectWithName(baseobj_name);
+                            gameObject.pos_x = pos_x;
+                            gameObject.pos_y = pos_y;
+                            gameObject.depth = depth;
+                            gameObject.isDestroyed = false;
+
+                            HApplication.getActiveScene().loadGameObject(gameObject);
+
+                            for (int cnt = 0; cnt < client_list.Count; cnt++)
+                            {
+                                if (client_list[cnt] != netplayer)
+                                {
+                                    client_list[cnt].socket.BeginSend(netplayer.data_buffer, 0, 512, 0, new AsyncCallback(sendCallback), netplayer);
+                                }
+                            }
+
+                            if (onCreate_handler_list != null) onCreate_handler_list(gameObject);
+                        }
+                        else if (netplayer.data_buffer[0] == BUFFER_UPDATE_GAMEOBJECT)
+                        {
+                            string object_name = extractString(netplayer.data_buffer, 1);
+                            string baseobj_name = extractString(netplayer.data_buffer, object_name.Length + 2);
+                            int pos_x = BitConverter.ToInt32(netplayer.data_buffer, object_name.Length + baseobj_name.Length + 3);
+                            int pos_y = BitConverter.ToInt32(netplayer.data_buffer, object_name.Length + baseobj_name.Length + 7);
+                            int depth = BitConverter.ToInt32(netplayer.data_buffer, object_name.Length + baseobj_name.Length + 11);
+                            bool isDestroyed = (bool)Convert.ToBoolean(netplayer.data_buffer[object_name.Length + baseobj_name.Length + 15]);
+
+                            GameObject_Scene gameObject = new GameObject_Scene();
+
+                            if ((gameObject = HApplication.getActiveScene().findGameObject(object_name)) != null)
+                            {
+                                if (isDestroyed == true)
+                                {
+                                    HApplication.getActiveScene().destroyGameObject(object_name);
+
+                                    if (onDestroy_handler_list != null) onDestroy_handler_list(gameObject);
+                                }
+                                else
+                                {
+                                    gameObject.instance_name = object_name;
+                                    gameObject.obj_instance = ObjectManager.findGameObjectWithName(baseobj_name);
+                                    gameObject.pos_x = pos_x;
+                                    gameObject.pos_y = pos_y;
+                                    gameObject.depth = depth;
+                                    gameObject.isDestroyed = false;
+
+                                    if (onUpdate_handler_list != null) onUpdate_handler_list(gameObject);
+                                }
+                            }
+
+                            for (int cnt = 0; cnt < client_list.Count; cnt++)
+                            {
+                                if (client_list[cnt] != netplayer)
+                                {
+                                    client_list[cnt].socket.BeginSend(netplayer.data_buffer, 0, 512, 0, new AsyncCallback(sendCallback), netplayer);
+                                }
+                            }
+                        }
+                        else if (netplayer.data_buffer[0] == BUFFER_DISCONNECT_PLAYER)
+                        {
+                            if (onDisconnected_handler_list != null) onDisconnected_handler_list(netplayer);
+
+                            client_list.Remove(netplayer);
+                        }
+                    }
+                    else if (user_type == (int)NetworkConstants.CONNECTION_CLIENT)
+                    {
+                        if (netplayer.data_buffer[0] == BUFFER_MESSAGE)
+                        {
+                            int buffer_size = BitConverter.ToInt32(netplayer.data_buffer, 1);
+
+                            if (onMessage_handler_list != null) onMessage_handler_list(extractString(netplayer.data_buffer, 6).ToCharArray(), buffer_size);
+                        }
+                        else if (netplayer.data_buffer[0] == BUFFER_CREATE_GAMEOBJECT)
+                        {
+                            string object_name = extractString(netplayer.data_buffer, 1);
+                            string baseobj_name = extractString(netplayer.data_buffer, object_name.Length + 2);
+                            int pos_x = BitConverter.ToInt32(netplayer.data_buffer, object_name.Length + baseobj_name.Length + 3);
+                            int pos_y = BitConverter.ToInt32(netplayer.data_buffer, object_name.Length + baseobj_name.Length + 7);
+                            int depth = BitConverter.ToInt32(netplayer.data_buffer, object_name.Length + baseobj_name.Length + 11);
+                            GameObject_Scene gameObject = new GameObject_Scene();
+
+                            gameObject.instance_name = object_name;
+                            gameObject.obj_instance = ObjectManager.findGameObjectWithName(baseobj_name);
+                            gameObject.pos_x = pos_x;
+                            gameObject.pos_y = pos_y;
+                            gameObject.depth = depth;
+                            gameObject.isDestroyed = false;
+
+                            HApplication.getActiveScene().loadGameObject(gameObject);
+
+                            if (onCreate_handler_list != null) onCreate_handler_list(gameObject);
+                        }
+                        else if (netplayer.data_buffer[0] == BUFFER_UPDATE_GAMEOBJECT)
+                        {
+                            string object_name = extractString(netplayer.data_buffer, 1);
+                            string baseobj_name = extractString(netplayer.data_buffer, object_name.Length + 2);
+                            int pos_x = BitConverter.ToInt32(netplayer.data_buffer, object_name.Length + baseobj_name.Length + 3);
+                            int pos_y = BitConverter.ToInt32(netplayer.data_buffer, object_name.Length + baseobj_name.Length + 7);
+                            int depth = BitConverter.ToInt32(netplayer.data_buffer, object_name.Length + baseobj_name.Length + 11);
+                            bool isDestroyed = (bool)Convert.ToBoolean(netplayer.data_buffer[object_name.Length + baseobj_name.Length + 15]);
+
+                            GameObject_Scene gameObject = new GameObject_Scene();
+
+                            if ((gameObject = HApplication.getActiveScene().findGameObject(object_name)) != null)
+                            {
+                                if (isDestroyed == true)
+                                {
+                                    HApplication.getActiveScene().destroyGameObject(object_name);
+
+                                    if (onDestroy_handler_list != null) onDestroy_handler_list(gameObject);
+                                }
+                                else
+                                {
+                                    gameObject.instance_name = object_name;
+                                    gameObject.obj_instance = ObjectManager.findGameObjectWithName(baseobj_name);
+                                    gameObject.pos_x = pos_x;
+                                    gameObject.pos_y = pos_y;
+                                    gameObject.depth = depth;
+                                    gameObject.isDestroyed = false;
+
+                                    if (onUpdate_handler_list != null) onUpdate_handler_list(gameObject);
+                                }
+                            }
+                        }
+                        else if (netplayer.data_buffer[0] == BUFFER_DISCONNECT_PLAYER)
+                        {
+                            if (onDisconnected_handler_list != null) onDisconnected_handler_list(netplayer);
+
+                            isNetworkReady = false;
+                            netplayer.socket.Close();
+                        }
+                    }
+                }
+
+                netplayer.isReady = true;
+            }
+           catch(Exception e)
+            {
+
+            }
+        }
+
+        public static void updateNetwork()
+        {
+	        if (!isNetworkReady) return;
+
+	        if (user_type == (int) NetworkConstants.CONNECTION_SERVER)
+	        {
+		        // Server Part.
+		      
+                if (isAcceptReady)
+                {
+                    isAcceptReady = false;
+                    basePlayer.socket.BeginAccept(new AsyncCallback(acceptCallback),basePlayer.socket);
+                }
+
+		        for (int cnt = 0; cnt < client_list.Count; cnt++) // Check all the ports.
+		        {
+                    if (client_list[cnt].isReady)
+                    {
+                        client_list[cnt].isReady = false;
+                        client_list[cnt].data_buffer = new byte[512];
+                        client_list[cnt].socket.BeginReceive(client_list[cnt].data_buffer,0,512,0,new AsyncCallback(receiveCallback),client_list[cnt]);
+                    }
+                }
+            }
+            else
+            {
+                if (basePlayer.isReady)
+                {
+                    basePlayer.isReady = false;
+                    basePlayer.data_buffer = new byte[512];
+                    basePlayer.socket.BeginReceive(basePlayer.data_buffer,0,512,0,new AsyncCallback(receiveCallback),basePlayer);
+                }
+            }
+        }
+
+        public static void disconnect()
+        {
+	        if (isNetworkReady)
+	        {
+		        if (user_type == (int) NetworkConstants.CONNECTION_SERVER)
+		        {
+			        for (int cnt = 0 ; cnt < client_list.Count; cnt++)
+			        {
+                        client_list[cnt].data_buffer = new byte[512];
+                        client_list[cnt].data_buffer[0] = (byte) BUFFER_DISCONNECT_PLAYER;
+
+                        client_list[cnt].socket.BeginSend(client_list[cnt].data_buffer,0,512,0,new AsyncCallback(sendCallback),client_list[cnt]);
+			        }
+		        }
+		        else if (user_type == (int) NetworkConstants.CONNECTION_CLIENT)
+		        {
+			         basePlayer.data_buffer = new byte[512];
+                     basePlayer.data_buffer[0] = (byte) BUFFER_DISCONNECT_PLAYER;
+
+                     basePlayer.socket.BeginSend(basePlayer.data_buffer,0,512,0,new AsyncCallback(sendCallback),basePlayer);
+		        }
+
+		        isNetworkReady = false;
+		        basePlayer.socket.Close(100);
+	        }
+        }
+
+        static void LoadString(byte[] buffer , int startIndex , string src)
+        {
+            int cnt = 0;
+
+	        for (; cnt < src.Length; cnt++)
+	        {
+		        buffer[startIndex + cnt] = (byte) src[cnt];
+	        }
+
+            buffer[startIndex + cnt] = 0;
+        } 
+
+        static void LoadInteger(byte[] buffer , int startIndex , int value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+
+	        for (int cnt = 0; cnt < 4; cnt++) 
+            { 
+                buffer[startIndex + cnt] = bytes[cnt]; 
+            }
+        }
+
+        static void sendCallback(IAsyncResult res)
+        {
+            try
+            {
+                ((NetworkPlayer)res.AsyncState).socket.EndSend(res);
+            }
+            catch(Exception e)
+            {
+
+            }
+        }
+
+        public static void createGameObject(GameObject_Scene gameObject)
+        {
+	        if (!isNetworkReady) return;
+
+	        byte[] data_buffer = new byte[512];
+
+	        data_buffer[0] = BUFFER_CREATE_GAMEOBJECT;
+	        LoadString(data_buffer,1,gameObject.instance_name);
+	        LoadString(data_buffer,2 + gameObject.instance_name.Length, gameObject.obj_instance.name);
+	        LoadInteger(data_buffer,3 + gameObject.instance_name.Length + gameObject.obj_instance.name.Length,gameObject.pos_x);
+	        LoadInteger(data_buffer,7 + gameObject.instance_name.Length + gameObject.obj_instance.name.Length,gameObject.pos_y);
+	        LoadInteger(data_buffer,11 + gameObject.instance_name.Length + gameObject.obj_instance.name.Length ,gameObject.depth);
+
+	        if (user_type == (int) NetworkConstants.CONNECTION_CLIENT)
+	        {
+                basePlayer.socket.BeginSend(data_buffer,0,512,0,new AsyncCallback(sendCallback),basePlayer);
+	        }
+	        else if (user_type == (int) NetworkConstants.CONNECTION_SERVER)
+	        {
+		        for (int cnt = 0; cnt < client_list.Count; cnt++)
+		        {
+			        client_list[cnt].socket.BeginSend(data_buffer,0,512,0,new AsyncCallback(sendCallback),client_list[cnt]);
+		        }
+	        }
+        }
+
+        public static void updateGameObject(GameObject_Scene gameObject)
+        {
+	        if (!isNetworkReady) return;
+
+	         byte[] data_buffer = new byte[512];
+
+	        data_buffer[0] = BUFFER_UPDATE_GAMEOBJECT;
+	        LoadString(data_buffer,1,gameObject.instance_name);
+	        LoadString(data_buffer,2 + gameObject.instance_name.Length, gameObject.obj_instance.name);
+	        LoadInteger(data_buffer,3 + gameObject.instance_name.Length + gameObject.obj_instance.name.Length,gameObject.pos_x);
+	        LoadInteger(data_buffer,7 + gameObject.instance_name.Length + gameObject.obj_instance.name.Length,gameObject.pos_y);
+	        LoadInteger(data_buffer,11 + gameObject.instance_name.Length + gameObject.obj_instance.name.Length ,gameObject.depth);
+	        data_buffer[15 + gameObject.instance_name.Length + gameObject.obj_instance.name.Length] = Convert.ToByte(gameObject.isDestroyed);
+
+	        if (user_type == (int) NetworkConstants.CONNECTION_CLIENT)
+	        {
+		        basePlayer.socket.BeginSend(data_buffer,0,512,0,new AsyncCallback(sendCallback),basePlayer);
+	        }
+	        else if (user_type == (int) NetworkConstants.CONNECTION_SERVER)
+	        {
+		       for (int cnt = 0; cnt < client_list.Count; cnt++)
+		        {
+			        client_list[cnt].socket.BeginSend(data_buffer,0,512,0,new AsyncCallback(sendCallback),client_list[cnt]);
+		        }
+	        }
+        }
+
+        public static void sendMessage(string message, int flag)
+        {
+	        if (!isNetworkReady) return;
+
+	        byte[] data_buffer = new byte[512];
+
+	        data_buffer[0] = BUFFER_MESSAGE;
+	        LoadInteger(data_buffer,1,message.Length);
+	        data_buffer[message.Length + 5] = (byte) flag;
+	        LoadString(data_buffer,message.Length + 6,message);
+
+	        if (user_type == (int) NetworkConstants.CONNECTION_CLIENT)
+	        {
+                basePlayer.socket.BeginSend(data_buffer, 0, 512, 0, new AsyncCallback(sendCallback), basePlayer);
+	        }
+	        else if (user_type == (int) NetworkConstants.CONNECTION_SERVER)
+	        {
+                for (int cnt = 0; cnt < client_list.Count; cnt++)
+                {
+                    client_list[cnt].socket.BeginSend(data_buffer, 0, 512, 0, new AsyncCallback(sendCallback), client_list[cnt]);
+                }
+	        }
         }
     }
 

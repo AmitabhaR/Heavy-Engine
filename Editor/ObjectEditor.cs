@@ -246,6 +246,7 @@ namespace Heavy_Engine
                             Editor.GameObject_Scene handle = editor_handle.gameObjectScene_list[cntr];
 
                             handle.mainObject = newObject;
+                            handle.Initialize();
 
                             editor_handle.gameObjectScene_list[cntr] = handle;
                         }

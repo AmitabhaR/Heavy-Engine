@@ -56,6 +56,9 @@ namespace Heavy_Engine
         MenuItem short_menu_cancel = new MenuItem("Cancel");
         MenuItem short_menu_showBaseProperty = new MenuItem("Show Base Property");
         MenuItem short_menu_showObjectProperty = new MenuItem("Show Object Property");
+        MenuItem short_menu_duplicate = new MenuItem("Duplicate");
+        MenuItem short_menu_rotation_scale = new MenuItem("Rotation and Scaling Editor");
+        MenuItem short_menu_child_editor = new MenuItem("Child Editor");
         int isMaximized = 30;
 
         public Editor(Form menu_screen,string project_dir,string project_name)
@@ -90,6 +93,74 @@ namespace Heavy_Engine
             short_menu_showBaseProperty.Click += new EventHandler(short_menu_showBaseProperty_Click);
             short_menu_showObjectProperty.Click += new EventHandler(short_menu_showObjectProperty_Click);
             short_menu_importheader.Click += short_menu_importheader_Click;
+            short_menu_duplicate.Click += short_menu_duplicate_Click;
+            short_menu_rotation_scale.Click += short_menu_rotation_scale_Click;
+            short_menu_child_editor.Click += short_menu_child_editor_Click;
+        }
+
+        void short_menu_child_editor_Click(object sender, EventArgs e)
+        {
+            if (gameObject_editor.SelectedObject != null)
+            {
+                // Open the editor.
+                ChildEditor child_editor = new ChildEditor(this);
+
+                child_editor.Show();
+            }
+        }
+
+        void short_menu_rotation_scale_Click(object sender, EventArgs e)
+        {
+            if (gameObject_editor.SelectedObject != null)
+            {
+                RotationScaleEditor rotation_scale_editor = new RotationScaleEditor(this);
+
+                rotation_scale_editor.Show();
+            }
+        }
+
+        void addChildObject(GameObject_Scene gameObj,GameObject_Scene src)
+        {
+            for(int cnt = 0;cnt < src.child_list.Count;cnt++)
+            {
+                GameObject_Scene Obj;
+
+                Obj = src.child_list[cnt];
+                Obj.child_list = new List<GameObject_Scene>(); 
+                Obj.instance_name += "_clone_" + (new Random()).Next(0, 100000000).ToString() + "_X_" + (new Random()).Next(0, 100000000).ToString() + "_X_" + (new Random()).Next(0, 100000000).ToString() + "_X_" + (new Random()).Next(0, 100000000).ToString();
+
+                gameObj.child_list.Add(Obj);
+
+                addChildObject(Obj,src.child_list[cnt]);
+
+                addGameObject(Obj.instance_name);
+                gameObjectScene_list.Add(Obj);
+            }
+        }
+
+        void short_menu_duplicate_Click(object sender, EventArgs e)
+        {
+            if (gameObject_editor.SelectedObject != null)
+            {
+                GameObject_Scene baseObject = ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj;
+                GameObject_Scene cur_obj = baseObject;
+
+                baseObject.child_list = new List<GameObject_Scene>();
+
+                addChildObject(baseObject, cur_obj);
+                baseObject.UpdateChildPosition(-cur_obj.position_scene_x ,-cur_obj.position_scene_y,true);
+                UpdateWorldChilds(baseObject);
+                baseObject.UpdateChildScenePosition(cam_x, cam_y, true);
+
+                baseObject.instance_name += "_clone_" + (new Random()).Next(0, 100000000).ToString() + "_X_" + (new Random()).Next(0, 100000000).ToString();
+                baseObject.position_x = baseObject.position_y = baseObject.position_scene_x = baseObject.position_scene_y = 0;
+
+                gameObjectScene_list.Add(baseObject);
+
+                addGameObject(baseObject.instance_name);
+
+                sortGameObjects();
+            }
         }
 
         void short_menu_importheader_Click(object sender, EventArgs e)
@@ -105,7 +176,7 @@ namespace Heavy_Engine
             {
                 if (gameObject.instance_name == (string)lb_objects.Items[lb_objects.SelectedIndex])
                 {
-                    gameObject_editor.SelectedObject = new GameObject_Scene_EDTIOR(gameObject);
+                    gameObject_editor.SelectedObject = new GameObject_Scene_EDITOR(gameObject,this);
                     return;
                 }
             }
@@ -145,7 +216,7 @@ namespace Heavy_Engine
         {
             if (gameObject_editor.SelectedObject == null) return;
 
-            ObjectEditor obj_editor = new ObjectEditor(this, ((GameObject_Scene_EDTIOR ) gameObject_editor.SelectedObject)._obj.mainObject.object_name);
+            ObjectEditor obj_editor = new ObjectEditor(this, ((GameObject_Scene_EDITOR ) gameObject_editor.SelectedObject)._obj.mainObject.object_name);
 
             obj_editor.Show();
         }
@@ -203,7 +274,7 @@ namespace Heavy_Engine
 
             if (gameObject_editor.SelectedObject == null) return;
 
-            if (instance_name == ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject)._obj.instance_name)
+            if (instance_name == ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject)._obj.instance_name)
             {
                 gameObject_editor.SelectedObject = null;
             }
@@ -225,25 +296,55 @@ namespace Heavy_Engine
             {
                 for (int cnt = 0; cnt < gameObjectScene_list.Count; cnt++)
                 {
-                    if (gameObjectScene_list[cnt].instance_name == ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject)._obj.instance_name)
+                    if (gameObjectScene_list[cnt].instance_name == ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject)._obj.instance_name)
                     {
                         GameObject_Scene obj = gameObjectScene_list[cnt];
+                        int prev_x = obj.position_scene_x,prev_y = obj.position_scene_y;
 
                         obj.position_scene_x = e.X;
                         obj.position_scene_y = e.Y;
 
                         gameObjectScene_list[cnt] = obj;
 
-                        ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).X = e.X + cam_x;
-                        ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).Y = e.Y + cam_y;
+                        ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).X = e.X + cam_x;
+                        ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).Y = e.Y + cam_y;
 
-                        GameObject_Scene obj_handle = ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj;
+                        GameObject_Scene obj_handle = ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj;
 
                         obj_handle.position_scene_x = e.X;
                         obj_handle.position_scene_y = e.Y;
 
-                        ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj = obj_handle;
-                       
+                        ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj = obj_handle;
+                        ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.UpdateChildPosition(e.X - prev_x, e.Y - prev_y,true);
+                        UpdateWorldChilds(gameObjectScene_list[cnt]);
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        public void UpdateWorldChilds(GameObject_Scene gameObject)
+        {
+            for(int cnt = 0;cnt < gameObject.child_list.Count;cnt++)
+            {
+                for(int cntr = 0;cntr < gameObjectScene_list.Count;cntr++)
+                {
+                    if (gameObjectScene_list[cntr].instance_name == gameObject.child_list[cnt].instance_name)
+                    {
+                        GameObject_Scene gameObj = gameObjectScene_list[cntr];
+
+                        gameObj.position_scene_x = gameObject.child_list[cnt].position_scene_x;
+                        gameObj.position_scene_y = gameObject.child_list[cnt].position_scene_y;
+                        gameObj.position_x = gameObject.child_list[cnt].position_x;
+                        gameObj.position_y = gameObject.child_list[cnt].position_y;
+                        gameObj.rotation_angle = gameObject.child_list[cnt].rotation_angle;
+                        gameObj.scaling_rate = gameObject.child_list[cnt].scaling_rate;
+                        gameObj.mainObject.object_img = gameObject.child_list[cnt].mainObject.object_img;     
+
+                        gameObjectScene_list[cntr] = gameObj;
+
+                        UpdateWorldChilds(gameObject.child_list[cnt]);
                         break;
                     }
                 }
@@ -258,6 +359,22 @@ namespace Heavy_Engine
         public void addGameObject(string instance_name)
         {
             lb_objects.Items.Add(instance_name);
+        }
+
+        public void sortGameObjects()
+        {
+            sortedArray = new DrawableGameObject[gameObjectScene_list.Count];
+
+            for (int cnt = 0; cnt < gameObjectScene_list.Count; cnt++)
+            {
+                sortedArray[cnt].depth = gameObjectScene_list[cnt].depth;
+                sortedArray[cnt].index = cnt;
+            }
+
+            while (!checkSorted(sortedArray))
+            {
+                sortElements(sortedArray);
+            }
         }
 
         private void findDirectories(TreeNode current_node, string path)
@@ -302,6 +419,11 @@ namespace Heavy_Engine
             this.menuItem_ImportHeader.Enabled = false;
         }
 
+        public GameObject_Scene_EDITOR GetActiveGameObject()
+        {
+            return (GameObject_Scene_EDITOR) gameObject_editor.SelectedObject;
+        }
+
         private void Editor_Load(object sender, EventArgs e)
         {
             System.Reflection.PropertyInfo info = typeof(Control).GetProperty("DoubleBuffered",System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
@@ -323,7 +445,7 @@ namespace Heavy_Engine
                 lb_objects.Items.Add(gameObjectScene_list[cnt].instance_name);
             }
 
-            sortedArray = new DrawableGameObject[gameObjectScene_list.Count];
+           /* sortedArray = new DrawableGameObject[gameObjectScene_list.Count];
 
             for (int cnt = 0; cnt < gameObjectScene_list.Count; cnt++)
             {
@@ -334,7 +456,9 @@ namespace Heavy_Engine
             while (!checkSorted(sortedArray))
             {
                 sortElements(sortedArray);
-            }
+            } */
+
+            sortGameObjects();
 
             this.base_container.Panel1MinSize = 250;
             this.base_container.Panel2MinSize = this.contpane_base.Width;
@@ -455,7 +579,7 @@ namespace Heavy_Engine
                         short_menu_release.Enabled = false;
                     }
 
-                    menu.MenuItems.AddRange(new MenuItem[] { short_menu_showGameObject , short_menu_select , short_menu_release , short_menu_cancel });
+                    menu.MenuItems.AddRange(new MenuItem[] { short_menu_showGameObject , short_menu_select , short_menu_release , short_menu_cancel , short_menu_duplicate , short_menu_rotation_scale , short_menu_child_editor });
                 }
                 else
                 {
@@ -534,18 +658,18 @@ namespace Heavy_Engine
             {
                 if (gameObjectScene_list[cntr].mainObject.object_img != null)
                 {
-                    if (gameObjectScene_list[cntr].position_scene_x + gameObjectScene_list[cntr].mainObject.object_img.Width > mouse_PX && gameObjectScene_list[cntr].position_scene_x < mouse_PX && gameObjectScene_list[cntr].position_scene_y + gameObjectScene_list[cntr].mainObject.object_img.Height > mouse_PY && gameObjectScene_list[cntr].position_scene_y < mouse_PY && e.Button == MouseButtons.Left)
+                    if (gameObjectScene_list[cntr].position_scene_x + (int) gameObjectScene_list[cntr].scaling_rate + gameObjectScene_list[cntr].mainObject.object_img.Width > mouse_PX && gameObjectScene_list[cntr].position_scene_x < mouse_PX && gameObjectScene_list[cntr].position_scene_y + (int) gameObjectScene_list[cntr].scaling_rate + gameObjectScene_list[cntr].mainObject.object_img.Height > mouse_PY && gameObjectScene_list[cntr].position_scene_y < mouse_PY && e.Button == MouseButtons.Left)
                     {
-                        GameObject_Scene_EDTIOR obj = new GameObject_Scene_EDTIOR(gameObjectScene_list[cntr]);
+                        GameObject_Scene_EDITOR obj = new GameObject_Scene_EDITOR(gameObjectScene_list[cntr],this);
                         gameObject_editor.SelectedObject = obj;
                         isLcontrol = true;
                     }
                 }
                 else if (gameObjectScene_list[cntr].mainObject.object_text != "")
                 {
-                    if (gameObjectScene_list[cntr].position_x + 10 * gameObjectScene_list[cntr].mainObject.object_text.Length > mouse_PX && gameObjectScene_list[cntr].position_x < mouse_PX && gameObjectScene_list[cntr].position_y + 50 > mouse_PY && gameObjectScene_list[cntr].position_y < mouse_PY && e.Button == MouseButtons.Left)
+                    if (gameObjectScene_list[cntr].position_x + 10 * gameObjectScene_list[cntr].mainObject.object_text.Length + gameObjectScene_list[cntr].scaling_rate > mouse_PX && gameObjectScene_list[cntr].position_x < mouse_PX && gameObjectScene_list[cntr].position_y + 50 + gameObjectScene_list[cntr].scaling_rate > mouse_PY && gameObjectScene_list[cntr].position_y < mouse_PY && e.Button == MouseButtons.Left)
                     {
-                        GameObject_Scene_EDTIOR obj = new GameObject_Scene_EDTIOR(gameObjectScene_list[cntr]);
+                        GameObject_Scene_EDITOR obj = new GameObject_Scene_EDITOR(gameObjectScene_list[cntr],this);
                         gameObject_editor.SelectedObject = obj;
                         isLcontrol = true;
                     }
@@ -620,21 +744,21 @@ namespace Heavy_Engine
 
                     if (gameObjectScene_list[cntr].mainObject.object_img != null)
                     {
-                        e.Graphics.DrawImage(new Bitmap(gameObjectScene_list[cntr].mainObject.object_img, new Size(gameObjectScene_list[cntr].mainObject.object_img.Width + zoom_rate, gameObjectScene_list[cntr].mainObject.object_img.Height + zoom_rate)), new Point(gameObjectScene_list[cntr].position_scene_x, gameObjectScene_list[cntr].position_scene_y));
+                        e.Graphics.DrawImage(new Bitmap(gameObjectScene_list[cntr].mainObject.object_img, new Size(gameObjectScene_list[cntr].mainObject.object_img.Width + zoom_rate + (int) gameObjectScene_list[cntr].scaling_rate, gameObjectScene_list[cntr].mainObject.object_img.Height + zoom_rate + (int) gameObjectScene_list[cntr].scaling_rate)), new Point(gameObjectScene_list[cntr].position_scene_x, gameObjectScene_list[cntr].position_scene_y));
                     }
                     else if (gameObjectScene_list[cntr].mainObject.object_text != "")
                     {
-                        e.Graphics.DrawString(gameObjectScene_list[cntr].mainObject.object_text, new Font("Verdana", 12), Brushes.Black, new Point(gameObjectScene_list[cntr].position_scene_x, gameObjectScene_list[cntr].position_scene_y));
+                        e.Graphics.DrawString(gameObjectScene_list[cntr].mainObject.object_text, new Font("Verdana", 12 + (int)gameObjectScene_list[cntr].scaling_rate), Brushes.Black, new Point(gameObjectScene_list[cntr].position_scene_x, gameObjectScene_list[cntr].position_scene_y));
                     }
                 }
 
                 if (gameObject_editor.SelectedObject != null)
                 {
-                    if (((GameObject_Scene_EDTIOR) gameObject_editor.SelectedObject).obj.mainObject.object_img != null)
+                    if (((GameObject_Scene_EDITOR) gameObject_editor.SelectedObject).obj.mainObject.object_img != null)
                     {
-                        GameObject_Scene_EDTIOR handle = (GameObject_Scene_EDTIOR)  gameObject_editor.SelectedObject;
+                        GameObject_Scene_EDITOR handle = (GameObject_Scene_EDITOR)  gameObject_editor.SelectedObject;
 
-                        e.Graphics.DrawEllipse(Pens.White, new Rectangle(((handle.obj.mainObject.object_img.Width / 2) + handle.obj.position_scene_x) - handle.obj.mainObject.object_img.Width, ((handle.obj.mainObject.object_img.Height / 2) + handle.obj.position_scene_y) - handle.obj.mainObject.object_img.Height, (2 * handle.obj.mainObject.object_img.Width) + 2 * zoom_rate, (2 * handle.obj.mainObject.object_img.Height) + 2 * zoom_rate));
+                        e.Graphics.DrawRectangle(Pens.White, handle.obj.position_scene_x - ((int)handle.obj.scaling_rate + zoom_rate), handle.obj.position_scene_y - ((int)handle.obj.scaling_rate + zoom_rate), handle.obj.mainObject.object_img.Width + 7 / 2 * ((int)handle.obj.scaling_rate + zoom_rate), handle.obj.mainObject.object_img.Height + 7 / 2 * ((int)handle.obj.scaling_rate + zoom_rate));
                     }
                 }
         }
@@ -924,6 +1048,26 @@ namespace Heavy_Engine
             return newObject;
         }
 
+        private void LoadChilds()
+        {
+            for(int cntr = 0;cntr < gameObjectScene_list.Count;cntr++)
+            {
+                for(int cnt = 0;cnt < gameObjectScene_list[cntr].child_list.Count;cnt++)
+                {
+                    for (int c = 0; c < gameObjectScene_list.Count; c++)
+                    {
+                        if (cnt == cntr) continue;
+
+                        if (gameObjectScene_list[cntr].child_list[cnt].instance_name == gameObjectScene_list[c].instance_name)
+                        {
+                            gameObjectScene_list[cntr].child_list[cnt] = gameObjectScene_list[c];
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         private void ProcessLine(string line)
         {
             List<object> token_list = new List<object>();
@@ -1001,6 +1145,10 @@ namespace Heavy_Engine
                     else if ((string) obj == "Project_FirstLevel:")
                     {
                         cur_action = "Project_FirstLevel";
+                    }
+                    else if ((string) obj == "Project_Platform:")
+                    {
+                        cur_action = "Project_Platform";
                     }
                     else if ((string) obj == "Level_Name:")
                     {
@@ -1082,6 +1230,14 @@ namespace Heavy_Engine
 
                         cur_action = "";
                     }
+                    else if (cur_action == "Project_Platform")
+                    {
+                        string str = (string)obj;
+
+                        platform_id = int.Parse(str);
+
+                        cur_action = "";
+                    }
                     else if (cur_action == "Level_Name")
                     {
                         string str = (string)obj;
@@ -1136,6 +1292,7 @@ namespace Heavy_Engine
                                 if (gameObj.object_name == str.Substring(1,str.Length - 1))
                                 {
                                     gameObject.mainObject = gameObj;
+                                    gameObject.Initialize();
                                 }
                             }
                         }
@@ -1177,11 +1334,56 @@ namespace Heavy_Engine
 
                         gameObject.depth = int.Parse(str);
 
-                        gameObjectScene_list.Add(gameObject);
-                        gameObject = new GameObject_Scene();
+                        cur_action = "Object_Tiled";
+                    }
+                    else if (cur_action == "Object_Tiled")
+                    {
+                        string str = (string)obj;
+
+                        gameObject.isTile = bool.Parse(str);
+
+                        cur_action = "Object_Rotation";
+                    }
+                    else if (cur_action == "Object_Rotation")
+                    {
+                        string str = (string)obj;
+
+                        gameObject.rotation_angle = float.Parse(str);
+                        gameObject.ApplyRotation(-gameObject.rotation_angle);
+
+                        cur_action = "Object_Scale";
+                    }
+                    else if (cur_action == "Object_Scale")
+                    {
+                        string str = (string)obj;
+
+                        gameObject.scaling_rate = float.Parse(str);
+
+                        cur_action = "Object_Childs";
+                    }
+                    else if (cur_action == "Object_Childs")
+                    {
+                        string str = (string)obj;
+
+                        if (str == ";")
+                        {
+                            cur_action = "";
+                            gameObjectScene_list.Add(gameObject);
+                            gameObject = new GameObject_Scene();
+                        }
+                        else
+                        {
+                            GameObject_Scene gameObj = new GameObject_Scene();
+
+                            gameObj.instance_name = str;
+
+                            gameObject.child_list.Add(gameObj);
+                        }
                     }
                 }
             }
+
+          if (gameObjectScene_list.Count > 0) LoadChilds(); // Reload the childs with proper instances.
         }
 
         private void menuItem_SaveProject_Click(object sender, EventArgs e)
@@ -1193,12 +1395,11 @@ namespace Heavy_Engine
             stm_wr.WriteLine("Project_Version: @" + project_info.project_version);
             stm_wr.WriteLine("Project_About: @" + project_info.project_about);
             stm_wr.WriteLine("Project_FirstLevel: Game-Levels\\" + Path.GetFileName(project_info.project_firstlevel));
+            stm_wr.WriteLine("Project_Platform: " + platform_id);
 
             stm_wr.Flush();
 
             stm_wr.Close();
-
-            MessageBox.Show("Project Saved Succesfully!", "Succesfull", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void menuItem_LoadProject_Click(object sender, EventArgs e)
@@ -1225,7 +1426,7 @@ namespace Heavy_Engine
 
                 LoadLevel(file_browser.FileName);
 
-                sortedArray = new DrawableGameObject[gameObjectScene_list.Count];
+                /*sortedArray = new DrawableGameObject[gameObjectScene_list.Count];
 
                 for (int cnt = 0; cnt < gameObjectScene_list.Count; cnt++)
                 {
@@ -1236,7 +1437,9 @@ namespace Heavy_Engine
                 while (!checkSorted(sortedArray))
                 {
                     sortElements(sortedArray);
-                }
+                } */
+
+                sortGameObjects();
 
                 lb_objects.Items.Clear();
 
@@ -1273,7 +1476,16 @@ namespace Heavy_Engine
             // Loop for printing object position.
             foreach(GameObject_Scene gameObject in gameObjectScene_list)
             {
-                stm_wr.WriteLine("Object: @" + gameObject.mainObject.object_name + "@ @" + gameObject.instance_name + "@ " + gameObject.position_x + " " + gameObject.position_y + " " + gameObject.depth); 
+                string obj_line = "Object: @" + gameObject.mainObject.object_name + "@ @" + gameObject.instance_name + "@ " + gameObject.position_x + " " + gameObject.position_y + " " + gameObject.depth + " " + gameObject.isTile + " " + gameObject.rotation_angle + " " + gameObject.scaling_rate;
+
+                foreach(GameObject_Scene gameObj in gameObject.child_list)
+                {
+                    obj_line += " " + gameObj.instance_name;
+                }
+
+                obj_line += " ;";
+
+                stm_wr.WriteLine(obj_line);
             }
 
             stm_wr.Flush();
@@ -1323,6 +1535,7 @@ namespace Heavy_Engine
             public bool object_physics;
             public bool object_rigid;
             public bool object_collider;
+           
         }
 
         public struct GameObject_Scene
@@ -1334,6 +1547,131 @@ namespace Heavy_Engine
             public int position_scene_x;
             public int position_scene_y;
             public int depth;
+            public bool isTile; // This property is only present in the editor . This property is not found in the real game library.
+            public float rotation_angle;
+            public float scaling_rate;
+            public List<GameObject_Scene> child_list;
+            private Image source_img;
+
+            public void Initialize( )
+            {
+                source_img = mainObject.object_img;
+
+                if (child_list == null) child_list = new List<GameObject_Scene>();
+            }
+
+            public void UpdateChildPosition(int rate_x,int rate_y,bool isParent)
+            {
+                if (!isParent) { position_scene_x += rate_x; position_scene_y += rate_y; }
+              
+                for(int cnt = 0;cnt < child_list.Count;cnt++)
+                {
+                    GameObject_Scene gameObj = child_list[cnt];
+
+                    gameObj.UpdateChildPosition(rate_x, rate_y,false);
+
+                    child_list[cnt] = gameObj;
+                }
+            }
+
+            public void UpdateChildScenePosition(int cam_x,int cam_y,bool isParent)
+            {
+                if (!isParent) { position_x = position_scene_x + cam_x; position_y = position_scene_y + cam_y; }
+              
+                for(int cnt = 0;cnt < child_list.Count;cnt++)
+                {
+                    GameObject_Scene gameObj = child_list[cnt];
+
+                    gameObj.UpdateChildScenePosition(cam_x, cam_y,false);
+
+                    child_list[cnt] = gameObj;
+                }
+            }
+
+            public void RestoreChildPosition(int parent_x , int parent_y, bool isParent)
+            {
+                int prev_x = position_scene_x, prev_y = position_scene_y;
+                if (!isParent) { position_scene_x = parent_x; position_scene_y = parent_y; }
+
+                for (int cnt = 0; cnt < child_list.Count; cnt++)
+                {
+                    GameObject_Scene gameObj = child_list[cnt];
+
+                    gameObj.RestoreChildPosition(parent_x - (prev_x - gameObj.position_scene_x), parent_y - (prev_y - gameObj.position_scene_y), false);
+
+                    child_list[cnt] = gameObj;
+                }
+            }
+
+            public void UpdateRotation(float rot_rate,int centerX , int centerY,bool isParent)
+            {
+                if (!isParent) Rotate(rot_rate);
+
+                for (int cnt = 0; cnt < child_list.Count; cnt++)
+                {
+                    GameObject_Scene gameObj = child_list[cnt];
+                    double angle = -( rot_rate * Math.PI / 180 );
+                    double cos = Math.Cos(angle);
+                    double sin = Math.Sin(angle);
+                    int dx = gameObj.position_scene_x - centerX;
+                    int dy = gameObj.position_scene_y - centerY;
+                    double x = cos * dx - sin * dy + centerX;
+                    double y = sin * dx + cos * dy + centerY;
+                    int prev_x = gameObj.position_scene_x;
+                    int prev_y = gameObj.position_scene_y;
+
+                    gameObj.position_scene_x = (int) Math.Round(x);
+                    gameObj.position_scene_y = (int) Math.Round(y );
+                    gameObj.UpdateRotation(rot_rate,centerX,centerX,false);
+
+                    child_list[cnt] = gameObj;
+                }
+            }
+
+            public void UpdateScale(float scale_rate,bool isParent)
+            {
+                if (!isParent) scaling_rate += scale_rate;
+
+                for (int cnt = 0; cnt < child_list.Count; cnt++)
+                {
+                    GameObject_Scene gameObj = child_list[cnt];
+
+                    gameObj.UpdateScale(scale_rate, false);
+
+                    child_list[cnt] = gameObj;
+                }
+            }
+
+            public void ApplyRotation(float angle)
+            {
+                if (mainObject.object_img != null)
+                {
+                    double rad_angle = angle * Math.PI / 180;
+                    Bitmap new_img = new Bitmap((int)(source_img.Width * Math.Abs(Math.Cos(rad_angle)) + source_img.Height * Math.Abs(Math.Sin(rad_angle))), (int)(source_img.Width * Math.Abs(Math.Sin(rad_angle)) + source_img.Height * Math.Abs(Math.Cos(rad_angle))));
+                    Graphics g = Graphics.FromImage(new_img);
+
+                    new_img.SetResolution(source_img.HorizontalResolution, source_img.VerticalResolution);
+
+                    g.Clear(Color.Transparent);
+                    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                    g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                    g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                    g.TranslateTransform(((new_img.Width - source_img.Width) / 2), ((new_img.Height - source_img.Height) / 2));
+                    g.TranslateTransform((float)(source_img.Size.Width / 2), (float)(source_img.Size.Height / 2));
+                    g.RotateTransform(angle);
+                    g.TranslateTransform(-(float)(source_img.Size.Width / 2), -(float)(source_img.Size.Height / 2));
+                    g.DrawImage(source_img, 0,0);
+                    
+                    mainObject.object_img = new_img;
+                }
+            }
+
+            public void Rotate(float angle)
+            {
+                ApplyRotation(-(angle + rotation_angle));
+                rotation_angle += angle;
+            }
         }
 
         public struct DrawableGameObject
@@ -1396,7 +1734,7 @@ namespace Heavy_Engine
         {
             if (gameObject_editor.SelectedObject != null)
             {
-                GameObject_Scene_EDTIOR obj = (GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject;
+                GameObject_Scene_EDITOR obj = (GameObject_Scene_EDITOR)gameObject_editor.SelectedObject;
                 
                 for(int cntr = 0;cntr < gameObjectScene_list.Count;cntr++)
                 {
@@ -1417,6 +1755,12 @@ namespace Heavy_Engine
                        }
 
                        int scene_px = gameObjectScene_list[cntr].position_scene_x,scene_py = gameObjectScene_list[cntr].position_scene_y;
+
+                       if (obj.obj.mainObject.object_img != null)
+                       {
+                           obj.obj.UpdateChildScenePosition(cam_x, cam_y, true);
+                           UpdateWorldChilds(gameObjectScene_list[cntr]);
+                       }
 
                        gameObjectScene_list[cntr] = obj.obj;
 
@@ -1546,13 +1890,13 @@ namespace Heavy_Engine
 
                     if (gameObject_editor.SelectedObject != null)
                     {
-                        if (((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
+                        if (((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
                         {
-                            GameObject_Scene obj_handle = ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj;
+                            GameObject_Scene obj_handle = ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj;
 
                             obj_handle.position_scene_y += 5;
 
-                            ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj = obj_handle;
+                            ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj = obj_handle;
                         }
                     }
 
@@ -1576,13 +1920,13 @@ namespace Heavy_Engine
 
                     if (gameObject_editor.SelectedObject != null)
                     {
-                        if (((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
+                        if (((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
                         {
-                            GameObject_Scene obj_handle = ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj;
+                            GameObject_Scene obj_handle = ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj;
 
                             obj_handle.position_scene_y -= 5;
 
-                            ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj = obj_handle;
+                            ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj = obj_handle;
                         }
                     }
 
@@ -1606,13 +1950,13 @@ namespace Heavy_Engine
 
                     if (gameObject_editor.SelectedObject != null)
                     {
-                        if (((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
+                        if (((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
                         {
-                            GameObject_Scene obj_handle = ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj;
+                            GameObject_Scene obj_handle = ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj;
 
                             obj_handle.position_scene_x += 5;
                             
-                            ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj = obj_handle;
+                            ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj = obj_handle;
                         }
                     }
 
@@ -1636,13 +1980,13 @@ namespace Heavy_Engine
 
                     if (gameObject_editor.SelectedObject != null)
                     {
-                        if (((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
+                        if (((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
                         {
-                            GameObject_Scene obj_handle = ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj;
+                            GameObject_Scene obj_handle = ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj;
 
                             obj_handle.position_scene_x -= 5;
                             
-                            ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj = obj_handle;
+                            ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj = obj_handle;
                         }
                     }
 
@@ -1664,14 +2008,14 @@ namespace Heavy_Engine
 
                     if (gameObject_editor.SelectedObject != null)
                     {
-                        if (((GameObject_Scene_EDTIOR) gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
+                        if (((GameObject_Scene_EDITOR) gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
                         {
-                            GameObject_Scene obj_handle = ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj;
+                            GameObject_Scene obj_handle = ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj;
 
                             obj_handle.position_scene_x -= 5 * rate;
                             obj_handle.position_scene_y -= 5 * rate;
 
-                            ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj = obj_handle;
+                            ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj = obj_handle;
                         }
                     }
 
@@ -1701,14 +2045,14 @@ namespace Heavy_Engine
 
                 if (gameObject_editor.SelectedObject != null)
                 {
-                    if (((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
+                    if (((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
                     {
-                        GameObject_Scene obj_handle = ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj;
+                        GameObject_Scene obj_handle = ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj;
 
                         obj_handle.position_scene_x -= 5;
                         obj_handle.position_scene_y -= 5;
 
-                        ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj = obj_handle;
+                        ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj = obj_handle;
                     }
                 }
 
@@ -1739,14 +2083,14 @@ namespace Heavy_Engine
 
                 if (gameObject_editor.SelectedObject != null)
                 {
-                    if (((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
+                    if (((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
                     {
-                        GameObject_Scene obj_handle = ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj;
+                        GameObject_Scene obj_handle = ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj;
 
                         obj_handle.position_scene_x += 5;
                         obj_handle.position_scene_y += 5;
 
-                        ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj = obj_handle;
+                        ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj = obj_handle;
                     }
                 }
 
@@ -1768,14 +2112,14 @@ namespace Heavy_Engine
 
                     if (gameObject_editor.SelectedObject != null)
                     {
-                        if (((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
+                        if (((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject)._obj.instance_name == handle.instance_name)
                         {
-                            GameObject_Scene obj_handle = ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj;
+                            GameObject_Scene obj_handle = ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj;
 
                             obj_handle.position_scene_x += 5 * rate;
                             obj_handle.position_scene_y += 5 * rate;
 
-                            ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject).obj = obj_handle;
+                            ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj = obj_handle;
                         }
                     }
 
@@ -1860,40 +2204,23 @@ namespace Heavy_Engine
 
            for (int cnt = 0; cnt < gameObjectScene_list.Count; cnt++)
            {
-               if (gameObjectScene_list[cnt].instance_name == ((GameObject_Scene_EDTIOR) gameObject_editor.SelectedObject)._obj.instance_name)
+               if (gameObjectScene_list[cnt].instance_name == ((GameObject_Scene_EDITOR) gameObject_editor.SelectedObject)._obj.instance_name)
                {
-                   gameObjectScene_list[cnt] = ((GameObject_Scene_EDTIOR)gameObject_editor.SelectedObject)._obj;
+                   if (gameObjectScene_list[cnt].mainObject.object_img != null)
+                   {
+                       gameObjectScene_list[cnt].UpdateRotation(((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.rotation_angle - ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject)._obj.rotation_angle, ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.position_scene_x + ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.mainObject.object_img.Width / 2, ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.position_scene_y + ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.mainObject.object_img.Height / 2, true);
+                       gameObjectScene_list[cnt].UpdateScale(-(((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.scaling_rate - ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject)._obj.scaling_rate), true);
+                       gameObjectScene_list[cnt].RestoreChildPosition(((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject)._obj.position_scene_x, ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject)._obj.position_scene_y, true);
+                       UpdateWorldChilds(gameObjectScene_list[cnt]);
+                   }
+
+                   gameObjectScene_list[cnt] = ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject)._obj;
                    break;
                }
            }
 
            isLcontrol = false;
            gameObject_editor.SelectedObject = null;
-       }
-
-       private void lbl_view_y_Click(object sender, EventArgs e)
-       {
-
-       }
-
-       private void gameObject_editor_Click(object sender, EventArgs e)
-       {
-
-       }
-
-       private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
-       {
-           
-       }
-
-       private void lb_objects_SelectedIndexChanged(object sender, EventArgs e)
-       {
-
-       }
-
-       private void file_tree_AfterSelect(object sender, TreeViewEventArgs e)
-       {
-
        }
 
        private void menuItem_OpenEditor_Click(object sender, EventArgs e)
@@ -1940,17 +2267,62 @@ namespace Heavy_Engine
                zoomOut((cp / 5) - tb_zoom.Value);
            }
        }
+
+       private void menuItem_TOpenEditor_Click(object sender, EventArgs e)
+       {
+           TileMapEditor tile_map_editor = new TileMapEditor(this);
+
+           tile_map_editor.Show();
+       }
+
+       private void menuItem_ImportPackage_Click(object sender, EventArgs e)
+       {
+           PackageManager.PackageManager pak_manager = new PackageManager.PackageManager(Application.StartupPath, project_default_dir);
+           OpenFileDialog open_file_dlg = new OpenFileDialog( );
+
+           open_file_dlg.InitialDirectory = Application.StartupPath + "\\Packages";
+           open_file_dlg.ShowDialog();
+
+           if (Path.GetExtension(open_file_dlg.FileName) == ".pak" || Path.GetExtension(open_file_dlg.FileName) == "pak")
+           {
+               PackageManager.Package pak = pak_manager.ReadPackage(open_file_dlg.FileName);
+
+               if (pak != null)
+               {
+                   pak_manager.ExtractPackage(pak);
+
+                   gameObject_list.Clear();
+                   reloadFileTree();
+
+                   foreach (string path in Directory.GetFiles(project_default_dir + "\\Game-Objects"))
+                   {
+                       // Call LoadObject here with parameter path + .obj for providing extension.
+                       gameObject_list.Add(LoadObject(path));
+                   }
+               }
+               else MessageBox.Show("Package Import Failed!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+           }
+       }
+
+       private void menuItem_CreatePackage_Click(object sender, EventArgs e)
+       {
+           CreatePackage create_pak = new CreatePackage(this);
+
+           create_pak.Show();
+       }
     }
 
-    class GameObject_Scene_EDTIOR
+    public class GameObject_Scene_EDITOR
     {
         public Editor.GameObject_Scene obj;
         public Editor.GameObject_Scene _obj;
+        private Editor editor_handle;
 
-        public GameObject_Scene_EDTIOR(Editor.GameObject_Scene obj)
+        public GameObject_Scene_EDITOR(Editor.GameObject_Scene obj,Editor editor_handle)
         {
             this.obj = obj;
             this._obj = obj;
+            this.editor_handle = editor_handle;
         }
         
         public int X
@@ -1989,7 +2361,7 @@ namespace Heavy_Engine
             }
         }
 
-        public string NAME
+        public string Name
         {
             get
             {
@@ -1998,6 +2370,91 @@ namespace Heavy_Engine
             set
             {
                 obj.instance_name = value;
+            }
+        }
+
+        public float Rotation
+        {
+            get
+            {
+                return obj.rotation_angle;
+            }
+            set
+            {
+                float prev_angle = obj.rotation_angle;
+                obj.rotation_angle = value;
+
+                if (obj.mainObject.object_img != null)
+                {
+                    obj.ApplyRotation(-obj.rotation_angle);
+                    obj.UpdateRotation((obj.rotation_angle - prev_angle), obj.position_scene_x + obj.mainObject.object_img.Width / 2, obj.position_scene_y + obj.mainObject.object_img.Height / 2, true);
+
+                    for (int cnt = 0; cnt < editor_handle.gameObjectScene_list.Count; cnt++)
+                    {
+                        if (editor_handle.gameObjectScene_list[cnt].instance_name == _obj.instance_name)
+                        {
+                            editor_handle.UpdateWorldChilds(editor_handle.gameObjectScene_list[cnt]);
+                            break;
+                        }
+                    }
+
+                    for(int cnt = 0;cnt < editor_handle.gameObjectScene_list.Count;cnt++)
+                    {
+                        if (editor_handle.gameObjectScene_list[cnt].instance_name == _obj.instance_name)
+                        {
+                            Editor.GameObject_Scene gameObject = editor_handle.gameObjectScene_list[cnt];
+
+                            gameObject.ApplyRotation(-obj.rotation_angle);
+                        
+                            editor_handle.gameObjectScene_list[cnt] = gameObject;
+
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        public float Scale
+        {
+            get
+            {
+                return obj.scaling_rate;
+            }
+            set
+            {
+                float prev_scale = obj.scaling_rate;
+                obj.scaling_rate = value;
+
+                if (obj.scaling_rate < 0) obj.scaling_rate = 0f;
+
+                if (obj.mainObject.object_img != null)
+                {
+                    obj.UpdateScale((obj.scaling_rate - prev_scale), true);
+
+                    for (int cnt = 0; cnt < editor_handle.gameObjectScene_list.Count; cnt++)
+                    {
+                        if (editor_handle.gameObjectScene_list[cnt].instance_name == _obj.instance_name)
+                        {
+                            editor_handle.UpdateWorldChilds(editor_handle.gameObjectScene_list[cnt]);
+                            break;
+                        }
+                    }
+                }
+
+                for (int cnt = 0; cnt < editor_handle.gameObjectScene_list.Count; cnt++)
+                {
+                    if (editor_handle.gameObjectScene_list[cnt].instance_name == _obj.instance_name)
+                    {
+                        Editor.GameObject_Scene gameObject = editor_handle.gameObjectScene_list[cnt];
+
+                        gameObject.scaling_rate = obj.scaling_rate;
+
+                        editor_handle.gameObjectScene_list[cnt] = gameObject;
+
+                        break;
+                    }
+                }
             }
         }
     }
@@ -2590,6 +3047,7 @@ namespace Heavy_Engine
                                 if (gameObj.object_name == str.Substring(1,str.Length - 1))
                                 {
                                     gameObject.mainObject = gameObj;
+                                    gameObject.Initialize();
                                 }
                             }
                         }
@@ -2621,10 +3079,61 @@ namespace Heavy_Engine
 
                         gameObject.position_y = int.Parse(str);
 
-                        cur_action = "";
-                        object_array.Add(gameObject);
-                        gameObject = new Editor.GameObject_Scene();
+                        cur_action = "Object_Depth";
                     }
+                     else if (cur_action == "Object_Depth")
+                     {
+                         string str = (string)obj;
+
+                         gameObject.depth = int.Parse(str);
+
+                         cur_action = "Object_Tiled";
+                     }
+                     else if (cur_action == "Object_Tiled")
+                     {
+                         string str = (string)obj;
+
+                         gameObject.isTile = bool.Parse(str);
+
+                         cur_action = "Object_Rotation";
+                     }
+                     else if (cur_action == "Object_Rotation")
+                     {
+                         string str = (string)obj;
+
+                         gameObject.rotation_angle = float.Parse(str);
+                         gameObject.ApplyRotation(-gameObject.rotation_angle);
+
+                         cur_action = "Object_Scale";
+                     }
+                     else if (cur_action == "Object_Scale")
+                     {
+                         string str = (string)obj;
+
+                         gameObject.scaling_rate = float.Parse(str);
+
+                         cur_action = "Object_Childs";
+                     }
+                     else if (cur_action == "Object_Childs")
+                     {
+                         string str = (string)obj;
+                         
+                         if (str == ";")
+                         {
+                             cur_action = "";
+                             object_array.Add(gameObject);
+                             gameObject = new Editor.GameObject_Scene();
+                         }
+                         else
+                         {
+                             Editor.GameObject_Scene gameObj = new Editor.GameObject_Scene();
+
+                             gameObj.instance_name = str;
+
+                             gameObject.child_list.Add(gameObj);
+                         }
+                     }
+
                 }
              }
             };
@@ -2667,6 +3176,7 @@ namespace Heavy_Engine
                 stm_wr.WriteLine("#pragma comment(lib,\"SDL2_image.lib\")");
                 stm_wr.WriteLine("#pragma comment(lib,\"SDL2_ttf.lib\")");
                 stm_wr.WriteLine("#pragma comment(lib,\"SDL2_mixer.lib\")");
+                stm_wr.WriteLine("#pragma comment(lib,\"SDL2_net.lib\")");
                 stm_wr.WriteLine("#pragma comment(lib,\"NativeRuntime.lib\")");
 
                 foreach(string path in Directory.GetFiles(editor_handle.project_default_dir + "\\Game-Plugins"))
@@ -2767,11 +3277,34 @@ namespace Heavy_Engine
                         stm_wr.WriteLine("obj.depth = " + object_array[cntr].depth + ";");
                         stm_wr.WriteLine("obj.instance_name = \"" + object_array[cntr].instance_name + "\";");
                         stm_wr.WriteLine("obj.obj_instance = ObjectManager.findGameObjectWithName(\"" + object_array[cntr].mainObject.object_name + "\");");
+                        stm_wr.WriteLine("obj.Initialize();");
+                        stm_wr.WriteLine("obj.SetScale(" + object_array[cntr].scaling_rate + ");");
+                        stm_wr.WriteLine("obj.SetRotationAngle(" + object_array[cntr].rotation_angle + ");");
 
-                        for (int cnt = 0; cnt < object_array[cntr].mainObject.scripts.Count; cnt++)
+                        for (int cnt = 0; cnt < object_array[cntr].child_list.Count;cnt++ )
                         {
-                            stm_wr.WriteLine("obj.registerScript(new " + Path.GetFileNameWithoutExtension(object_array[cntr].mainObject.scripts[cnt]) + "( ));");
+                            stm_wr.WriteLine("obj.AddChild(\"" + object_array[cntr].child_list[cnt].instance_name + "\");");
                         }
+
+                            for (int cnt = 0; cnt < object_array[cntr].mainObject.scripts.Count; cnt++)
+                            {
+                                bool isSuccess = false;
+
+                                if (editor_handle.platform_id == 1)
+                                {
+                                    if (Path.GetExtension(object_array[cntr].mainObject.scripts[cnt]) == ".cs" || Path.GetExtension(object_array[cntr].mainObject.scripts[cnt]) == "cs") isSuccess = true;
+                                }
+                                else if (editor_handle.platform_id == 2 || editor_handle.platform_id == 3)
+                                {
+                                    if (Path.GetExtension(object_array[cntr].mainObject.scripts[cnt]) == ".java" || Path.GetExtension(object_array[cntr].mainObject.scripts[cnt]) == "java") isSuccess = true;
+                                }
+                                /* else if (editor_handle.platform_id == 4)
+                                {
+                                    if (Path.GetExtension(object_array[cntr].mainObject.scripts[cnt]) == ".cpp" || Path.GetExtension(object_array[cntr].mainObject.scripts[cnt]) == "cpp") isSuccess = true;
+                                } */
+
+                                if (isSuccess) stm_wr.WriteLine("obj.registerScript(new " + Path.GetFileNameWithoutExtension(object_array[cntr].mainObject.scripts[cnt]) + "( ));");
+                            }
                     }
                     else
                     {
@@ -2780,10 +3313,18 @@ namespace Heavy_Engine
                         stm_wr.WriteLine("obj->depth = " + object_array[cntr].depth + ";");
                         stm_wr.WriteLine("obj->instance_name = \"" + object_array[cntr].instance_name + "\";");
                         stm_wr.WriteLine("obj->obj_instance = ObjectManager::findGameObjectWithName(\"" + object_array[cntr].mainObject.object_name + "\");");
+                        stm_wr.WriteLine("obj->Initialize();");
+                        stm_wr.WriteLine("obj->SetScale(" + ((object_array[cntr].scaling_rate == 0) ? 1 : object_array[cntr].scaling_rate) + ");");
+                        stm_wr.WriteLine("obj->SetRotationAngle(" + object_array[cntr].rotation_angle + ");");
+
+                        for (int cnt = 0; cnt < object_array[cntr].child_list.Count; cnt++)
+                        {
+                            stm_wr.WriteLine("obj->AddChild(\"" + object_array[cntr].child_list[cnt].instance_name + "\");");
+                        }
 
                         for (int cnt = 0; cnt < object_array[cntr].mainObject.scripts.Count; cnt++)
                         {
-                            stm_wr.WriteLine("obj->registerScript(new " + Path.GetFileNameWithoutExtension(object_array[cntr].mainObject.scripts[cnt]) + "( ));");
+                            if (Path.GetExtension(object_array[cntr].mainObject.scripts[cnt]) == ".cpp" || Path.GetExtension(object_array[cntr].mainObject.scripts[cnt]) == "cpp") stm_wr.WriteLine("obj->registerScript(new " + Path.GetFileNameWithoutExtension(object_array[cntr].mainObject.scripts[cnt]) + "( ));");
                         }
                     }
 
@@ -2949,6 +3490,7 @@ jmp:
 
                     File.Copy(Application.StartupPath + "\\Runtime.dll", editor_handle.project_default_dir + "\\Build\\Runtime.dll");
                     File.Copy(Application.StartupPath + "\\JVLIB.dll", editor_handle.project_default_dir + "\\Build\\JVLIB.dll");
+                    File.Copy(Application.StartupPath + "\\Interop.WMPLib.dll", editor_handle.project_default_dir + "\\Build\\Interop.WMPLib.dll");
 
                     foreach (string path in rem_files)
                     {
@@ -3081,12 +3623,14 @@ jmp:
                             }
                         }
 
-                        bat_stm.WriteLine("Class-Path: JRuntime.jar" + libs );
+                        bat_stm.WriteLine("Class-Path: JRuntime.jar" + libs);
 
                         bat_stm.Flush();
                         bat_stm.Close();
 
                         File.Copy(Application.StartupPath + "\\JRuntime.jar" , editor_handle.project_default_dir + "\\Build\\JRuntime.jar");
+                        File.Copy(Application.StartupPath + "\\jl1.0.1.jar", editor_handle.project_default_dir + "\\Build\\jl1.0.1.jar");
+                        File.Copy(Application.StartupPath + "\\thumbnailator-0.4.8.jar", editor_handle.project_default_dir + "\\Build\\thumbnailator-0.4.8.jar");
 
                         foreach (string path in Directory.GetFiles(editor_handle.project_default_dir + "\\Game-Plugins"))
                         {
@@ -3178,7 +3722,7 @@ jmp:
 
                     ProcessStartInfo pinfo = new ProcessStartInfo();
 
-                    pinfo.Arguments = "-target 1.3 -source 1.3 -bootclasspath \"" + Application.StartupPath + "\\cldc_1.0.jar\";\"" + Application.StartupPath + "\\midp_2.0.jar\"" + " -cp ." + lib_str + ";" + "\"" + Application.StartupPath + "\\JMRuntime.jar\"; \"" + editor_handle.project_default_dir + "\\AppMain.java\"" + file_path_com;
+                    pinfo.Arguments = "-target 3.4 -source 3.4 -bootclasspath \"" + Application.StartupPath + "\\cldc_1.1.jar\";\"" + Application.StartupPath + "\\midp_2.1.jar\"" + " -cp ." + lib_str + ";" + "\"" + Application.StartupPath + "\\JMRuntime.jar\"; \"" + editor_handle.project_default_dir + "\\AppMain.java\"" + file_path_com;
                     pinfo.FileName = "javac";
                     pinfo.UseShellExecute = false;
                     pinfo.RedirectStandardOutput = true;
@@ -3244,7 +3788,7 @@ jmp:
                         }
 
                         bat_stm.WriteLine("jar xf JMRuntime.jar jruntime");
-                        bat_stm.WriteLine("preverify -classpath \"" + Application.StartupPath + "\\JMRuntime.jar\";\"" + Application.StartupPath + "\\midp_2.0.jar\";\"" + Application.StartupPath + "\\cldc_1.0.jar\"; -d \"" + editor_handle.project_default_dir + "\\Build\" code");
+                        bat_stm.WriteLine("preverify -classpath \"" + Application.StartupPath + "\\JMRuntime.jar\";\"" + Application.StartupPath + "\\midp_2.1.jar\";\"" + Application.StartupPath + "\\cldc_1.1.jar\"; -d \"" + editor_handle.project_default_dir + "\\Build\" code");
                   //      bat_stm.WriteLine("jar cvfm \"" + editor_handle.project_default_dir + "\\Build\\" + editor_handle.project_info.project_name + ".jar\" COM.T bin " + "Data " + "jruntime" + libs);
                         bat_stm.WriteLine("jar cvfm " + editor_handle.project_info.project_name + ".jar COM.T bin " + "Data " + "jruntime" + libs);
                         bat_stm.WriteLine("del Data");

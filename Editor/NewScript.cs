@@ -83,10 +83,38 @@ namespace Heavy_Engine
                 else if (editor_handle.platform_id == 1)
                 {
                   stm_wr =  File.CreateText(editor_handle.project_default_dir + "\\Game-Scripts\\" + txt_script_name.Text + ".cs");
+
+                  stm_wr.WriteLine("using Runtime; \n");
+                  stm_wr.WriteLine("public class " + txt_script_name.Text + " : HeavyScript \n {");
+
+                  stm_wr.WriteLine("\tbool isInit = true;");
+
+                  stm_wr.WriteLine("\tpublic override void process(GameObject_Scene gameObject) \n\t{");
+                  stm_wr.WriteLine("\t\tif (isInit) \n\t\t{");
+                  stm_wr.WriteLine("\t\t\t//Write your initialization part here.");
+                  stm_wr.WriteLine("\t}");
+                  stm_wr.WriteLine("\t\telse \n\t\t{");
+                  stm_wr.WriteLine("\t\t\t//Write your update part here.");
+                  stm_wr.WriteLine("\t}");
+                  stm_wr.WriteLine("}");
                 }
                 else if (editor_handle.platform_id == 2 || editor_handle.platform_id == 3)
                 {
                   stm_wr = File.CreateText(editor_handle.project_default_dir + "\\Game-Scripts\\" + txt_script_name.Text + ".java");
+
+                  stm_wr.WriteLine("import jruntime.*; \n");
+                  stm_wr.WriteLine("public class " + txt_script_name.Text + " extends HeavyScript \n {");
+
+                  stm_wr.WriteLine("\tboolean isInit = true;");
+
+                  stm_wr.WriteLine("\tpublic void process(GameObject_Scene gameObject) \n\t{");
+                  stm_wr.WriteLine("\t\tif (isInit) \n\t\t{");
+                  stm_wr.WriteLine("\t\t\t//Write your initialization part here.");
+                  stm_wr.WriteLine("\t}");
+                  stm_wr.WriteLine("\t\telse \n\t\t{");
+                  stm_wr.WriteLine("\t\t\t//Write your update part here.");
+                  stm_wr.WriteLine("\t}");
+                  stm_wr.WriteLine("}");  
                 }
                 else if (editor_handle.platform_id == 4)
                 {

@@ -1,5 +1,36 @@
 #include "ResourceManager.h"
 
+static char * itoa(unsigned int num)
+{
+	if (num == 0) return "0";
+
+	int rev = 0;
+	int dig_count = 0;
+
+	while (num > 0)
+	{
+		rev = rev * 10 + (num % 10);
+		num /= 10;
+		dig_count++;
+	}
+
+	char * ret_str = new char[dig_count + 1];
+
+	int cnt = 0;
+
+	while (rev > 0)
+	{
+		ret_str[cnt] = '0' + (rev % 10);
+		rev /= 10;
+		cnt++;
+	}
+
+	ret_str[dig_count] = 0;
+
+	return ret_str;
+}
+
+
 Image ResourceManager::findImage(std::string img_path)
 {
 	return IMG_Load(img_path.c_str());
@@ -7,14 +38,13 @@ Image ResourceManager::findImage(std::string img_path)
 
 std::string ResourceManager::getResource(std::string res_name)
 {
-	std::string res_file = "./Data/" + res_name;
+	std::string res_file = std::string("./Data/") + res_name;
 
 	File fl = fopen(res_file.c_str(), "r");
 
-	fclose(fl);
-
 	if (fl)
 	{
+		fclose(fl);
 		return res_file;
 	}
 
@@ -108,14 +138,14 @@ std::string ResourceManager::encryptFileName(std::string base_string)
 
 		if (cur_ch < 65 || cur_ch > 91)
 		{
-			out_string += (int) 2;
+			out_string += (char) '2';
 			out_string += cur_ch; // Avoid Digits.
 		}
 		else if (cur_ch + 10 < 91)
 		{
 			out_string += (char)'0';
 			out_string += (char)(cur_ch + 10);
-			out_string += (int)(91 - (cur_ch + 10));
+			out_string += itoa(91 - (cur_ch + 10));
 
 			if (91 - (cur_ch + 10) < 10)
 			{
@@ -124,9 +154,9 @@ std::string ResourceManager::encryptFileName(std::string base_string)
 		}
 		else if (cur_ch - 10 >= 65)
 		{
-			out_string += (int)1;
+			out_string += (char)'1';
 			out_string += (char)(cur_ch - 10);
-			out_string += (int)((cur_ch - 10) - 65);
+			out_string += itoa((cur_ch - 10) - 65);
 
 			if ((cur_ch - 10) - 65 < 10)
 			{

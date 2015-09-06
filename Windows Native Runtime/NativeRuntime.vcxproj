@@ -39,8 +39,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>E:\SDL2_image-2.0.0\include;E:\SDL2_mixer-2.0.0\include;E:\SDL2_ttf-2.0.12\include;E:\SDL2-2.0.3\include;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\SDL2_image-2.0.0\lib\x86;E:\SDL2_mixer-2.0.0\lib\x86;E:\SDL2_ttf-2.0.12\lib\x86;E:\SDL2-2.0.3\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>E:\SDL2_net-2.0.0\include;E:\SDL2_image-2.0.0\include;E:\SDL2_mixer-2.0.0\include;E:\SDL2_ttf-2.0.12\include;E:\SDL2-2.0.3\include;$(IncludePath)</IncludePath>
+    <LibraryPath>E:\SDL2_net-2.0.0\lib\x86;E:\SDL2_image-2.0.0\lib\x86;E:\SDL2_mixer-2.0.0\lib\x86;E:\SDL2_ttf-2.0.12\lib\x86;E:\SDL2-2.0.3\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -71,19 +71,23 @@
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="AnimationManager.cpp" />
+    <ClCompile Include="Audio.cpp" />
     <ClCompile Include="GameObject_Scene.cpp" />
     <ClCompile Include="HApplication.cpp" />
     <ClCompile Include="NavigationManager.cpp" />
     <ClCompile Include="Navigator.cpp" />
+    <ClCompile Include="NetworkManager.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="SDL_rotozoom.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
     <ClInclude Include="AnimationManager.h" />
+    <ClInclude Include="Audio.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObject_Scene.h" />
     <ClInclude Include="HApplication.h" />
@@ -92,12 +96,14 @@
     <ClInclude Include="HExtra.h" />
     <ClInclude Include="NavigationManager.h" />
     <ClInclude Include="Navigator.h" />
+    <ClInclude Include="NetworkManager.h" />
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="SDL2_rotozoom.h" />
     <ClInclude Include="Vector2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

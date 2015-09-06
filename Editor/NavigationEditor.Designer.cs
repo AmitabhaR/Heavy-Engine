@@ -310,7 +310,6 @@
             this.MainMenuStrip = this.topStrip_menu;
             this.Name = "NavigationEditor";
             this.ShowIcon = false;
-            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Navigation Editor";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;

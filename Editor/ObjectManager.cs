@@ -69,7 +69,7 @@ namespace Heavy_Engine
                     lb_scene_objects.Items.Add(editor_handle.gameObjectScene_list[cntr].instance_name);
                 }
 
-                editor_handle.sortedArray = new Editor.DrawableGameObject[editor_handle.gameObjectScene_list.Count];
+              /*  editor_handle.sortedArray = new Editor.DrawableGameObject[editor_handle.gameObjectScene_list.Count];
 
                 for (int cnt = 0; cnt < editor_handle.gameObjectScene_list.Count; cnt++)
                 {
@@ -80,7 +80,9 @@ namespace Heavy_Engine
                 while (!editor_handle.checkSorted(editor_handle.sortedArray))
                 {
                     editor_handle.sortElements(editor_handle.sortedArray);
-                }
+                } */
+
+                editor_handle.sortGameObjects();
 
                 editor_handle.reloadFileTree();
             }
@@ -103,7 +105,7 @@ namespace Heavy_Engine
                     lb_scene_objects.Items.Add(editor_handle.gameObjectScene_list[cntr].instance_name);
                 }
 
-                editor_handle.sortedArray = new Editor.DrawableGameObject[editor_handle.gameObjectScene_list.Count];
+             /*   editor_handle.sortedArray = new Editor.DrawableGameObject[editor_handle.gameObjectScene_list.Count];
 
                 for (int cnt = 0; cnt < editor_handle.gameObjectScene_list.Count; cnt++)
                 {
@@ -114,7 +116,9 @@ namespace Heavy_Engine
                 while (!editor_handle.checkSorted(editor_handle.sortedArray))
                 {
                     editor_handle.sortElements(editor_handle.sortedArray);
-                }
+                } */
+
+                editor_handle.sortGameObjects();
 
                 editor_handle.reloadFileTree();
             }

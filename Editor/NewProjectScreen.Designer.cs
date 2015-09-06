@@ -36,6 +36,8 @@
             this.txt_project_name = new System.Windows.Forms.TextBox();
             this.txt_project_path = new System.Windows.Forms.TextBox();
             this.btn_change_dir = new System.Windows.Forms.Button();
+            this.lbl_packages = new System.Windows.Forms.Label();
+            this.clb_importable_packages = new System.Windows.Forms.CheckedListBox();
             this.SuspendLayout();
             // 
             // lbl_window_name
@@ -51,7 +53,7 @@
             // btn_create_project
             // 
             this.btn_create_project.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_create_project.Location = new System.Drawing.Point(473, 411);
+            this.btn_create_project.Location = new System.Drawing.Point(480, 570);
             this.btn_create_project.Name = "btn_create_project";
             this.btn_create_project.Size = new System.Drawing.Size(150, 45);
             this.btn_create_project.TabIndex = 1;
@@ -62,7 +64,7 @@
             // btn_back
             // 
             this.btn_back.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_back.Location = new System.Drawing.Point(629, 411);
+            this.btn_back.Location = new System.Drawing.Point(636, 570);
             this.btn_back.Name = "btn_back";
             this.btn_back.Size = new System.Drawing.Size(150, 45);
             this.btn_back.TabIndex = 2;
@@ -116,13 +118,34 @@
             this.btn_change_dir.UseVisualStyleBackColor = true;
             this.btn_change_dir.Click += new System.EventHandler(this.btn_change_dir_Click);
             // 
+            // lbl_packages
+            // 
+            this.lbl_packages.AutoSize = true;
+            this.lbl_packages.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_packages.Location = new System.Drawing.Point(123, 264);
+            this.lbl_packages.Name = "lbl_packages";
+            this.lbl_packages.Size = new System.Drawing.Size(178, 20);
+            this.lbl_packages.TabIndex = 9;
+            this.lbl_packages.Text = "Importable Packages";
+            // 
+            // clb_importable_packages
+            // 
+            this.clb_importable_packages.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.clb_importable_packages.FormattingEnabled = true;
+            this.clb_importable_packages.Location = new System.Drawing.Point(127, 287);
+            this.clb_importable_packages.Name = "clb_importable_packages";
+            this.clb_importable_packages.Size = new System.Drawing.Size(472, 244);
+            this.clb_importable_packages.TabIndex = 10;
+            // 
             // NewProjectScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Silver;
-            this.ClientSize = new System.Drawing.Size(791, 468);
+            this.ClientSize = new System.Drawing.Size(791, 627);
             this.ControlBox = false;
+            this.Controls.Add(this.clb_importable_packages);
+            this.Controls.Add(this.lbl_packages);
             this.Controls.Add(this.btn_change_dir);
             this.Controls.Add(this.txt_project_path);
             this.Controls.Add(this.txt_project_name);
@@ -139,6 +162,7 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Create New Project";
+            this.Load += new System.EventHandler(this.NewProjectScreen_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -154,5 +178,7 @@
         private System.Windows.Forms.TextBox txt_project_name;
         private System.Windows.Forms.TextBox txt_project_path;
         private System.Windows.Forms.Button btn_change_dir;
+        private System.Windows.Forms.Label lbl_packages;
+        private System.Windows.Forms.CheckedListBox clb_importable_packages;
     }
 }

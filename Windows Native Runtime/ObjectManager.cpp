@@ -17,6 +17,10 @@ void ObjectManager::loadObject(std::string name, std::string text, std::string i
 		instance.img.Width = img_Width;
 		instance.img.Height = img_Height;
 	}
+	else
+	{
+		instance.img.baseImage = NULL;
+	}
 
 	instance.tag = tag;
 	instance._static = isStatic;

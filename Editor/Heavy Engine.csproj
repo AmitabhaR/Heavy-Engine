@@ -2,6 +2,7 @@
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ApplicationIcon>text_troff.ico</ApplicationIcon>
+    <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -16,7 +17,6 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup>
     <TargetZone>LocalIntranet</TargetZone>
@@ -59,7 +59,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Heavy Engine.XML</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <Prefer32Bit>false</Prefer32Bit>
@@ -68,6 +69,11 @@
     <StartupObject>Heavy_Engine.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PackageManager.HeavyEngine, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Release\PackageManager.HeavyEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -78,6 +84,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AboutHeavyEngine.cs">
@@ -110,11 +117,23 @@
     <Compile Include="BuildProgress.Designer.cs">
       <DependentUpon>BuildProgress.cs</DependentUpon>
     </Compile>
+    <Compile Include="ChildEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ChildEditor.Designer.cs">
+      <DependentUpon>ChildEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="CreateObject.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="CreateObject.Designer.cs">
       <DependentUpon>CreateObject.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CreatePackage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CreatePackage.Designer.cs">
+      <DependentUpon>CreatePackage.cs</DependentUpon>
     </Compile>
     <Compile Include="Editor.cs">
       <SubType>Form</SubType>
@@ -196,6 +215,12 @@
     <Compile Include="ResourceManager.Designer.cs">
       <DependentUpon>ResourceManager.cs</DependentUpon>
     </Compile>
+    <Compile Include="RotationScaleEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RotationScaleEditor.Designer.cs">
+      <DependentUpon>RotationScaleEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="ScriptManager.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -208,6 +233,12 @@
     </Compile>
     <Compile Include="SpriteBaker.Designer.cs">
       <DependentUpon>SpriteBaker.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TileMapEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TileMapEditor.Designer.cs">
+      <DependentUpon>TileMapEditor.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="AboutHeavyEngine.resx">
       <DependentUpon>AboutHeavyEngine.cs</DependentUpon>
@@ -224,8 +255,14 @@
     <EmbeddedResource Include="BuildProgress.resx">
       <DependentUpon>BuildProgress.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ChildEditor.resx">
+      <DependentUpon>ChildEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CreateObject.resx">
       <DependentUpon>CreateObject.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CreatePackage.resx">
+      <DependentUpon>CreatePackage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Editor.resx">
       <DependentUpon>Editor.cs</DependentUpon>
@@ -276,11 +313,17 @@
     <EmbeddedResource Include="ResourceManager.resx">
       <DependentUpon>ResourceManager.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="RotationScaleEditor.resx">
+      <DependentUpon>RotationScaleEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ScriptManager.resx">
       <DependentUpon>ScriptManager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SpriteBaker.resx">
       <DependentUpon>SpriteBaker.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TileMapEditor.resx">
+      <DependentUpon>TileMapEditor.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="Properties\app.manifest" />

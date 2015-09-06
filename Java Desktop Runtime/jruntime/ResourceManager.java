@@ -1,30 +1,29 @@
-package jruntime;
-
-import java.io.*;
-import java.awt.image.*;
-import javax.imageio.ImageIO;
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+package jruntime;
+
+import java.io.IOException;
+import java.io.InputStream;
+import javax.microedition.lcdui.Image;
 
 /**
  *
  * @author Riju
  */
-public class ResourceManager
+public class ResourceManager 
 {
-	public static BufferedImage findImage(String file_name)
+    public static Image findImage(String file_name)
 	{
-            File fl = new File("/Data/" + encryptFileName(file_name) + ".X");
+            java.io.InputStream fl = (new Object( )).getClass().getResourceAsStream("/Data/" + encryptFileName(file_name) + ".X");
             
-            if (fl.exists() && !fl.isDirectory())
+            if (fl != null)
             {
                 try
                 {
-                    return ImageIO.read(fl);
+                    return Image.createImage(fl);
                 }
                 catch(IOException ax)
                 {
@@ -39,18 +38,11 @@ public class ResourceManager
 		
 	public static InputStream getResourceAsStream(String file_name)
 	{
-            File fl = new File("/Data/" + encryptFileName(file_name) + ".X");
+            InputStream fl = (new Object( )).getClass().getResourceAsStream("/Data/" + encryptFileName(file_name) + ".X");
             
-	    if (fl.exists() && !fl.isDirectory())
+	    if (fl != null)
 	    {
-                try
-                {
-                    return new FileInputStream("/Data/" + encryptFileName(file_name) + ".X");
-                }
-                catch ( FileNotFoundException ax )
-                {
-                    return null;
-                }
+                return fl;
 	    }
 	    else
 	    {
@@ -60,9 +52,9 @@ public class ResourceManager
 		
 	public static String getResource(String file_name)
 	{
-            File fl = new File( "/Data/" + encryptFileName(file_name) + ".X");
+            InputStream fl = (new Object( )).getClass().getResourceAsStream("/Data/" + encryptFileName(file_name) + ".X");
             
-		if (fl.exists() && !fl.isDirectory())
+		if (fl != null)
 		{
                     return "/Data/" + encryptFileName(file_name) + ".X";
 		}
@@ -72,16 +64,26 @@ public class ResourceManager
 		}
 	}
         
-        public static String decryptFileName(String base_string)
+        static boolean isLetter(char c)
+        {
+            if ((c >= 65 && c <= 91) || (c >= 97 && c <= 123))
+            {
+                return true;
+            }
+            
+            return false;
+        }
+        
+       public static String decryptFileName(String base_string)
         {
             String out_string = "";
-            int skip_count = 0;
-            
-            if (base_string == null || base_string == "")
+        int skip_count = 0;
+        
+        if (base_string == null || base_string == "")
             {
                 return "";
             }
-            
+        
         for(int cnt = 0;cnt < base_string.length();cnt++)
         {
             if (skip_count > 0 && skip_count <= 3)
@@ -96,7 +98,7 @@ public class ResourceManager
             
             char cur_ch = base_string.charAt(cnt);
             
-            if (Character.isAlphabetic(cur_ch))
+            if (isLetter(cur_ch))
             {
                 if (base_string.charAt(cnt - 1) == '0')
                 {

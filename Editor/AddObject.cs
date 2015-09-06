@@ -76,7 +76,7 @@ namespace Heavy_Engine
                 }
             }
 
-            Editor.GameObject_Scene game_object = new Editor.GameObject_Scene( );
+            Editor.GameObject_Scene game_object = new Editor.GameObject_Scene();
 
             game_object.instance_name = txt_instance_name.Text;
             game_object.position_x = int.Parse(txt_position_x.Text);
@@ -85,6 +85,7 @@ namespace Heavy_Engine
             game_object.position_scene_x = game_object.position_x + editor_handle.cam_x;
             game_object.position_scene_y = game_object.position_y + editor_handle.cam_y;
             game_object.mainObject = editor_handle.gameObject_list[lb_object.SelectedIndex];
+            game_object.Initialize();
 
             editor_handle.gameObjectScene_list.Add(game_object);
 

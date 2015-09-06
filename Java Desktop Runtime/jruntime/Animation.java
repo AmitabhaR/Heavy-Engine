@@ -1,37 +1,34 @@
-package jruntime;
-
-import jruntime.ResourceManager;
-import java.util.*;
-import java.awt.image.BufferedImage;
-import javax.imageio.*;
-import java.io.*;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+package jruntime;
 
+import java.io.IOException;
+import javax.microedition.lcdui.*;
+import java.util.*;
 /**
  *
  * @author Riju
  */
 public class Animation
 {
-	private ArrayList<BufferedImage> images = null;
-	private float update_delay = 0.0f;
-	private float update_counter  = 0.0f;
+        private Vector images = null;
+	private int update_delay = 0;
+	private int update_counter  = 0;
 	private int current_frame = 0;
 	private boolean canRepeat = false;
         private GameObject_Scene baseGameObject = null;
         private boolean isRunning = false;
         
-	public Animation( GameObject_Scene baseObject , float update_delay , boolean repeat)
+        public Animation( GameObject_Scene baseObject , int update_delay , boolean repeat)
 	{
                 this.baseGameObject = baseObject;
 		this.update_delay = update_delay;
-		update_counter = 0.0f;
+		update_counter = 0;
 		canRepeat = repeat;
-		images = new ArrayList<BufferedImage>( );
+		images = new Vector( );
 	}
 
         public void start( )
@@ -48,11 +45,11 @@ public class Animation
             return isRunning;
         }
         
-	public void addFrame(BufferedImage img)
+	public void addFrame(Image img)
 	{
 		if (img != null)
 		{
-			images.add( img ); 
+			images.addElement( img ); 
 		}
 	}
 
@@ -64,7 +61,7 @@ public class Animation
 			{
                             try
                             {
-				images.add(ImageIO.read(ResourceManager.getResourceAsStream( name ) ));
+				images.addElement(Image.createImage( ResourceManager.getResourceAsStream( name ) ));
                             }
                             catch(IOException ax)
                             {
@@ -74,11 +71,11 @@ public class Animation
 		}
 	}
 
-	public void setFrame(int frame_id, BufferedImage img)
+	public void setFrame(int frame_id,Image img)
 	{
 		if (frame_id > -1 && frame_id < images.size())
 		{
-			images.set(frame_id, img);
+			images.setElementAt(img,frame_id);
 		} 
 	}
 
@@ -86,20 +83,15 @@ public class Animation
 	{
 		if (frame_id > -1 && frame_id < images.size( ))
 		{
-			images.remove(frame_id );
+			images.removeElementAt(frame_id );
 		} 
 	}
 
-	public BufferedImage getFrame()
+	public Image getFrame()
 	{
-		return images.get(current_frame); 
+		return (Image) images.elementAt(current_frame); 
 	}
-        
-        public void stop( )
-        {
-            isRunning = false;
-        }
-        
+
 	public void update( )
 	{
 		if (update_counter >= update_delay)
@@ -109,8 +101,8 @@ public class Animation
 				 if (canRepeat)
 				 {
 					current_frame = 0; 
-                                        baseGameObject.setImage(images.get(current_frame));
-                                        update_counter = 0f;
+                                        baseGameObject.setImage((Image) images.elementAt(current_frame));
+                                        update_counter = 0;
 				 }
                                  else
                                  {
@@ -119,14 +111,14 @@ public class Animation
 			}
 			else
 			{
-                                baseGameObject.setImage(images.get(current_frame));
+                                baseGameObject.setImage((Image) images.elementAt(current_frame));
 				current_frame++;
-                                update_counter = 0f;
+                                update_counter = 0;
 			}
 		}
 		else
 		{
-			update_counter += 1f;
+			update_counter++;
 		}	 
 	}
 }

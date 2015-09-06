@@ -29,6 +29,7 @@ namespace Heavy_Engine
         public NavigationEditor(Editor editor_handle,string path)
         {
             this.editor_handle = editor_handle;
+            editor_handle.Visible = false; 
 
             if (File.Exists(path))
             {
@@ -53,10 +54,16 @@ namespace Heavy_Engine
             this.shortmenu_deletePoint.Click += shortmenu_deletePoint_Click;
             this.shortmenu_deselectPoint.Click += shortmenu_deselectPoint_Click;
             this.shortmenu_selectPoint.Click += shortmenu_selectPoint_Click;
+            this.FormClosing += NavigationEditor_FormClosing;
 
             reloadGameObjects();
 
            if (File.Exists(cur_file)) readNavigationFile(cur_file);
+        }
+
+        void NavigationEditor_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            editor_handle.Visible = true;
         }
 
         void NavigationEditor_KeyDown(object sender, KeyEventArgs e)
@@ -244,7 +251,12 @@ namespace Heavy_Engine
 
             foreach (Editor.GameObject_Scene gameObject in editor_handle.gameObjectScene_list)
             {
-                gameObject_list.Add(gameObject);
+                Editor.GameObject_Scene cp = gameObject;
+
+                cp.position_scene_x = cp.position_x;
+                cp.position_scene_y = cp.position_y;
+
+                gameObject_list.Add(cp);
             }
         }
 

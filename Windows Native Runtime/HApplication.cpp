@@ -1,5 +1,7 @@
 #include "HApplication.h"
 #include <SDL_mixer.h>
+#include <SDL_net.h>
+#include "NetworkManager.h"
 
 static Scene * cur_scene;
 static Window mainWindow;
@@ -64,6 +66,7 @@ void HApplication::Initialize(std::string project_name)
 	IMG_Init(IMG_INIT_PNG);
 	TTF_Init();
 	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+	SDLNet_Init();
 
 	mainWindow = SDL_CreateWindow(project_name.c_str(), 100, 100, 600, 640, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 
@@ -110,7 +113,14 @@ Canvas HApplication::getCanvas()
 
 void HApplication::Exit()
 {
+	NetworkManager::disconnect();
 	SDL_DestroyWindow(mainWindow);
+	Mix_Quit();
+	TTF_Quit();
+	IMG_Quit();
+	SDLNet_Quit();
+	SDL_Quit();
+
 	exit(0x1);
 }
 

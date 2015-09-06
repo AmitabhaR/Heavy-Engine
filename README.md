@@ -32,8 +32,8 @@ For more information , please contact us at help.reostudio@yahoo.com .
 		
 ### Compile BosCompiler
 	1. For compiling BosCompiler , download Orwell Dev-Cpp (http://sourceforge.net/projects/orwelldevcpp/files/latest/download) or download CodeBlocks (http://sourceforge.net/projects/codeblocks/files/Binaries/13.12/Windows/codeblocks-13.12mingw-setup.exe/download).
-	2. Create a new project and all the source files.
-	3. Build the Exe and compiling is finished.
+	2. Create a new project and add all the source files.
+	3. Build the EXE and compiling is finished.
 
 ### Compile C# Runtime
 	1. Create a visual studio class library project .
@@ -51,10 +51,19 @@ For more information , please contact us at help.reostudio@yahoo.com .
 	2. Add the folder / package jruntime to your project for proper compile.
 	3. Compile an get the jar file.
 
+### Compile Windows Native Runtime
+	1. Open VS2013 and create a new static library project for c++.
+	2. Add all the files present in the Windows Native Runtime folder.
+	3. Hit Build button to compile to the final .lib file.
+	
 ### Compile Engine
 	1. Open the Heavy-Engine.sln in the visual studio editor.
 	2. Click re-build to re-make the exe file.
 
+### Finally
+ 	1.Open the folder pre-compiled.
+	2.Copy all the files and folders like that pattern and run the engine.
+	
 # Other Options
 In the pre-compiled folder , we have compiled and given you the latest build . You can download that if you don't want to re-compile the engine.
 
