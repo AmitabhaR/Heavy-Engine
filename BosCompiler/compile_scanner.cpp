@@ -30,7 +30,7 @@ bool Scanner::start( )
 
                     if (!isString && !isComment)
                     {
-                        if (cur_char == " ")
+                        if (cur_char == " " || cur_char == "\t")
                         {
                             if (cur_token != "")
                             {

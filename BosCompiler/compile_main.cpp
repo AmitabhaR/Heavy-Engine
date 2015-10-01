@@ -1,5 +1,5 @@
 /*
-	 BosCompiler v1.1 , Licensed under GNU GPL v2.0 . 
+	 BosCompiler v1.1 , Licensed under GNU GPL v2.0 .
 	 For more information , visit http://www.gnu.org/licenses/gpl-2.0.html .
 	 Developed by Reo Studio @ 2015 - 2016
 */
@@ -36,15 +36,15 @@ bool Compiler::startCompile( )
     }
     else
     {
-    	#if TESTING
-    	
+    	#ifdef TESTING
+
         list<string> tok_list = scanner.getTokens();
 
         for(list<string>::iterator tok = tok_list.begin( );tok != tok_list.end();tok++)
         {
             cout << *tok << endl;
-        } 
-        
+        }
+
         #endif
 
         // Call parser for generating native code.

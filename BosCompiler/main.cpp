@@ -10,12 +10,6 @@
 #include <fstream>
 #include "compile_main.hpp"
 
-#define PLATFORM_WINDOWS 0x1
-#define PLATFORM_JAVA 0x2
-#define PLATFORM_JAVA_ME 0x3
-#define PLATFORM_WINDOWS_NATIVE 0x4
-
-
 using namespace std;
 
 int main(int argc , char * argv[])
@@ -64,22 +58,12 @@ int main(int argc , char * argv[])
         {
             if (cur_action == "gen_code")
             {
-                if (cur_arg == "1")
-                {
-                    gen_code = PLATFORM_WINDOWS;
-                }
-                else if (cur_arg == "2")
-                {
-                    gen_code = PLATFORM_JAVA;
-                }
-                else if ( cur_arg == "3")
-                {
-                	gen_code = PLATFORM_JAVA_ME;
-				}
-				else if ( cur_arg == "4")
-				{
-					gen_code = PLATFORM_WINDOWS_NATIVE;
-				}
+                if (cur_arg == "1") gen_code = PLATFORM_WINDOWS;
+                else if (cur_arg == "2") gen_code = PLATFORM_JAVA;
+                else if (cur_arg == "3") gen_code = PLATFORM_JAVA_ME;
+				else if (cur_arg == "4") gen_code = PLATFORM_WINDOWS_NATIVE;
+				else if (cur_arg == "5") gen_code = PLATFORM_LINUX_NATIVE;
+				else if (cur_arg == "6") gen_code = PLATFORM_GCW_ZERO_NATIVE;
                 else
                 {
                     cout << cur_arg << " is not a valid platform id." << endl;
@@ -104,12 +88,6 @@ int main(int argc , char * argv[])
         cout << "Compile failed!" << endl;
         return 0;
     }
-    else
-    {
-        cout << "Compile successfull!" << endl;
-        return 1;
-    }
-
-
+   
     return 1;
 }

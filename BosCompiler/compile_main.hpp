@@ -18,6 +18,14 @@ using namespace std;
     Note : This class consists of the the compile start function.
 */
 
+#define PLATFORM_WINDOWS 0x1
+#define PLATFORM_JAVA 0x2
+#define PLATFORM_JAVA_ME 0x3
+#define PLATFORM_WINDOWS_NATIVE 0x4
+#define PLATFORM_LINUX_NATIVE 0x5
+#define PLATFORM_GCW_ZERO_NATIVE 0x6
+//#define PLATFORM_WINDOWS_STORE 0x7
+
 class Compiler
 {
 public:

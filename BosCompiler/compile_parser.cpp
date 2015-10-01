@@ -29,126 +29,16 @@ bool Parser::parse(string class_name , string dir)
 
         if (cur_action == "")
         {
-            if (cur_token == "static_var")
+            if (cur_token == "static_var" || cur_token == "var" || cur_token == "set" || cur_token == "add" || cur_token ==  "sub" || cur_token == "mul" || cur_token == "div" || cur_token == "if" || cur_token == "goto" ||
+			    cur_token == "object_setX" || cur_token == "object_setY" || cur_token == "object_getX" || cur_token == "object_getY" || cur_token == "object_setTag" || cur_token == "object_getTag" || cur_token == "object_setStatic" ||	
+				cur_token == "object_getStatic" || cur_token == "object_setRigid" || cur_token == "object_getRigid" || cur_token == "object_setCollider" || cur_token == "object_getCollider" || cur_token == "object_registerScript" ||
+				cur_token == "object_setText" || cur_token == "object_getText" || cur_token == "object_setRotation" || cur_token == "object_getRotation" || cur_token == "object_setScale" || cur_token == "object_getScale" ||
+				cur_token == "scene_addGameObject" || cur_token == "scene_destroyGameObject" || cur_token == "scene_activate" || cur_token == "native" || cur_token == "navigation_start" || cur_token == "animation_start" || 
+				cur_token == "network_startServer" || cur_token == "network_connectServer" || cur_token == "network_createGameObject" || cur_token == "network_updateGameObject" || cur_token == "network_destroyGameObject" || cur_token == "network_disconnect" ||
+				cur_token == "object_addChild")
             {
-                cur_action = "static_var";
+                cur_action = cur_token;
             }
-            else if (cur_token == "var")
-            {
-                cur_action = "var";
-            }
-            else if (cur_token == "set")
-            {
-                cur_action = "set";
-            }
-            else if (cur_token == "add")
-            {
-                cur_action = "add";
-            }
-            else if (cur_token == "sub")
-            {
-                cur_action = "sub";
-            }
-            else if (cur_token == "mul")
-            {
-                cur_action = "mul";
-            }
-            else if (cur_token == "div")
-            {
-                cur_action = "div";
-            }
-            else if (cur_token == "if")
-            {
-                cur_action = "if";
-            }
-            else if (cur_token == "goto")
-            {
-                cur_action = "goto";
-            }
-            else if (cur_token == "object_setX")
-            {
-                cur_action = "object_setX";
-            }
-            else if (cur_token == "object_setY")
-            {
-                cur_action = "object_setY";
-            }
-            else if (cur_token == "object_getX")
-            {
-                cur_action = "object_getX";
-            }
-            else if (cur_token == "object_getY")
-            {
-                cur_action = "object_getY";
-            }
-            else if (cur_token == "object_setTag")
-            {
-                cur_action = "object_setTag";
-            }
-            else if (cur_token == "object_getTag")
-            {
-                cur_action = "object_getTag";
-            }
-            else if (cur_token == "object_setStatic")
-            {
-                cur_action = "object_setStatic";
-            }
-            else if (cur_token == "object_getStatic")
-            {
-                cur_action = "object_getStatic";
-            }
-            else if (cur_token == "object_setRigid")
-            {
-                cur_action = "object_setRigid";
-            }
-            else if (cur_token == "object_getRigid")
-            {
-                cur_action = "object_getRigid";
-            }
-            else if (cur_token == "object_setCollider")
-            {
-                cur_action = "object_setCollider";
-            }
-            else if (cur_token == "object_getCollider")
-            {
-                cur_action = "object_getCollider";
-            }
-            else if (cur_token == "object_registerScript")
-            {
-                cur_action = "object_registerScript";
-            }
-            else if (cur_token == "object_setText")
-            {
-                cur_action = "object_setText";
-            }
-            else if (cur_token == "object_getText")
-            {
-                cur_action = "object_getText";
-            }
-            else if (cur_token == "scene_addGameObject")
-            {
-                cur_action = "scene_addGameObject";
-            }
-            else if (cur_token == "scene_destroyGameObject")
-            {
-                cur_action = "scene_destroyGameObject";
-            }
-            else if (cur_token == "scene_activate")
-            {
-                cur_action = "scene_activate";
-            }
-            else if (cur_token == "native")
-            {
-            	cur_action = "native";
-			}
-			else if (cur_token == "navigation_start")
-			{
-				cur_action = "navigation_start";
-			}
-			else if (cur_token == "animation_start")
-			{
-				cur_action = "animation_start";
-			}
 			else if (cur_token == "import_header")
 			{
 				if (gen_code == 0x4)
@@ -1866,6 +1756,444 @@ bool Parser::parse(string class_name , string dir)
 
                 cur_action = "end_line";
             }
+            else if (cur_action == "object_setRotation")
+            {
+            	 bool isSuccess = false;
+                 bool isVar = false;
+                 bool isThis = false;
+
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type == "string")
+                        {
+                            isSuccess = true;
+                            isVar = true;
+                            break;
+                        }
+                }
+
+                if (!isSuccess)
+                {
+                    if (cur_token.substr(0,1) == "@")
+                    {
+                        isSuccess = true;
+                    }
+                    else if (cur_token == "this")
+                    {
+                        isSuccess = true;
+                        isThis = true;
+                    }
+                }
+
+                if (isSuccess)
+                {
+                	if (gen_code == 1 || gen_code == 2 || gen_code == 3)
+                	{
+                	
+                    if (isThis)
+                    {
+                         cur_code = "gameObject.SetRotation(";
+                    }
+                    else if (!isVar)
+                    {
+                        cur_code = "HApplication.getActiveScene( ).findGameObject(\"" + cur_token.substr(1,cur_token.length() - 1) + "\").SetRotation(";
+                    }
+                    else
+                    {
+                        cur_code = "HApplication.getActiveScene( ).findGameObject(" + cur_token + ").SetRotation(";
+                    }
+                
+					}
+					else
+					{
+						if (isThis)
+                    	{
+                         	cur_code = "pGameObject->setRigid(";
+                    	}
+                    	else if (!isVar)
+                    	{
+                        	cur_code = "HApplication::getActiveScene( )->findGameObject(\"" + cur_token.substr(1,cur_token.length() - 1) + "\")->SetRotation(";
+                    	}
+                    	else
+                    	{
+                        	cur_code = "HApplication::getActiveScene( )->findGameObject(" + cur_token + ")->SetRotation(";
+                    	}
+					}
+                }
+                else
+                {
+                    this->errors.push_back("Error : Object name not found!");
+                }
+
+                cur_comma_param = "object_setRotation_value";
+                cur_action = "comma";
+			}
+			else if (cur_action == "object_setRotation_value")
+			{
+				 bool isSuccess = false;
+
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type != "string")
+                        {
+                            isSuccess = true;
+                            break;
+                        }
+                }
+
+                if (!isSuccess)
+                {
+                    bool isNum = true;
+
+                     for(int cnt = 0;cnt < cur_token.length();cnt++)
+                      {
+                              string cur_dig = cur_token.substr(cnt,1);
+
+                              if (cur_dig != "0" && cur_dig != "1" && cur_dig != "2" && cur_dig != "3" && cur_dig != "4" && cur_dig != "5" && cur_dig != "6" && cur_dig != "7" && cur_dig != "8" && cur_dig != "9")
+                              {
+                                  isSuccess = false;
+                                  isNum = false;
+                                  break;
+                              }
+                        }
+
+                    if (isNum)
+                    {
+                        isSuccess = true;
+                    }
+                }
+
+                if (isSuccess)
+                {
+                    cur_code = cur_token + ");";
+                    this->generated_codes.push_back(cur_code);
+                }
+                else
+                {
+                    this->errors.push_back("Error : Value or Variable Expected!");
+                }
+
+                cur_action = "end_line";
+			}
+			else if (cur_action == "object_getRotation")
+			{
+				bool isSuccess = false;
+
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type != "string")
+                        {
+                            isSuccess = true;
+                            break;
+                        }
+                }
+
+                if (isSuccess)
+                {
+                    cur_code = cur_token + " = ";
+                }
+                else
+                {
+                    this->errors.push_back("Error : Variable not found!");
+                }
+
+                cur_comma_param = "object_getRotation_value";
+                cur_action = "comma";
+			}
+			else if (cur_action == "object_getRotation_value")
+			{
+				 bool isSuccess = false;
+                 bool isVar = false;
+                 bool isThis = false;
+
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type == "string")
+                        {
+                            isSuccess = true;
+                            isVar = true;
+                            break;
+                        }
+                }
+
+                if (!isSuccess)
+                {
+                    if (cur_token.substr(0,1) == "@")
+                    {
+                        isSuccess = true;
+                    }
+                    else if (cur_token == "this")
+                    {
+                        isSuccess = true;
+                        isThis = true;
+                    }
+                }
+
+                if (isSuccess)
+                {
+                	
+                	if (gen_code == 1 || gen_code == 2 || gen_code == 3)
+                	{
+					
+                    if (isThis)
+                    {
+                         cur_code += "gameObject.GetRotation( );";
+                    }
+                    else if (!isVar)
+                    {
+                        cur_code += "HApplication.getActiveScene( ).findGameObject(\"" + cur_token.substr(1,cur_token.length() - 1) + "\").GetRotation( );";
+                    }
+                    else
+                    {
+                        cur_code += "HApplication.getActiveScene( ).findGameObject(" + cur_token + ").GetRotation( );";
+                    }
+
+					}
+					else
+					{
+						if (isThis)
+						{
+                         	cur_code += "pGameObject->GetRotation( );";
+                    	}
+                   	 	else if (!isVar)
+                    	{
+                        	cur_code += "HApplication::getActiveScene( )->findGameObject(\"" + cur_token.substr(1,cur_token.length() - 1) + "\")->GetRotation( );";
+                    	}
+                    	else
+                    	{
+                        	cur_code += "HApplication::getActiveScene( )->findGameObject(" + cur_token + ")->GetRotation();";
+                    	}
+					}
+				
+
+                    this->generated_codes.push_back(cur_code);
+                }
+                else
+                {
+                    this->errors.push_back("Error : Object name not found!");
+                }
+
+                cur_action = "end_line";
+			}
+			else if (cur_action == "object_setScale")
+			{
+				 bool isSuccess = false;
+                 bool isVar = false;
+                 bool isThis = false;
+
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type == "string")
+                        {
+                            isSuccess = true;
+                            isVar = true;
+                            break;
+                        }
+                }
+
+                if (!isSuccess)
+                {
+                    if (cur_token.substr(0,1) == "@")
+                    {
+                        isSuccess = true;
+                    }
+                    else if (cur_token == "this")
+                    {
+                        isSuccess = true;
+                        isThis = true;
+                    }
+                }
+
+                if (isSuccess)
+                {
+                	if (gen_code == 1 || gen_code == 2 || gen_code == 3)
+                	{
+                	
+                    if (isThis)
+                    {
+                         cur_code = "gameObject.SetScale(";
+                    }
+                    else if (!isVar)
+                    {
+                        cur_code = "HApplication.getActiveScene( ).findGameObject(\"" + cur_token.substr(1,cur_token.length() - 1) + "\").SetScale(";
+                    }
+                    else
+                    {
+                        cur_code = "HApplication.getActiveScene( ).findGameObject(" + cur_token + ").SetScale(";
+                    }
+                
+					}
+					else
+					{
+						if (isThis)
+                    	{
+                         	cur_code = "pGameObject->setScale(";
+                    	}
+                    	else if (!isVar)
+                    	{
+                        	cur_code = "HApplication::getActiveScene( )->findGameObject(\"" + cur_token.substr(1,cur_token.length() - 1) + "\")->SetScale(";
+                    	}
+                    	else
+                    	{
+                        	cur_code = "HApplication::getActiveScene( )->findGameObject(" + cur_token + ")->SetScale(";
+                    	}
+					}
+                }
+                else
+                {
+                    this->errors.push_back("Error : Object name not found!");
+                }
+
+                cur_comma_param = "object_setScale_value";
+                cur_action = "comma";
+			}
+			else if (cur_action == "object_setScale_value")
+			{
+				bool isSuccess = false;
+
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type != "string")
+                        {
+                            isSuccess = true;
+                            break;
+                        }
+                }
+
+                if (!isSuccess)
+                {
+                    bool isNum = true;
+
+                     for(int cnt = 0;cnt < cur_token.length();cnt++)
+                      {
+                              string cur_dig = cur_token.substr(cnt,1);
+
+                              if (cur_dig != "0" && cur_dig != "1" && cur_dig != "2" && cur_dig != "3" && cur_dig != "4" && cur_dig != "5" && cur_dig != "6" && cur_dig != "7" && cur_dig != "8" && cur_dig != "9")
+                              {
+                                  isSuccess = false;
+                                  isNum = false;
+                                  break;
+                              }
+                        }
+
+                    if (isNum)
+                    {
+                        isSuccess = true;
+                    }
+                }
+
+                if (isSuccess)
+                {
+                    cur_code = cur_token + ");";
+                    this->generated_codes.push_back(cur_code);
+                }
+                else
+                {
+                    this->errors.push_back("Error : Value or Variable Expected!");
+                }
+
+                cur_action = "end_line";
+			}
+			else if (cur_action == "object_getScale")
+			{
+				bool isSuccess = false;
+
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type != "string")
+                        {
+                            isSuccess = true;
+                            break;
+                        }
+                }
+
+                if (isSuccess)
+                {
+                    cur_code = cur_token + " = ";
+                }
+                else
+                {
+                    this->errors.push_back("Error : Variable not found!");
+                }
+
+                cur_comma_param = "object_getScale_value";
+                cur_action = "comma";
+			}
+			else if (cur_action == "object_getScale_value")
+			{
+				 bool isSuccess = false;
+                 bool isVar = false;
+                 bool isThis = false;
+
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type == "string")
+                        {
+                            isSuccess = true;
+                            isVar = true;
+                            break;
+                        }
+                }
+
+                if (!isSuccess)
+                {
+                    if (cur_token.substr(0,1) == "@")
+                    {
+                        isSuccess = true;
+                    }
+                    else if (cur_token == "this")
+                    {
+                        isSuccess = true;
+                        isThis = true;
+                    }
+                }
+
+                if (isSuccess)
+                {
+                	
+                	if (gen_code == 1 || gen_code == 2 || gen_code == 3)
+                	{
+					
+                    if (isThis)
+                    {
+                         cur_code += "gameObject.GetScale( );";
+                    }
+                    else if (!isVar)
+                    {
+                        cur_code += "HApplication.getActiveScene( ).findGameObject(\"" + cur_token.substr(1,cur_token.length() - 1) + "\").GetScale( );";
+                    }
+                    else
+                    {
+                        cur_code += "HApplication.getActiveScene( ).findGameObject(" + cur_token + ").GetScale( );";
+                    }
+
+					}
+					else
+					{
+						if (isThis)
+						{
+                         	cur_code += "pGameObject->GetScale( );";
+                    	}
+                   	 	else if (!isVar)
+                    	{
+                        	cur_code += "HApplication::getActiveScene( )->findGameObject(\"" + cur_token.substr(1,cur_token.length() - 1) + "\")->GetScale( );";
+                    	}
+                    	else
+                    	{
+                        	cur_code += "HApplication::getActiveScene( )->findGameObject(" + cur_token + ")->GetScale();";
+                    	}
+					}
+				
+
+                    this->generated_codes.push_back(cur_code);
+                }
+                else
+                {
+                    this->errors.push_back("Error : Object name not found!");
+                }
+
+                cur_action = "end_line";
+			}
             else if (cur_action == "object_setCollider")
             {
                  bool isSuccess = false;
@@ -1914,7 +2242,7 @@ bool Parser::parse(string class_name , string dir)
                     }
                     
                 	}
-                	else
+                	else 
                 	{
                 		if (isThis)
                     	{
@@ -2858,7 +3186,7 @@ bool Parser::parse(string class_name , string dir)
 
                 if (isSuccess)
                 {
-                    if (this->gen_code != 0x1)  this->generated_codes.push_back("goto " + cur_token + ";");
+                    if (this->gen_code != 0x2 && this->gen_code != 0x3)  this->generated_codes.push_back("goto " + cur_token + ";");
                 }
                 else
                 {
@@ -3163,6 +3491,242 @@ bool Parser::parse(string class_name , string dir)
 
                 cur_action = "end_line";
 			}
+			else if (cur_action == "network_startServer")
+			{
+				 bool isSuccess = false;
+
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type != "string")
+                        {
+                            isSuccess = true;
+                            break;
+                        }
+                }
+
+                if (!isSuccess)
+                {
+                    bool isNum = true;
+
+                     for(int cnt = 0;cnt < cur_token.length();cnt++)
+                      {
+                              string cur_dig = cur_token.substr(cnt,1);
+
+                              if (cur_dig != "0" && cur_dig != "1" && cur_dig != "2" && cur_dig != "3" && cur_dig != "4" && cur_dig != "5" && cur_dig != "6" && cur_dig != "7" && cur_dig != "8" && cur_dig != "9")
+                              {
+                                  isSuccess = false;
+                                  isNum = false;
+                                  break;
+                              }
+                        }
+
+                    if (isNum)
+                    {
+                        isSuccess = true;
+                    }
+                }
+
+                if (isSuccess)
+                {
+                	if (this->gen_code == 1 || this->gen_code == 2 || this->gen_code == 3) cur_code = "NetworkManager.startServer(" + cur_token + ");";
+                	else cur_code = "NetworkManager::startServer(" + cur_token + ");";
+                	
+                    this->generated_codes.push_back(cur_code);
+                }
+                else
+                {
+                    this->errors.push_back("Error : Value or Variable Expected!");
+                }
+
+                cur_action = "end_line";
+			}
+			else if (cur_action == "network_connectServer")
+			{
+				 bool isSuccess = false;
+                 bool isVar = false;
+            
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type == "string")
+                        {
+                            isSuccess = true;
+                            isVar = true;
+                            break;
+                        }
+                }
+
+                if (!isSuccess)
+                {
+                    if (cur_token.substr(0,1) == "@")
+                    {
+                        isSuccess = true;
+                    }
+                }
+
+                if (isSuccess)
+                {
+                	if (gen_code == 1 || gen_code == 2 || gen_code == 3)
+                	{
+                	
+                    if (!isVar)
+                    {
+                    	cur_code = "NetworkManager.connectServer(\"" + cur_token.substr(1,cur_token.length() - 1) + "\",";
+                    }
+                    else
+                    {
+                        cur_code = "NetworkManager::connectServer(" + cur_token + ",";
+                    }
+                    
+                	}
+                	else
+                	{
+                    	if (!isVar)
+                    	{
+                    		cur_code = "NetworkManager::connectServer(\"" + cur_token.substr(1,cur_token.length() - 1) + "\",";
+                    	}
+                    	else
+                    	{
+                        	cur_code = "NetworkManager::connectServer(" + cur_token + ",";
+                    	}
+					}
+                }
+                else
+                {
+                    this->errors.push_back("Error : Object name not found!");
+                }
+
+                cur_comma_param = "network_connectServer_port";
+                cur_action = "comma";
+			}
+			else if (cur_action == "network_connectServer_port")
+			{
+				 bool isSuccess = false;
+
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type != "string")
+                        {
+                            isSuccess = true;
+                            break;
+                        }
+                }
+
+                if (!isSuccess)
+                {
+                    bool isNum = true;
+
+                     for(int cnt = 0;cnt < cur_token.length();cnt++)
+                      {
+                              string cur_dig = cur_token.substr(cnt,1);
+
+                              if (cur_dig != "0" && cur_dig != "1" && cur_dig != "2" && cur_dig != "3" && cur_dig != "4" && cur_dig != "5" && cur_dig != "6" && cur_dig != "7" && cur_dig != "8" && cur_dig != "9")
+                              {
+                                  isSuccess = false;
+                                  isNum = false;
+                                  break;
+                              }
+                        }
+
+                    if (isNum)
+                    {
+                        isSuccess = true;
+                    }
+                }
+
+                if (isSuccess)
+                {
+                	cur_code += "," + cur_token + ");";
+                	
+                    this->generated_codes.push_back(cur_code);
+                }
+                else
+                {
+                    this->errors.push_back("Error : Value or Variable Expected!");
+                }
+
+                cur_action = "end_line";			
+			}
+			else if (cur_action == "network_createGameObject")
+			{
+				if (gen_code == 1 || gen_code == 2 || gen_code == 3 ) this->generated_codes.push_back("NetworkManager.createGameObject(gameObject);");
+				else this->generated_codes.push_back("NetworkManager::createGameObject(pGameObject);");
+				cur_action = "end_line";
+			}
+			else if (cur_action == "network_updateGameObject")
+			{
+				if (gen_code == 1 || gen_code == 2 || gen_code == 3 ) this->generated_codes.push_back("NetworkManager.updateGameObject(gameObject);");
+				else this->generated_codes.push_back("NetworkManager::updateGameObject(pGameObject);");
+				cur_action = "end_line";
+			}
+			else if (cur_action == "network_destroyGameObject")
+			{
+				if (gen_code == 1 || gen_code == 2 || gen_code == 3 ) this->generated_codes.push_back("NetworkManager.destroyGameObject(gameObject);");
+				else this->generated_codes.push_back("NetworkManager::destroyGameObject(pGameObject);");
+				cur_action = "end_line";
+			}
+			else if (cur_action == "network_disconnet")
+			{
+				if (gen_code == 1 || gen_code == 2 || gen_code == 3 ) this->generated_codes.push_back("NetworkManager.disconnect();");
+				else this->generated_codes.push_back("NetworkManager::disconnect();");
+				cur_action = "end_line";
+			}
+			else if (cur_action == "object_addChild")
+			{
+				bool isSuccess = false;
+                bool isVar = false;
+            
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type == "string")
+                        {
+                            isSuccess = true;
+                            isVar = true;
+                            break;
+                        }
+                }
+
+                if (!isSuccess)
+                {
+                    if (cur_token.substr(0,1) == "@")
+                    {
+                        isSuccess = true;
+                    }
+                }
+
+                if (isSuccess)
+                {
+                	if (gen_code == 1 || gen_code == 2 || gen_code == 3)
+                	{
+                	
+                    if (!isVar)
+                    {
+                    	cur_code = "gameObject.AddChild(\"" + cur_token.substr(1,cur_token.length() - 1) + "\");";
+                    }
+                    else
+                    {
+                        cur_code = "gameObject.AddChild(" + cur_token + ");";
+                    }
+                    
+                	}
+                	else
+                	{
+                    	if (!isVar)
+                    	{
+                    		cur_code = "pGameObject->AddChild(\"" + cur_token.substr(1,cur_token.length() - 1) + "\");";
+                    	}
+                    	else
+                    	{
+                        	cur_code = "pGameObject->AddChild(" + cur_token + ");";
+                    	}
+					}
+                }
+                else
+                {
+                    this->errors.push_back("Error : Object name not found!");
+                }
+
+                cur_action = "end_line";
+			} 
             else if (cur_action == "native")
             {
             	if (cur_token.substr(0,1) == "@")
@@ -3219,9 +3783,9 @@ bool Parser::parse(string class_name , string dir)
         this->generated_codes.push_back("{");
         this->generated_codes.push_back("GameObject_Scene ___o___ = null;");
     }
-    else if (this->gen_code == 4)
+    else if (this->gen_code == 4 || this->gen_code == 5 || this->gen_code == 6)
     {
-    	// Native Windows / C++ Code.
+    	// Native C++ Code.
     	// Generate header file.
 		string header_file_nm = dir + "\\" + class_name + ".h";
     	ofstream header_stm(header_file_nm.c_str());
@@ -3305,140 +3869,24 @@ void Parser::parseIf( list<Variable> & var_list, list<string>::iterator & token 
     list<Variable> variable_list; // Static variable list.
     Variable def_var;
 	
-	for(list<Variable>::iterator var = var_list.begin();var != var_list.end();var++)
-	{
-		if (var->isStatic)
-		{
-			variable_list.push_back(*var);
-		}
-	}
+	for(list<Variable>::iterator var = var_list.begin();var != var_list.end();var++) variable_list.push_back(*var);
 	
     for(;token != tokens.end( );token++)
     {
         string cur_token = *token;
-
-        if (cur_action == "")
+		
+		if (cur_action == "")
         {
-            if (cur_token == "var")
+            if (cur_token == "var" || cur_token == "set" || cur_token == "add" || cur_token ==  "sub" || cur_token == "mul" || cur_token == "div" || cur_token == "if" || cur_token == "goto" ||
+			    cur_token == "object_setX" || cur_token == "object_setY" || cur_token == "object_getX" || cur_token == "object_getY" || cur_token == "object_setTag" || cur_token == "object_getTag" || cur_token == "object_setStatic" ||	
+				cur_token == "object_getStatic" || cur_token == "object_setRigid" || cur_token == "object_getRigid" || cur_token == "object_setCollider" || cur_token == "object_getCollider" || cur_token == "object_registerScript" ||
+				cur_token == "object_setText" || cur_token == "object_getText" || cur_token == "object_setRotation" || cur_token == "object_getRotation" || cur_token == "object_setScale" || cur_token == "object_getScale" ||
+				cur_token == "scene_addGameObject" || cur_token == "scene_destroyGameObject" || cur_token == "scene_activate" || cur_token == "native" || cur_token == "navigation_start" || cur_token == "animation_start" || 
+				cur_token == "network_startServer" || cur_token == "network_connectServer" || cur_token == "network_createGameObject" || cur_token == "network_updateGameObject" || cur_token == "network_destroyGameObject" || cur_token == "network_disconnect" ||
+				cur_token == "object_addChild")
             {
-                cur_action = "var";
+                cur_action = cur_token;
             }
-            else if (cur_token == "set")
-            {
-                cur_action = "set";
-            }
-            else if (cur_token == "add")
-            {
-                cur_action = "add";
-            }
-            else if (cur_token == "sub")
-            {
-                cur_action = "sub";
-            }
-            else if (cur_token == "mul")
-            {
-                cur_action = "mul";
-            }
-            else if (cur_token == "div")
-            {
-                cur_action = "div";
-            }
-            else if (cur_token == "if")
-            {
-                cur_action = "if";
-            }
-            else if (cur_token == "goto")
-            {
-                cur_action = "goto";
-            }
-            else if (cur_token == "object_setX")
-            {
-                cur_action = "object_setX";
-            }
-            else if (cur_token == "object_setY")
-            {
-                cur_action = "object_setY";
-            }
-            else if (cur_token == "object_getX")
-            {
-                cur_action = "object_getX";
-            }
-            else if (cur_token == "object_getY")
-            {
-                cur_action = "object_getY";
-            }
-            else if (cur_token == "object_setTag")
-            {
-                cur_action = "object_setTag";
-            }
-            else if (cur_token == "object_getTag")
-            {
-                cur_action = "object_getTag";
-            }
-            else if (cur_token == "object_setStatic")
-            {
-                cur_action = "object_setStatic";
-            }
-            else if (cur_token == "object_getStatic")
-            {
-                cur_action = "object_getStatic";
-            }
-            else if (cur_token == "object_setRigid")
-            {
-                cur_action = "object_setRigid";
-            }
-            else if (cur_token == "object_getRigid")
-            {
-                cur_action = "object_getRigid";
-            }
-            else if (cur_token == "object_setCollider")
-            {
-                cur_action = "object_setCollider";
-            }
-            else if (cur_token == "object_getCollider")
-            {
-                cur_action = "object_getCollider";
-            }
-            else if (cur_token == "object_registerScript")
-            {
-                cur_action = "object_registerScript";
-            }
-            else if (cur_token == "object_setText")
-            {
-                cur_action = "object_setText";
-            }
-            else if (cur_token == "object_getText")
-            {
-                cur_action = "object_getText";
-            }
-            else if (cur_token == "scene_addGameObject")
-            {
-                cur_action = "scene_addGameObject";
-            }
-            else if (cur_token == "scene_destroyGameObject")
-            {
-                cur_action = "scene_destroyGameObject";
-            }
-            else if (cur_token == "scene_activate")
-            {
-                cur_action = "scene_activate";
-            }
-            else if (cur_token == "native")
-            {
-            	cur_action = "native";
-			}
-			else if (cur_token == "navigation_start")
-			{
-				cur_action = "navigation_start";
-			}
-			else if (cur_token == "animation_start")
-			{
-				cur_action = "animation_start";
-			}
-			else if (cur_token == "end")
-			{
-				return;
-			}
             else
             {
                 if (cur_token.substr(cur_token.length() - 1,1) == ":")
@@ -5084,6 +5532,444 @@ void Parser::parseIf( list<Variable> & var_list, list<string>::iterator & token 
 
                 cur_action = "end_line";
             }
+            else if (cur_action == "object_setRotation")
+            {
+            	 bool isSuccess = false;
+                 bool isVar = false;
+                 bool isThis = false;
+
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type == "string")
+                        {
+                            isSuccess = true;
+                            isVar = true;
+                            break;
+                        }
+                }
+
+                if (!isSuccess)
+                {
+                    if (cur_token.substr(0,1) == "@")
+                    {
+                        isSuccess = true;
+                    }
+                    else if (cur_token == "this")
+                    {
+                        isSuccess = true;
+                        isThis = true;
+                    }
+                }
+
+                if (isSuccess)
+                {
+                	if (gen_code == 1 || gen_code == 2 || gen_code == 3)
+                	{
+                	
+                    if (isThis)
+                    {
+                         cur_code = "gameObject.SetRotation(";
+                    }
+                    else if (!isVar)
+                    {
+                        cur_code = "HApplication.getActiveScene( ).findGameObject(\"" + cur_token.substr(1,cur_token.length() - 1) + "\").SetRotation(";
+                    }
+                    else
+                    {
+                        cur_code = "HApplication.getActiveScene( ).findGameObject(" + cur_token + ").SetRotation(";
+                    }
+                
+					}
+					else
+					{
+						if (isThis)
+                    	{
+                         	cur_code = "pGameObject->setRigid(";
+                    	}
+                    	else if (!isVar)
+                    	{
+                        	cur_code = "HApplication::getActiveScene( )->findGameObject(\"" + cur_token.substr(1,cur_token.length() - 1) + "\")->SetRotation(";
+                    	}
+                    	else
+                    	{
+                        	cur_code = "HApplication::getActiveScene( )->findGameObject(" + cur_token + ")->SetRotation(";
+                    	}
+					}
+                }
+                else
+                {
+                    this->errors.push_back("Error : Object name not found!");
+                }
+
+                cur_comma_param = "object_setRotation_value";
+                cur_action = "comma";
+			}
+			else if (cur_action == "object_setRotation_value")
+			{
+				 bool isSuccess = false;
+
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type != "string")
+                        {
+                            isSuccess = true;
+                            break;
+                        }
+                }
+
+                if (!isSuccess)
+                {
+                    bool isNum = true;
+
+                     for(int cnt = 0;cnt < cur_token.length();cnt++)
+                      {
+                              string cur_dig = cur_token.substr(cnt,1);
+
+                              if (cur_dig != "0" && cur_dig != "1" && cur_dig != "2" && cur_dig != "3" && cur_dig != "4" && cur_dig != "5" && cur_dig != "6" && cur_dig != "7" && cur_dig != "8" && cur_dig != "9")
+                              {
+                                  isSuccess = false;
+                                  isNum = false;
+                                  break;
+                              }
+                        }
+
+                    if (isNum)
+                    {
+                        isSuccess = true;
+                    }
+                }
+
+                if (isSuccess)
+                {
+                    cur_code = cur_token + ");";
+                    this->generated_codes.push_back(cur_code);
+                }
+                else
+                {
+                    this->errors.push_back("Error : Value or Variable Expected!");
+                }
+
+                cur_action = "end_line";
+			}
+			else if (cur_action == "object_getRotation")
+			{
+				bool isSuccess = false;
+
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type != "string")
+                        {
+                            isSuccess = true;
+                            break;
+                        }
+                }
+
+                if (isSuccess)
+                {
+                    cur_code = cur_token + " = ";
+                }
+                else
+                {
+                    this->errors.push_back("Error : Variable not found!");
+                }
+
+                cur_comma_param = "object_getRotation_value";
+                cur_action = "comma";
+			}
+			else if (cur_action == "object_getRotation_value")
+			{
+				 bool isSuccess = false;
+                 bool isVar = false;
+                 bool isThis = false;
+
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type == "string")
+                        {
+                            isSuccess = true;
+                            isVar = true;
+                            break;
+                        }
+                }
+
+                if (!isSuccess)
+                {
+                    if (cur_token.substr(0,1) == "@")
+                    {
+                        isSuccess = true;
+                    }
+                    else if (cur_token == "this")
+                    {
+                        isSuccess = true;
+                        isThis = true;
+                    }
+                }
+
+                if (isSuccess)
+                {
+                	
+                	if (gen_code == 1 || gen_code == 2 || gen_code == 3)
+                	{
+					
+                    if (isThis)
+                    {
+                         cur_code += "gameObject.GetRotation( );";
+                    }
+                    else if (!isVar)
+                    {
+                        cur_code += "HApplication.getActiveScene( ).findGameObject(\"" + cur_token.substr(1,cur_token.length() - 1) + "\").GetRotation( );";
+                    }
+                    else
+                    {
+                        cur_code += "HApplication.getActiveScene( ).findGameObject(" + cur_token + ").GetRotation( );";
+                    }
+
+					}
+					else
+					{
+						if (isThis)
+						{
+                         	cur_code += "pGameObject->GetRotation( );";
+                    	}
+                   	 	else if (!isVar)
+                    	{
+                        	cur_code += "HApplication::getActiveScene( )->findGameObject(\"" + cur_token.substr(1,cur_token.length() - 1) + "\")->GetRotation( );";
+                    	}
+                    	else
+                    	{
+                        	cur_code += "HApplication::getActiveScene( )->findGameObject(" + cur_token + ")->GetRotation();";
+                    	}
+					}
+				
+
+                    this->generated_codes.push_back(cur_code);
+                }
+                else
+                {
+                    this->errors.push_back("Error : Object name not found!");
+                }
+
+                cur_action = "end_line";
+			}
+			else if (cur_action == "object_setScale")
+			{
+				 bool isSuccess = false;
+                 bool isVar = false;
+                 bool isThis = false;
+
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type == "string")
+                        {
+                            isSuccess = true;
+                            isVar = true;
+                            break;
+                        }
+                }
+
+                if (!isSuccess)
+                {
+                    if (cur_token.substr(0,1) == "@")
+                    {
+                        isSuccess = true;
+                    }
+                    else if (cur_token == "this")
+                    {
+                        isSuccess = true;
+                        isThis = true;
+                    }
+                }
+
+                if (isSuccess)
+                {
+                	if (gen_code == 1 || gen_code == 2 || gen_code == 3)
+                	{
+                	
+                    if (isThis)
+                    {
+                         cur_code = "gameObject.SetScale(";
+                    }
+                    else if (!isVar)
+                    {
+                        cur_code = "HApplication.getActiveScene( ).findGameObject(\"" + cur_token.substr(1,cur_token.length() - 1) + "\").SetScale(";
+                    }
+                    else
+                    {
+                        cur_code = "HApplication.getActiveScene( ).findGameObject(" + cur_token + ").SetScale(";
+                    }
+                
+					}
+					else
+					{
+						if (isThis)
+                    	{
+                         	cur_code = "pGameObject->setScale(";
+                    	}
+                    	else if (!isVar)
+                    	{
+                        	cur_code = "HApplication::getActiveScene( )->findGameObject(\"" + cur_token.substr(1,cur_token.length() - 1) + "\")->SetScale(";
+                    	}
+                    	else
+                    	{
+                        	cur_code = "HApplication::getActiveScene( )->findGameObject(" + cur_token + ")->SetScale(";
+                    	}
+					}
+                }
+                else
+                {
+                    this->errors.push_back("Error : Object name not found!");
+                }
+
+                cur_comma_param = "object_setScale_value";
+                cur_action = "comma";
+			}
+			else if (cur_action == "object_setScale_value")
+			{
+				bool isSuccess = false;
+
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type != "string")
+                        {
+                            isSuccess = true;
+                            break;
+                        }
+                }
+
+                if (!isSuccess)
+                {
+                    bool isNum = true;
+
+                     for(int cnt = 0;cnt < cur_token.length();cnt++)
+                      {
+                              string cur_dig = cur_token.substr(cnt,1);
+
+                              if (cur_dig != "0" && cur_dig != "1" && cur_dig != "2" && cur_dig != "3" && cur_dig != "4" && cur_dig != "5" && cur_dig != "6" && cur_dig != "7" && cur_dig != "8" && cur_dig != "9")
+                              {
+                                  isSuccess = false;
+                                  isNum = false;
+                                  break;
+                              }
+                        }
+
+                    if (isNum)
+                    {
+                        isSuccess = true;
+                    }
+                }
+
+                if (isSuccess)
+                {
+                    cur_code = cur_token + ");";
+                    this->generated_codes.push_back(cur_code);
+                }
+                else
+                {
+                    this->errors.push_back("Error : Value or Variable Expected!");
+                }
+
+                cur_action = "end_line";
+			}
+			else if (cur_action == "object_getScale")
+			{
+				bool isSuccess = false;
+
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type != "string")
+                        {
+                            isSuccess = true;
+                            break;
+                        }
+                }
+
+                if (isSuccess)
+                {
+                    cur_code = cur_token + " = ";
+                }
+                else
+                {
+                    this->errors.push_back("Error : Variable not found!");
+                }
+
+                cur_comma_param = "object_getScale_value";
+                cur_action = "comma";
+			}
+			else if (cur_action == "object_getScale_value")
+			{
+				 bool isSuccess = false;
+                 bool isVar = false;
+                 bool isThis = false;
+
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type == "string")
+                        {
+                            isSuccess = true;
+                            isVar = true;
+                            break;
+                        }
+                }
+
+                if (!isSuccess)
+                {
+                    if (cur_token.substr(0,1) == "@")
+                    {
+                        isSuccess = true;
+                    }
+                    else if (cur_token == "this")
+                    {
+                        isSuccess = true;
+                        isThis = true;
+                    }
+                }
+
+                if (isSuccess)
+                {
+                	
+                	if (gen_code == 1 || gen_code == 2 || gen_code == 3)
+                	{
+					
+                    if (isThis)
+                    {
+                         cur_code += "gameObject.GetScale( );";
+                    }
+                    else if (!isVar)
+                    {
+                        cur_code += "HApplication.getActiveScene( ).findGameObject(\"" + cur_token.substr(1,cur_token.length() - 1) + "\").GetScale( );";
+                    }
+                    else
+                    {
+                        cur_code += "HApplication.getActiveScene( ).findGameObject(" + cur_token + ").GetScale( );";
+                    }
+
+					}
+					else
+					{
+						if (isThis)
+						{
+                         	cur_code += "pGameObject->GetScale( );";
+                    	}
+                   	 	else if (!isVar)
+                    	{
+                        	cur_code += "HApplication::getActiveScene( )->findGameObject(\"" + cur_token.substr(1,cur_token.length() - 1) + "\")->GetScale( );";
+                    	}
+                    	else
+                    	{
+                        	cur_code += "HApplication::getActiveScene( )->findGameObject(" + cur_token + ")->GetScale();";
+                    	}
+					}
+				
+
+                    this->generated_codes.push_back(cur_code);
+                }
+                else
+                {
+                    this->errors.push_back("Error : Object name not found!");
+                }
+
+                cur_action = "end_line";
+			}
             else if (cur_action == "object_setCollider")
             {
                  bool isSuccess = false;
@@ -5132,7 +6018,7 @@ void Parser::parseIf( list<Variable> & var_list, list<string>::iterator & token 
                     }
                     
                 	}
-                	else
+                	else 
                 	{
                 		if (isThis)
                     	{
@@ -5629,7 +6515,7 @@ void Parser::parseIf( list<Variable> & var_list, list<string>::iterator & token 
                 	
                 	if (gen_code == 1 || gen_code == 2 || gen_code == 3)
                 	{
-                	
+                
                     if (!isVar)
                     {
                         this->generated_codes.push_back("___o___.instance_name = \"" + cur_token.substr(1,cur_token.length() - 1) + "\";");
@@ -6076,7 +6962,7 @@ void Parser::parseIf( list<Variable> & var_list, list<string>::iterator & token 
 
                 if (isSuccess)
                 {
-                    if (this->gen_code != 0x1)  this->generated_codes.push_back("goto " + cur_token + ";");
+                    if (this->gen_code != 0x2 && this->gen_code != 0x3)  this->generated_codes.push_back("goto " + cur_token + ";");
                 }
                 else
                 {
@@ -6381,6 +7267,242 @@ void Parser::parseIf( list<Variable> & var_list, list<string>::iterator & token 
 
                 cur_action = "end_line";
 			}
+			else if (cur_action == "network_startServer")
+			{
+				 bool isSuccess = false;
+
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type != "string")
+                        {
+                            isSuccess = true;
+                            break;
+                        }
+                }
+
+                if (!isSuccess)
+                {
+                    bool isNum = true;
+
+                     for(int cnt = 0;cnt < cur_token.length();cnt++)
+                      {
+                              string cur_dig = cur_token.substr(cnt,1);
+
+                              if (cur_dig != "0" && cur_dig != "1" && cur_dig != "2" && cur_dig != "3" && cur_dig != "4" && cur_dig != "5" && cur_dig != "6" && cur_dig != "7" && cur_dig != "8" && cur_dig != "9")
+                              {
+                                  isSuccess = false;
+                                  isNum = false;
+                                  break;
+                              }
+                        }
+
+                    if (isNum)
+                    {
+                        isSuccess = true;
+                    }
+                }
+
+                if (isSuccess)
+                {
+                	if (this->gen_code == 1 || this->gen_code == 2 || this->gen_code == 3) cur_code = "NetworkManager.startServer(" + cur_token + ");";
+                	else cur_code = "NetworkManager::startServer(" + cur_token + ");";
+                	
+                    this->generated_codes.push_back(cur_code);
+                }
+                else
+                {
+                    this->errors.push_back("Error : Value or Variable Expected!");
+                }
+
+                cur_action = "end_line";
+			}
+			else if (cur_action == "network_connectServer")
+			{
+				 bool isSuccess = false;
+                 bool isVar = false;
+            
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type == "string")
+                        {
+                            isSuccess = true;
+                            isVar = true;
+                            break;
+                        }
+                }
+
+                if (!isSuccess)
+                {
+                    if (cur_token.substr(0,1) == "@")
+                    {
+                        isSuccess = true;
+                    }
+                }
+
+                if (isSuccess)
+                {
+                	if (gen_code == 1 || gen_code == 2 || gen_code == 3)
+                	{
+                	
+                    if (!isVar)
+                    {
+                    	cur_code = "NetworkManager.connectServer(\"" + cur_token.substr(1,cur_token.length() - 1) + "\",";
+                    }
+                    else
+                    {
+                        cur_code = "NetworkManager::connectServer(" + cur_token + ",";
+                    }
+                    
+                	}
+                	else
+                	{
+                    	if (!isVar)
+                    	{
+                    		cur_code = "NetworkManager::connectServer(\"" + cur_token.substr(1,cur_token.length() - 1) + "\",";
+                    	}
+                    	else
+                    	{
+                        	cur_code = "NetworkManager::connectServer(" + cur_token + ",";
+                    	}
+					}
+                }
+                else
+                {
+                    this->errors.push_back("Error : Object name not found!");
+                }
+
+                cur_comma_param = "network_connectServer_port";
+                cur_action = "comma";
+			}
+			else if (cur_action == "network_connectServer_port")
+			{
+				 bool isSuccess = false;
+
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type != "string")
+                        {
+                            isSuccess = true;
+                            break;
+                        }
+                }
+
+                if (!isSuccess)
+                {
+                    bool isNum = true;
+
+                     for(int cnt = 0;cnt < cur_token.length();cnt++)
+                      {
+                              string cur_dig = cur_token.substr(cnt,1);
+
+                              if (cur_dig != "0" && cur_dig != "1" && cur_dig != "2" && cur_dig != "3" && cur_dig != "4" && cur_dig != "5" && cur_dig != "6" && cur_dig != "7" && cur_dig != "8" && cur_dig != "9")
+                              {
+                                  isSuccess = false;
+                                  isNum = false;
+                                  break;
+                              }
+                        }
+
+                    if (isNum)
+                    {
+                        isSuccess = true;
+                    }
+                }
+
+                if (isSuccess)
+                {
+                	cur_code += "," + cur_token + ");";
+                	
+                    this->generated_codes.push_back(cur_code);
+                }
+                else
+                {
+                    this->errors.push_back("Error : Value or Variable Expected!");
+                }
+
+                cur_action = "end_line";			
+			}
+			else if (cur_action == "network_createGameObject")
+			{
+				if (gen_code == 1 || gen_code == 2 || gen_code == 3 ) this->generated_codes.push_back("NetworkManager.createGameObject(gameObject);");
+				else this->generated_codes.push_back("NetworkManager::createGameObject(pGameObject);");
+				cur_action = "end_line";
+			}
+			else if (cur_action == "network_updateGameObject")
+			{
+				if (gen_code == 1 || gen_code == 2 || gen_code == 3 ) this->generated_codes.push_back("NetworkManager.updateGameObject(gameObject);");
+				else this->generated_codes.push_back("NetworkManager::updateGameObject(pGameObject);");
+				cur_action = "end_line";
+			}
+			else if (cur_action == "network_destroyGameObject")
+			{
+				if (gen_code == 1 || gen_code == 2 || gen_code == 3 ) this->generated_codes.push_back("NetworkManager.destroyGameObject(gameObject);");
+				else this->generated_codes.push_back("NetworkManager::destroyGameObject(pGameObject);");
+				cur_action = "end_line";
+			}
+			else if (cur_action == "network_disconnet")
+			{
+				if (gen_code == 1 || gen_code == 2 || gen_code == 3 ) this->generated_codes.push_back("NetworkManager.disconnect();");
+				else this->generated_codes.push_back("NetworkManager::disconnect();");
+				cur_action = "end_line";
+			}
+			else if (cur_action == "object_addChild")
+			{
+				bool isSuccess = false;
+                bool isVar = false;
+            
+                 for(list<Variable>::iterator cur_var = variable_list.begin( );cur_var != variable_list.end( );cur_var++)
+                 {
+                        if (cur_var->var_name == cur_token && cur_var->var_type == "string")
+                        {
+                            isSuccess = true;
+                            isVar = true;
+                            break;
+                        }
+                }
+
+                if (!isSuccess)
+                {
+                    if (cur_token.substr(0,1) == "@")
+                    {
+                        isSuccess = true;
+                    }
+                }
+
+                if (isSuccess)
+                {
+                	if (gen_code == 1 || gen_code == 2 || gen_code == 3)
+                	{
+                	
+                    if (!isVar)
+                    {
+                    	cur_code = "gameObject.AddChild(\"" + cur_token.substr(1,cur_token.length() - 1) + "\");";
+                    }
+                    else
+                    {
+                        cur_code = "gameObject.AddChild(" + cur_token + ");";
+                    }
+                    
+                	}
+                	else
+                	{
+                    	if (!isVar)
+                    	{
+                    		cur_code = "pGameObject->AddChild(\"" + cur_token.substr(1,cur_token.length() - 1) + "\");";
+                    	}
+                    	else
+                    	{
+                        	cur_code = "pGameObject->AddChild(" + cur_token + ");";
+                    	}
+					}
+                }
+                else
+                {
+                    this->errors.push_back("Error : Object name not found!");
+                }
+
+                cur_action = "end_line";
+			} 
             else if (cur_action == "native")
             {
             	if (cur_token.substr(0,1) == "@")

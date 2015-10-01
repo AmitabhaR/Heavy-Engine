@@ -26,9 +26,9 @@ Release Notes (Beta 1.0.2)
 	1. Multi-threaded Animation not supported anymore.
 	2. Added a save level message for preventing progress loss.
 	3. Build system made more reliable by adding support to paths with spaces.
-	4. Fixed a animation bug causing no change in animation over time.
+	4. Fixed animation bug causing no change in animation over time.
 	5. Added animation as well as navigation manager for managing those tasks.
-	6. Fixed a api problem : scene_array is not available any more directly.
+	6. Fixed api problem : scene_array is not available any more directly.
 	7. Bosch Scripts Code Generation problem fixed while using scene_addGameObject.
 	8. Bosch Scripts Code Generation problem fixed while using scene_activate.
 	9. Added Build Log Support for all platforms.
@@ -39,4 +39,4 @@ Release Notes (Beta 1.0.2)
 	14. getResource() function file error has been fixed in windows native build.
 	
 ### Notice
-	1. Bosch Scripts not yet updated according to latest features added to the engine . It is usable but the latest features cannot be accessed right now . Further notice will be given for it's update.
+	1. Bosch Scripts are updated with latest features of the engine.
