@@ -35,6 +35,8 @@ namespace Runtime
         private List<HeavyScript> scripts;
         public int depth;
         public bool isDestroyed = false;
+        public bool AllowCameraRotation = false;
+        public bool AllowCameraTranslation = false;
         private float rotation_angle;
         private float scale_rate;
         private Image source_img;
@@ -293,6 +295,32 @@ namespace Runtime
         public int speed;
     }
 
+    public class Camera
+    {
+        static Vector2 camera_pos;
+        static float camera_rotation;
+
+        public static void TranslateCamera(Vector2 pos)
+        {
+            camera_pos.x += pos.x;
+            camera_pos.y += pos.y;
+            foreach(GameObject_Scene gameObject in HApplication.getActiveScene().getAllGameObjects())
+                if (gameObject.AllowCameraTranslation) gameObject.Translate(-pos.x, -pos.y);
+
+            NavigationManager.updateNavigatorTargets(pos);
+        }
+
+        public static void RotateCamera(float rotate_angle)
+        {
+            camera_rotation += rotate_angle;
+            foreach (GameObject_Scene gameObject in HApplication.getActiveScene().getAllGameObjects()) 
+                if (gameObject.AllowCameraRotation) gameObject.Rotate(-rotate_angle);
+        }
+
+        public static Vector2 getCameraPosition() { return camera_pos;  }
+        public static float getCameraRotation() { return camera_rotation; }
+    }
+
     public class ParticleSystem
     {
         List<Particle> particle_list;
@@ -428,7 +456,7 @@ namespace Runtime
          makeSorting();
 		}
 
-        public bool checkSorted(DrawableGameObject[] index_array)
+        private bool checkSorted(DrawableGameObject[] index_array)
         {
             for (int cnt = 0; cnt < index_array.Length; cnt++)
             {
@@ -444,7 +472,7 @@ namespace Runtime
             return true;
         }
 
-        public void sortElements(DrawableGameObject[] index_array)
+        private void sortElements(DrawableGameObject[] index_array)
         {
             for (int cnt = 0; cnt < index_array.Length; cnt++)
             {
@@ -615,6 +643,8 @@ namespace Runtime
 			return null;
 		}
 
+        public List<GameObject_Scene> getAllGameObjects() { return object_array;  }
+        
         public GameObject_Scene[] findGameObject(int tag)
         {
             GameObject_Scene[] ret_array = new GameObject_Scene[0];
@@ -668,23 +698,22 @@ namespace Runtime
         {
             int cnt = 0;
 
-        x:
+            for (; cnt < navigator_list.Count; cnt++)
+            {
+                Navigator nav = navigator_list[cnt];
 
-            for (; cnt < navigator_list.Count;cnt++ )
+                if (!nav.isNavigating())
                 {
-                    Navigator nav = navigator_list[cnt];
-
-                    if (!nav.isNavigating())
-                    {
-                       // nav.stop();
-                        navigator_list.RemoveAt(cnt);
-                        goto x;
-                    }
-                    else
-                    {
-                        nav.update();
-                    }
+                    navigator_list.RemoveAt(cnt);
+                    cnt--; // Stay at current position.
                 }
+                else nav.update();
+            }
+        }
+
+        public static void updateNavigatorTargets(Vector2 pos) // Called by camera class only.
+        {
+            foreach(Navigator nav in navigator_list) nav.cameraUpdatePoints(pos);
         }
     }
 
@@ -1267,11 +1296,10 @@ namespace Runtime
         private int current_frame = 0;
         private GameObject_Scene baseObject;
         private int navigation_speed = 0;
-        private float delta_error = 0;
-        private bool isVertical = false;
-        private float error = 0f;
-        private float deltaX = 0f;
-        private float deltaY = 0f;
+        private float slope = 0f;
+        private float deltaX = 0f, deltaY = 0f;
+        private int pos_x = 0 , pos_y = 0;
+        private int update_counter = 0, total_updates = 0;
 
         public Navigator(GameObject_Scene baseObject,int navigation_speed)
         {
@@ -1292,6 +1320,21 @@ namespace Runtime
             }
         }
 
+        private void makePath(Vector2 begin_point , Vector2 end_point)
+        {
+            deltaY = (end_point.y - begin_point.y);
+            deltaX = (end_point.x - begin_point.x);
+
+            if (Math.Abs(deltaX) >= Math.Abs(deltaY)) slope = deltaY / deltaX;
+            else slope = deltaX / deltaY;
+
+            total_updates = (int)(((float)Math.Sqrt((double)Math.Pow(Math.Abs(deltaX), 2) + Math.Pow(Math.Abs(deltaY), 2))) / navigation_speed);
+            update_counter = 0;
+
+            pos_x = begin_point.x;
+            pos_y = begin_point.y;
+        }
+
         public void start()
         {
             if (!isRunning)
@@ -1299,20 +1342,11 @@ namespace Runtime
                 isRunning = true;
                 current_frame = 0;
 
-                if (current_frame < nav_points.Count)
+                if (current_frame < nav_points.Count && current_frame + 1 < nav_points.Count)
                 {
-                    if (nav_points[current_frame].x - baseObject.pos_x == 0)
-                    {
-                        isVertical = true;
-                    }
-                    else
-                    {
-                        deltaX = nav_points[current_frame].x - baseObject.pos_x;
-                        deltaY = nav_points[current_frame].y - baseObject.pos_y;
-                        delta_error = Math.Abs( nav_points[current_frame].y - baseObject.pos_y / nav_points[current_frame].x - baseObject.pos_x);
-                        isVertical = false;
-                        error = 0f;
-                    }
+                    makePath(nav_points[current_frame], nav_points[current_frame + 1]); 
+                    baseObject.pos_x = pos_x;
+                    baseObject.pos_y = pos_y;
                 }
             }
         }
@@ -1327,58 +1361,49 @@ namespace Runtime
             isRunning = false;
         }
 
+        public void cameraUpdatePoints(Vector2 pos)
+        {
+            for(int cntr = 0;cntr < nav_points.Count;cntr++)
+            {
+                Vector2 nav_point = nav_points[cntr];
+
+                nav_point.x -= pos.x;
+                nav_point.y -= pos.y;
+
+                nav_points[cntr] = nav_point;
+            }
+        }
+
         public void update()
         {
-                    if (current_frame < nav_points.Count)
+            if (current_frame < nav_points.Count && current_frame + 1 < nav_points.Count)
+                if (this.baseObject.obj_instance.img != null)
+                    if (update_counter == total_updates)//baseObject.pos_x + baseObject.obj_instance.img.Width >= nav_points[current_frame + 1].x && baseObject.pos_x < nav_points[current_frame + 1].x && baseObject.pos_y + baseObject.obj_instance.img.Height >= nav_points[current_frame + 1].y && baseObject.pos_y < nav_points[current_frame + 1].y)
                     {
-                        if (this.baseObject.obj_instance.img != null)
-                        {
-                            if (baseObject.pos_x + (baseObject.obj_instance.img.Width / 2) > nav_points[current_frame].x && baseObject.pos_x < nav_points[current_frame].x + 10 && baseObject.pos_y + (baseObject.obj_instance.img.Height / 2) > nav_points[current_frame].y && baseObject.pos_y < nav_points[current_frame].y + 10)
-                            {
-                                current_frame++;
+                        current_frame++;
 
-                                if (current_frame < nav_points.Count)
-                                {
-                                    if (nav_points[current_frame].x - baseObject.pos_x == 0 )
-                                    {
-                                        isVertical = true;
-                                    }
-                                    else
-                                    {
-                                        deltaX = nav_points[current_frame].x - baseObject.pos_x;
-                                        deltaY = nav_points[current_frame].y - baseObject.pos_y;
-                                        delta_error = Math.Abs(nav_points[current_frame].y - baseObject.pos_y / nav_points[current_frame].x - baseObject.pos_x);
-                                        isVertical = false;
-                                        error = 0f;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if (!isVertical)
-                                {
-                                    if (error >= 0.5f)
-                                    {
-                                        baseObject.pos_y += (nav_points[current_frame].y < baseObject.pos_y) ? -navigation_speed : navigation_speed;
-                                        error /= (deltaX + navigation_speed * deltaY * deltaX + deltaY + navigation_speed);
-                                    }
-                                    else
-                                    {
-                                        baseObject.pos_x += (nav_points[current_frame].x < baseObject.pos_x) ? -navigation_speed : navigation_speed;
-                                        error += delta_error;
-                                    }
-                                }
-                                else
-                                {
-                                    baseObject.pos_y += (nav_points[current_frame].y < baseObject.pos_y) ? -navigation_speed : navigation_speed;
-                                }
-                            }
-                        }
+                        if (current_frame < nav_points.Count && current_frame + 1 < nav_points.Count) makePath(nav_points[current_frame], nav_points[current_frame + 1]);
+                        else stop();
                     }
                     else
                     {
-                        stop();
+                        if (Math.Abs(deltaX) >= Math.Abs(deltaY))
+                        {
+                            baseObject.pos_x = pos_x;
+                            baseObject.pos_y = (int)(slope * (pos_x - nav_points[current_frame].x) + nav_points[current_frame].y);
+                            pos_x += navigation_speed * ((deltaX < 0) ? -1 : (deltaX > 0) ? 1 : 0);
+                        }
+                        else
+                        {
+                            baseObject.pos_y = pos_y;
+                            baseObject.pos_x = (int)(slope * (pos_y - nav_points[current_frame].y) + nav_points[current_frame].x);
+                            pos_y += navigation_speed * ((deltaY < 0) ? -1 : (deltaY > 0) ? 1 : 0);
+                        }
+
+                        update_counter++;
                     }
+                else ;
+            else stop();
         }
     }
 
@@ -1470,6 +1495,7 @@ namespace Runtime
                     {
                         current_frame = 0;
                         this.baseGameObject.setImage(images[current_frame]);
+                        this.baseGameObject.SetRotationAngle(this.baseGameObject.GetRotationAngle());
                         update_counter = 0f;
                     }
                     else
@@ -1480,6 +1506,7 @@ namespace Runtime
 				else
 				{
                     this.baseGameObject.setImage(images[current_frame]);
+                    this.baseGameObject.SetRotationAngle(this.baseGameObject.GetRotationAngle());
 					current_frame++;
                     update_counter = 0f;
 				}

@@ -48,6 +48,8 @@ public:
 	GameObject_Scene *  findGameObject(std::string);
 
 	std::list<GameObject_Scene_ptr> findGameObject(int);
+
+	std::list<GameObject_Scene_ptr> getAllGameObjects();
 };
 
 typedef Scene* Scene_ptr;

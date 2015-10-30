@@ -234,7 +234,9 @@ public class Scene extends GameCanvas implements CommandListener,Runnable
                 sortElements(sortedArray);
             }
         }
-                
+        
+        public Vector getAllGameObject() { return object_array; }
+        
 		public void drawScene(Graphics g)
 		{
                     g.setColor(R,G,B);

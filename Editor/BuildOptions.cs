@@ -21,45 +21,39 @@ namespace Heavy_Engine
 
         private void BuildOptions_Load(object sender, EventArgs e)
         {
-            if (editor_handle.platform_id == 1)
-            {
-                rb_Windows.Checked = true;
-            }
-            else if (editor_handle.platform_id == 2)
-            {
-                rb_JavaDesktop.Checked = true;
-            }
-            else if (editor_handle.platform_id == 3)
-            {
-                rb_JavaMobile.Checked = true;
-            }
-            else if (editor_handle.platform_id == 4)
-            {
-                rb_WindowsNative.Checked = true;
-            }
+            if (editor_handle.platform_id == 1) rb_Windows.Checked = true;
+            else if (editor_handle.platform_id == 2) rb_JavaDesktop.Checked = true;
+            else if (editor_handle.platform_id == 3) rb_JavaMobile.Checked = true;
+            else if (editor_handle.platform_id == 4) rb_WindowsNative.Checked = true;
+            else if (editor_handle.platform_id == 5) rb_LinuxNative.Checked = true;
         }
 
         private void btn_save_Click(object sender, EventArgs e)
         {
-            if (rb_Windows.Checked == true)
+            if (rb_Windows.Checked)
             {
                 editor_handle.platform_id = 1;
                 editor_handle.DisableHeaderImport();
             }
-            else if (rb_JavaDesktop.Checked == true)
+            else if (rb_JavaDesktop.Checked)
             {
                 editor_handle.platform_id = 2;
                 editor_handle.DisableHeaderImport();
             }
-            else if (rb_JavaMobile.Checked == true)
+            else if (rb_JavaMobile.Checked)
             {
                 editor_handle.platform_id = 3;
                 editor_handle.current_level.back_color = Color.FromArgb(0, editor_handle.current_level.back_color.R, editor_handle.current_level.back_color.G, editor_handle.current_level.back_color.B);
                 editor_handle.DisableHeaderImport();
             }
-            else if (rb_WindowsNative.Checked == true)
+            else if (rb_WindowsNative.Checked)
             {
                 editor_handle.platform_id = 4;
+                editor_handle.EnableHeaderImport();
+            }
+            else if (rb_LinuxNative.Checked)
+            {
+                editor_handle.platform_id = 5;
                 editor_handle.EnableHeaderImport();
             }
 

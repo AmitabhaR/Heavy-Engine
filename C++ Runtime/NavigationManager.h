@@ -11,6 +11,8 @@ public:
 	static void registerNavigation(Navigator *);
 
 	static void updateNavigation();
+
+	static void updateNavigatorTargets(Vector2);
 };
 
 #endif

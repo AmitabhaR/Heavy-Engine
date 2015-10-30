@@ -19,8 +19,10 @@ public class GameObject_Scene
     public String instance_name;
     public Vector scripts;
     public boolean isDestroyed = false;
+    public boolean AllowCameraTranslation = false;
+    public boolean AllowCameraRotation = false;
     public int depth;
-    private int rotate_angle;
+    private double rotate_angle;
     private int scale_rate;
     private Image source_img;
     private boolean isChildReady = false;
@@ -84,7 +86,7 @@ public class GameObject_Scene
             }
         }
 
-        public void UpdateChildRotation(float rate_angle, boolean isParent)
+        public void UpdateChildRotation(double rate_angle, boolean isParent)
         {
             if (!isParent)
             {
@@ -137,9 +139,9 @@ public class GameObject_Scene
         return scale_rate;
     }
     
-    public void SetRotationAngle(int angle)
+    public void SetRotationAngle(double angle)
     {
-        int prev_angle = rotate_angle;
+        double prev_angle = rotate_angle;
         applyRotation(angle);
         rotate_angle = angle;
         
@@ -147,12 +149,12 @@ public class GameObject_Scene
         UpdateChildRotation(angle - prev_angle,true);
     }
     
-    public int GetRotationAngle()
+    public double GetRotationAngle()
     {
         return rotate_angle;
     }
     
-    private void applyRotation(int angle)
+    private void applyRotation(double angle)
     {
         int sw = source_img.getWidth();
         int sh = source_img.getHeight();
@@ -161,18 +163,18 @@ public class GameObject_Scene
         source_img.getRGB(srcData, 0, sw, 0, 0, sw, sh);
         int[] dstData = new int[sw * sh];
      
-        int rads = angle / 60;
-        int sa = (int) Math.sin(rads);
-        int ca = (int) Math.cos(rads);
-        int isa = (int) (256 * sa);
-        int ica = (int) (256 * ca);
+        double rads = angle / 60;
+        double sa = Math.sin(rads);
+        double ca = Math.cos(rads);
+        double isa = (256 * sa);
+        double ica = (256 * ca);
      
         int my = - (sh >> 1);
         for(int i = 0; i < sh; i++) {
             int wpos = i * sw;
      
-            int xacc = my * isa - (sw >> 1) * ica + ((sw >> 1) << 8);
-            int yacc = my * ica + (sw >> 1) * isa + ((sh >> 1) << 8);
+            int xacc = (int) ( my * isa - (sw >> 1) * ica + ((sw >> 1) << 8) );
+            int yacc = (int) ( my * ica + (sw >> 1) * isa + ((sh >> 1) << 8) );
      
             for(int j = 0; j < sw; j++) {
                 int srcx = (xacc >> 8);
@@ -194,7 +196,7 @@ public class GameObject_Scene
         obj_instance.img.getGraphics().drawRGB(dstData, 0, sw, 0, 0, sw, sh, true);
     }
     
-    public void rotate(int angle)
+    public void Rotate(double angle)
     {
         applyRotation(rotate_angle + angle);
         rotate_angle += angle;

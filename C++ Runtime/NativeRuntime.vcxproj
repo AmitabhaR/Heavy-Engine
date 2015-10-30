@@ -72,6 +72,7 @@
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="AnimationManager.cpp" />
     <ClCompile Include="Audio.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GameObject_Scene.cpp" />
     <ClCompile Include="HApplication.cpp" />
     <ClCompile Include="NavigationManager.cpp" />
@@ -88,6 +89,7 @@
     <ClInclude Include="Animation.h" />
     <ClInclude Include="AnimationManager.h" />
     <ClInclude Include="Audio.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObject_Scene.h" />
     <ClInclude Include="HApplication.h" />

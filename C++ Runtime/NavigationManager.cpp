@@ -25,18 +25,20 @@ x:
 			{
 				navigator_ptr = *cur_navigator;
 				navigator_iter = cur_navigator;
+				break;
 			}
 		}
-
 
 		if (!navigator_ptr->isNavigating())
 		{
 			navigator_list.erase(navigator_iter);
 			goto x;
 		}
-		else
-		{
-			navigator_ptr->update();
-		}
+		else navigator_ptr->update();
 	}
+}
+
+void NavigationManager::updateNavigatorTargets(Vector2 pos) // Called by camera class only.
+{
+	for(register std::list<Navigator *>::iterator cur_nav = navigator_list.begin();cur_nav != navigator_list.end( );cur_nav++) (*cur_nav)->cameraUpdatePoints(pos);
 }

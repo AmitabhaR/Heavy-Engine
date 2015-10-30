@@ -38,15 +38,19 @@
             this.rb_JavaDesktop = new System.Windows.Forms.RadioButton();
             this.rb_JavaMobile = new System.Windows.Forms.RadioButton();
             this.rb_WindowsNative = new System.Windows.Forms.RadioButton();
-            this.lbl_BuildOptions = new System.Windows.Forms.Label();
+            this.lbl_WindowsNative = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.pictureBox4 = new System.Windows.Forms.PictureBox();
+            this.pictureBox5 = new System.Windows.Forms.PictureBox();
+            this.lbl_LinuxNative = new System.Windows.Forms.Label();
+            this.rb_LinuxNative = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).BeginInit();
             this.SuspendLayout();
             // 
             // lbl_Windows
@@ -72,7 +76,7 @@
             // btn_save
             // 
             this.btn_save.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_save.Location = new System.Drawing.Point(12, 266);
+            this.btn_save.Location = new System.Drawing.Point(12, 352);
             this.btn_save.Name = "btn_save";
             this.btn_save.Size = new System.Drawing.Size(111, 27);
             this.btn_save.TabIndex = 4;
@@ -83,7 +87,7 @@
             // btn_cancel
             // 
             this.btn_cancel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_cancel.Location = new System.Drawing.Point(129, 266);
+            this.btn_cancel.Location = new System.Drawing.Point(131, 352);
             this.btn_cancel.Name = "btn_cancel";
             this.btn_cancel.Size = new System.Drawing.Size(111, 27);
             this.btn_cancel.TabIndex = 5;
@@ -141,15 +145,15 @@
             this.rb_WindowsNative.TabStop = true;
             this.rb_WindowsNative.UseVisualStyleBackColor = true;
             // 
-            // lbl_BuildOptions
+            // lbl_WindowsNative
             // 
-            this.lbl_BuildOptions.AutoSize = true;
-            this.lbl_BuildOptions.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_BuildOptions.Location = new System.Drawing.Point(109, 216);
-            this.lbl_BuildOptions.Name = "lbl_BuildOptions";
-            this.lbl_BuildOptions.Size = new System.Drawing.Size(129, 20);
-            this.lbl_BuildOptions.TabIndex = 11;
-            this.lbl_BuildOptions.Text = "Windows Native :";
+            this.lbl_WindowsNative.AutoSize = true;
+            this.lbl_WindowsNative.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_WindowsNative.Location = new System.Drawing.Point(109, 216);
+            this.lbl_WindowsNative.Name = "lbl_WindowsNative";
+            this.lbl_WindowsNative.Size = new System.Drawing.Size(129, 20);
+            this.lbl_WindowsNative.TabIndex = 11;
+            this.lbl_WindowsNative.Text = "Windows Native :";
             // 
             // pictureBox1
             // 
@@ -187,17 +191,49 @@
             this.pictureBox4.TabIndex = 15;
             this.pictureBox4.TabStop = false;
             // 
+            // pictureBox5
+            // 
+            this.pictureBox5.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox5.Image")));
+            this.pictureBox5.Location = new System.Drawing.Point(12, 266);
+            this.pictureBox5.Name = "pictureBox5";
+            this.pictureBox5.Size = new System.Drawing.Size(68, 49);
+            this.pictureBox5.TabIndex = 16;
+            this.pictureBox5.TabStop = false;
+            // 
+            // lbl_LinuxNative
+            // 
+            this.lbl_LinuxNative.AutoSize = true;
+            this.lbl_LinuxNative.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_LinuxNative.Location = new System.Drawing.Point(110, 281);
+            this.lbl_LinuxNative.Name = "lbl_LinuxNative";
+            this.lbl_LinuxNative.Size = new System.Drawing.Size(102, 20);
+            this.lbl_LinuxNative.TabIndex = 17;
+            this.lbl_LinuxNative.Text = "Linux Native :";
+            // 
+            // rb_LinuxNative
+            // 
+            this.rb_LinuxNative.AutoSize = true;
+            this.rb_LinuxNative.Location = new System.Drawing.Point(228, 286);
+            this.rb_LinuxNative.Name = "rb_LinuxNative";
+            this.rb_LinuxNative.Size = new System.Drawing.Size(14, 13);
+            this.rb_LinuxNative.TabIndex = 18;
+            this.rb_LinuxNative.TabStop = true;
+            this.rb_LinuxNative.UseVisualStyleBackColor = true;
+            // 
             // BuildOptions
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Gray;
-            this.ClientSize = new System.Drawing.Size(307, 305);
+            this.ClientSize = new System.Drawing.Size(307, 391);
+            this.Controls.Add(this.rb_LinuxNative);
+            this.Controls.Add(this.lbl_LinuxNative);
+            this.Controls.Add(this.pictureBox5);
             this.Controls.Add(this.pictureBox4);
             this.Controls.Add(this.pictureBox3);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.lbl_BuildOptions);
+            this.Controls.Add(this.lbl_WindowsNative);
             this.Controls.Add(this.rb_WindowsNative);
             this.Controls.Add(this.rb_JavaMobile);
             this.Controls.Add(this.rb_JavaDesktop);
@@ -219,6 +255,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -235,10 +272,13 @@
         private System.Windows.Forms.RadioButton rb_JavaDesktop;
         private System.Windows.Forms.RadioButton rb_JavaMobile;
         private System.Windows.Forms.RadioButton rb_WindowsNative;
-        private System.Windows.Forms.Label lbl_BuildOptions;
+        private System.Windows.Forms.Label lbl_WindowsNative;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.PictureBox pictureBox3;
         private System.Windows.Forms.PictureBox pictureBox4;
+        private System.Windows.Forms.PictureBox pictureBox5;
+        private System.Windows.Forms.Label lbl_LinuxNative;
+        private System.Windows.Forms.RadioButton rb_LinuxNative;
     }
 }

@@ -66,7 +66,7 @@ namespace Heavy_Engine
                             return;
                         }
                     }
-                    else if (editor_handle.platform_id == 4)
+                    else if (editor_handle.platform_id == 4 || editor_handle.platform_id == 5)
                     {
                         if (Path.GetFileName(path) == txt_script_name.Text + ".cpp")
                         {
@@ -92,9 +92,11 @@ namespace Heavy_Engine
                   stm_wr.WriteLine("\tpublic override void process(GameObject_Scene gameObject) \n\t{");
                   stm_wr.WriteLine("\t\tif (isInit) \n\t\t{");
                   stm_wr.WriteLine("\t\t\t//Write your initialization part here.");
+                  stm_wr.WriteLine("\t\t\tisInit = false;");
                   stm_wr.WriteLine("\t}");
                   stm_wr.WriteLine("\t\telse \n\t\t{");
                   stm_wr.WriteLine("\t\t\t//Write your update part here.");
+                  stm_wr.WriteLine("\t\t}");
                   stm_wr.WriteLine("\t}");
                   stm_wr.WriteLine("}");
                 }
@@ -110,18 +112,28 @@ namespace Heavy_Engine
                   stm_wr.WriteLine("\tpublic void process(GameObject_Scene gameObject) \n\t{");
                   stm_wr.WriteLine("\t\tif (isInit) \n\t\t{");
                   stm_wr.WriteLine("\t\t\t//Write your initialization part here.");
+                  stm_wr.WriteLine("\t\t\tisInit = false;");
                   stm_wr.WriteLine("\t}");
                   stm_wr.WriteLine("\t\telse \n\t\t{");
                   stm_wr.WriteLine("\t\t\t//Write your update part here.");
+                  stm_wr.WriteLine("\t\t}");
                   stm_wr.WriteLine("\t}");
                   stm_wr.WriteLine("}");  
                 }
-                else if (editor_handle.platform_id == 4)
+                else if (editor_handle.platform_id == 4 || editor_handle.platform_id == 5)
                 {
                     stm_wr = File.CreateText(editor_handle.project_default_dir + "\\Game-Scripts\\" + txt_script_name.Text + ".cpp");
 
                     stm_wr.WriteLine("#include \"" + txt_script_name.Text + ".h\"\n\n");
-                    stm_wr.WriteLine("void " + txt_script_name.Text + "::process(void * gameObject) { \n\n }");
+                    stm_wr.WriteLine("void " + txt_script_name.Text + "::process(void * gameObject) \n{");
+                    stm_wr.WriteLine("\tif (isInit) \n\t{");
+                    stm_wr.WriteLine("\t\t//Write your initialization part here.");
+                    stm_wr.WriteLine("\t\tisInit = false;");
+                    stm_wr.WriteLine("\t}");
+                    stm_wr.WriteLine("\telse \n\t{");
+                    stm_wr.WriteLine("\t\t//Write your update part here.");
+                    stm_wr.WriteLine("\t}");
+                    stm_wr.WriteLine("}");  
 
                     stm_wr.Close();
 
@@ -134,6 +146,7 @@ namespace Heavy_Engine
 
                     stm_wr.WriteLine("class " + txt_script_name.Text + " : public HeavyScript {");
                     stm_wr.WriteLine("public:");
+                    stm_wr.WriteLine("bool isInit = false;");
                     stm_wr.WriteLine("void process(void *);");
                     stm_wr.WriteLine("};");
 

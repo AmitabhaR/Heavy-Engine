@@ -1,4 +1,4 @@
-Release Notes (Beta 1.0.2)
+Release Notes (Beta 1.0.3)
 ========================
 
 ### New Features
@@ -21,6 +21,8 @@ Release Notes (Beta 1.0.2)
 	11. Editor now saves the last selected platform by the user.
 	12. Added Rotation , Scaling and Parent-Child grouping system features.
 	13. Added Duplication of game objects in the editor.
+	14. Added Linux Platform as Build Target.
+	15. Added a Camera Manager in the API.
 	
 ### Fixes
 	1. Multi-threaded Animation not supported anymore.
@@ -37,6 +39,9 @@ Release Notes (Beta 1.0.2)
 	12. Fixed Depth Collision Detection and Depth Rendering Problems.
 	13. Error with string encryption in native windows build has been fixed.
 	14. getResource() function file error has been fixed in windows native build.
+	15. Navigation path dis-order bug fixed . Smooth navigation system implemented.
+	16. Now a inital code is generated for native builds also.
+	17. After saving a navigation file , sometimes the file is not viewed in the editor's file tree . Bug is fixed . Also same for Animation files.
 	
 ### Notice
 	1. Bosch Scripts are updated with latest features of the engine.

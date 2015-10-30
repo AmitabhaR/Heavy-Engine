@@ -450,3 +450,5 @@ std::list<GameObject_Scene_ptr> Scene::findGameObject(int tag)
 
 	return ret_list;
 }
+
+std::list<GameObject_Scene_ptr> Scene::getAllGameObjects() { return this->object_array; }

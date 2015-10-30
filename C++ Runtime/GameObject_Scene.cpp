@@ -209,3 +209,4 @@ std::list<GameObject_Scene *> GameObject_Scene::GetAllChilds()
 {
 	return this->child_list;
 }
+

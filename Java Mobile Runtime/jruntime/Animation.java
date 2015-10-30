@@ -102,6 +102,7 @@ public class Animation
 				 {
 					current_frame = 0; 
                                         baseGameObject.setImage((Image) images.elementAt(current_frame));
+                                        baseGameObject.SetRotationAngle(baseGameObject.GetRotationAngle());
                                         update_counter = 0;
 				 }
                                  else
@@ -112,6 +113,7 @@ public class Animation
 			else
 			{
                                 baseGameObject.setImage((Image) images.elementAt(current_frame));
+                                baseGameObject.SetRotationAngle(baseGameObject.GetRotationAngle());
 				current_frame++;
                                 update_counter = 0;
 			}

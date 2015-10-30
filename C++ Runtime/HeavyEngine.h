@@ -14,5 +14,6 @@
 #include "HApplication.h"
 #include "HeavyScript.h"
 #include "NetworkManager.h"
+#include "Camera.h"
 
 #endif

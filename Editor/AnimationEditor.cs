@@ -220,6 +220,11 @@ namespace Heavy_Engine
 
         private void menuItem_Exit_Click(object sender, EventArgs e)
         {
+            if (MessageBox.Show("Save current file ?", "Message", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                menuItem_SaveAnimation_Click(null, null);
+            }
+
             this.Close();
         }
 
@@ -402,6 +407,8 @@ namespace Heavy_Engine
 
                 stm_wr.Close();
             }
+
+            editor_handle.reloadFileTree();
         }
 
         private void menuItem_NewAnimation_Click(object sender, EventArgs e)

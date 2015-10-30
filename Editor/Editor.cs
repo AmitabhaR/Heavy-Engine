@@ -12,6 +12,7 @@ using System.Reflection;
 using Microsoft.CSharp;
 using System.Diagnostics;
 using System.Threading;
+using Microsoft.Win32;
 
 namespace Heavy_Engine
 {
@@ -142,15 +143,15 @@ namespace Heavy_Engine
         {
             if (gameObject_editor.SelectedObject != null)
             {
-                GameObject_Scene baseObject = ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj;
+                GameObject_Scene baseObject = ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj; // Make a duplicate copy of the game object.
                 GameObject_Scene cur_obj = baseObject;
 
                 baseObject.child_list = new List<GameObject_Scene>();
 
                 addChildObject(baseObject, cur_obj);
-                baseObject.UpdateChildPosition(-cur_obj.position_scene_x ,-cur_obj.position_scene_y,true);
-                UpdateWorldChilds(baseObject);
-                baseObject.UpdateChildScenePosition(cam_x, cam_y, true);
+                baseObject.UpdateChildPosition(-cur_obj.position_scene_x ,-cur_obj.position_scene_y,true); // Return to (0,0) coordinate in editor.
+                UpdateWorldChilds(baseObject);  // Update all instances in game-object list.
+                baseObject.UpdateChildScenePosition(cam_x, cam_y, true); // Update the child position in the game world.
 
                 baseObject.instance_name += "_clone_" + (new Random()).Next(0, 100000000).ToString() + "_X_" + (new Random()).Next(0, 100000000).ToString();
                 baseObject.position_x = baseObject.position_y = baseObject.position_scene_x = baseObject.position_scene_y = 0;
@@ -440,10 +441,9 @@ namespace Heavy_Engine
             this.lb_objects.MouseClick += new MouseEventHandler(lb_objects_MouseClick);
             this.file_tree.NodeMouseClick += new TreeNodeMouseClickEventHandler(file_tree_NodeMouseClick);
 
-            for (int cnt = 0; cnt < gameObjectScene_list.Count; cnt++)
-            {
-                lb_objects.Items.Add(gameObjectScene_list[cnt].instance_name);
-            }
+            for (int cnt = 0; cnt < gameObjectScene_list.Count; cnt++) lb_objects.Items.Add(gameObjectScene_list[cnt].instance_name);
+
+            this.menuItem_ImportHeader.Enabled = (platform_id == 4 || platform_id == 5) ? true : false;
 
            /* sortedArray = new DrawableGameObject[gameObjectScene_list.Count];
 
@@ -464,6 +464,17 @@ namespace Heavy_Engine
             this.base_container.Panel2MinSize = this.contpane_base.Width;
             calculateLines();
             reloadFileTree();
+
+            RegistryKey reg_key = Registry.CurrentUser.CreateSubKey("Software\\HeavyEngine");
+            object recent2 = reg_key.GetValue("Recent2");
+
+            reg_key.SetValue("Recent2", (reg_key.GetValue("Recent1") == null) ? "" : reg_key.GetValue("Recent1"));
+            reg_key.SetValue("Recent3", (recent2 == null) ? "" : recent2);
+            reg_key.SetValue("Recent1", project_default_dir);
+
+            menuItem_Recent1.Text = project_default_dir;
+            menuItem_Recent2.Text = (string) reg_key.GetValue("Recent2");
+            menuItem_Recent3.Text = (string) reg_key.GetValue("Recent3");
         }
 
         void file_tree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -504,7 +515,7 @@ namespace Heavy_Engine
 
                     LoadLevel(abs_path);
 
-                    sortedArray = new DrawableGameObject[gameObjectScene_list.Count];
+                   /* sortedArray = new DrawableGameObject[gameObjectScene_list.Count];
 
                     for (int cnt = 0; cnt < gameObjectScene_list.Count; cnt++)
                     {
@@ -522,7 +533,10 @@ namespace Heavy_Engine
                     for (int cnt = 0; cnt < gameObjectScene_list.Count; cnt++)
                     {
                         lb_objects.Items.Add(gameObjectScene_list[cnt].instance_name);
-                    }
+                    } */
+                    sortGameObjects();
+
+                    foreach (GameObject_Scene gameObj in gameObjectScene_list) addGameObject(gameObj.instance_name);
                 }
                 else if (Path.GetExtension(abs_path) == ".nav" || Path.GetExtension(abs_path) == "nav")
                 {
@@ -638,7 +652,12 @@ namespace Heavy_Engine
 
         void Editor_FormClosing(object sender, FormClosingEventArgs e)
         {
-           if (canClose) Application.Exit();
+           if (canClose)
+           {
+               if (MessageBox.Show("Save current level ?", "Message", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) menuItem_SaveLevel_Click(null, null);
+               canClose = false;
+               Application.Exit();
+           }
         }
   
         void Editor_MouseClick(object sender, MouseEventArgs e)
@@ -765,10 +784,7 @@ namespace Heavy_Engine
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Save current level ?", "Message", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            {
-                menuItem_SaveLevel_Click(null, null);
-            }
+            if (MessageBox.Show("Save current level ?", "Message", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) menuItem_SaveLevel_Click(null, null);
 
             menu_screen.Close();
             this.Close();
@@ -1861,9 +1877,16 @@ namespace Heavy_Engine
                         File.Copy(open_file_dlg.FileName, project_default_dir + "\\Game-Plugins\\" + Path.GetFileName(open_file_dlg.FileName));
                     }
                 }
-                else
+                else if (platform_id == 4)
                 {
                     if (Path.GetExtension(open_file_dlg.FileName) == ".lib" || Path.GetExtension(open_file_dlg.FileName) == "lib" || Path.GetExtension(open_file_dlg.FileName) == ".dll" || Path.GetExtension(open_file_dlg.FileName) == "dll")
+                    {
+                        File.Copy(open_file_dlg.FileName, project_default_dir + "\\Game-Plugins\\" + Path.GetFileName(open_file_dlg.FileName));
+                    }
+                }
+                else if (platform_id == 5)
+                {
+                    if (Path.GetExtension(open_file_dlg.FileName) == ".so" || Path.GetExtension(open_file_dlg.FileName) == "so" || Path.GetExtension(open_file_dlg.FileName) == ".a" || Path.GetExtension(open_file_dlg.FileName) == "a")
                     {
                         File.Copy(open_file_dlg.FileName, project_default_dir + "\\Game-Plugins\\" + Path.GetFileName(open_file_dlg.FileName));
                     }
@@ -2134,33 +2157,13 @@ namespace Heavy_Engine
             try
             {
                 foreach (string path in Directory.GetFiles(project_default_dir + "\\Game-Scripts"))
-                {
-                    if (Path.GetExtension(path) == ".bs" || Path.GetExtension(path) == "bs")
-                    {
-                        Process.Start("notepad++", path);
-                    }
+                    if (Path.GetExtension(path) == ".bs" || Path.GetExtension(path) == "bs") Process.Start("notepad++", path);
                     else if (platform_id == 1)
-                    {
-                        if (Path.GetExtension(path) == ".cs" || Path.GetExtension(path) == "cs")
-                        {
-                            Process.Start("notepad++", path);
-                        }
-                    }
+                        if (Path.GetExtension(path) == ".cs" || Path.GetExtension(path) == "cs") Process.Start("notepad++", path);
                     else if (platform_id == 2 || platform_id == 3)
-                    {
-                        if (Path.GetExtension(path) == ".java" || Path.GetExtension(path) == "java")
-                        {
-                            Process.Start("notepad++", path);
-                        }
-                    }
-                    else if (platform_id == 4)
-                    {
-                        if (Path.GetExtension(path) == ".cpp" || Path.GetExtension(path) == "cpp" || Path.GetExtension(path) == ".h" || Path.GetExtension(path) == "h")
-                        {
-                            Process.Start("notepad++", path);
-                        }
-                    }
-                }
+                        if (Path.GetExtension(path) == ".java" || Path.GetExtension(path) == "java") Process.Start("notepad++", path);
+                    else if (platform_id == 4 || platform_id == 5)
+                        if (Path.GetExtension(path) == ".cpp" || Path.GetExtension(path) == "cpp" || Path.GetExtension(path) == ".h" || Path.GetExtension(path) == "h") Process.Start("notepad++", path);
             }
             catch (Win32Exception eax)
             {
@@ -2309,6 +2312,39 @@ namespace Heavy_Engine
            CreatePackage create_pak = new CreatePackage(this);
 
            create_pak.Show();
+       }
+
+
+       private void LoadProjectDirectly(string data )
+       {
+           if (MessageBox.Show("Save current level ?", "Message", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) menuItem_SaveLevel_Click(null, null);
+
+           LoadProjectScreen load_prj_screen = new LoadProjectScreen(menu_screen, this);
+
+           load_prj_screen.txt_path.Text = data;
+           load_prj_screen.txt_project_name.Text = data.Substring(data.LastIndexOf('\\') + 1, data.Length - (data.LastIndexOf('\\') + 1));
+
+           canClose = false;
+
+           load_prj_screen.btn_load_Click(null, null);
+       }
+
+       private void menuItem_Recent1_Click(object sender, EventArgs e)
+       {
+           if (Directory.Exists(menuItem_Recent1.Text)) LoadProjectDirectly(menuItem_Recent1.Text);
+           else MessageBox.Show("Directory dosen't exist anymore.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+       }
+
+       private void menuItem_Recent2_Click(object sender, EventArgs e)
+       {
+           if (Directory.Exists(menuItem_Recent2.Text)) LoadProjectDirectly(menuItem_Recent2.Text);
+           else MessageBox.Show("Directory dosen't exist anymore.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+       }
+
+       private void menuItem_Recent3_Click(object sender, EventArgs e)
+       {
+           if (Directory.Exists(menuItem_Recent3.Text)) LoadProjectDirectly(menuItem_Recent3.Text);
+           else MessageBox.Show("Directory dosen't exist anymore.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
        }
     }
 
@@ -2701,7 +2737,7 @@ namespace Heavy_Engine
 
                     if (editor_handle.platform_id == 1) platform_ext = ".cs"; else if (editor_handle.platform_id == 2 || editor_handle.platform_id == 3) platform_ext = ".java"; else platform_ext = ".cpp";
 
-                    Process compiler = Process.Start(Application.StartupPath + "\\bc.exe", "-p " + editor_handle.platform_id + " -o " + Path.GetDirectoryName(path) + "\\" + Path.GetFileNameWithoutExtension(path) + platform_ext + " " + path);
+                    Process compiler = Process.Start(Application.StartupPath + "\\bc.exe", "-p " + editor_handle.platform_id + " -o \"" + Path.GetDirectoryName(path) + "\\" + Path.GetFileNameWithoutExtension(path) + platform_ext + "\" \"" + path + "\"");
 
                 wt:
                     if (!compiler.HasExited) goto wt;
@@ -2751,7 +2787,7 @@ namespace Heavy_Engine
                         file_writer.WriteLine("public " + Path.GetFileNameWithoutExtension(path) + "_Navigator(GameObject_Scene baseObject,int navigation_speed) { ");
                         file_writer.WriteLine("super(baseObject,navigation_speed);");
                     }
-                    else if (editor_handle.platform_id == 4)
+                    else if (editor_handle.platform_id == 4 || editor_handle.platform_id == 5)
                     {
                         // Header File.
                         StreamWriter header_writer = new StreamWriter(editor_handle.project_default_dir + "\\Game-Scripts\\" + Path.GetFileNameWithoutExtension(path).Replace(" " , "") + "_Navigator.h");
@@ -2777,20 +2813,18 @@ namespace Heavy_Engine
                     }
 
                     foreach (NavigationPoint point in nav_points)
-                    {
-                        if (editor_handle.platform_id != 4) file_writer.WriteLine("this.addPoint( new Vector2(" + point.position_x + "," + point.position_y + "));");
+                        if (editor_handle.platform_id != 4 && editor_handle.platform_id != 5) file_writer.WriteLine("this.addPoint( new Vector2(" + point.position_x + "," + point.position_y + "));");
                         else file_writer.WriteLine("this->addPoint({" + point.position_x + "," + point.position_y + "});");
-                    }
 
                     file_writer.WriteLine("}"); // End of constructor.
-                    if (editor_handle.platform_id != 4) file_writer.WriteLine("}"); // End of class.
+                    if (editor_handle.platform_id != 4 && editor_handle.platform_id != 5) file_writer.WriteLine("}"); // End of class.
 
                     file_writer.Flush();
 
                     file_writer.Close();
 
                     rem_files.Add(editor_handle.project_default_dir + "\\Game-Scripts\\" + Path.GetFileNameWithoutExtension(path) + "_Navigator" + platform_ext);
-                    if (editor_handle.platform_id == 4) rem_files.Add(editor_handle.project_default_dir + "\\Game-Scripts\\" + Path.GetFileNameWithoutExtension(path).Replace(" " , "") + "_Navigator.h");
+                    if (editor_handle.platform_id == 4 || editor_handle.platform_id == 5) rem_files.Add(editor_handle.project_default_dir + "\\Game-Scripts\\" + Path.GetFileNameWithoutExtension(path).Replace(" " , "") + "_Navigator.h");
                 }
             }
 
@@ -2821,9 +2855,7 @@ namespace Heavy_Engine
                         file_writer.WriteLine("public " + Path.GetFileNameWithoutExtension(path) + "_Animation(GameObject_Scene baseObject,bool isRepeating) : base(baseObject," + baseAnim.animation_speed.ToString( ) + ",isRepeating) { ");
 
                         foreach (string anim_file in baseAnim.frame_list)
-                        {
                             file_writer.WriteLine("this.addFrame(Image.FromFile(Application.StartupPath + \"\\\\Data\\\\" + encryptFileName(Path.GetFileNameWithoutExtension(anim_file))  + ".X" +"\"));");
-                        }
                     }
                     else if (editor_handle.platform_id == 2 || editor_handle.platform_id == 3)
                     {
@@ -2838,14 +2870,12 @@ namespace Heavy_Engine
                         file_writer.WriteLine("try {");
 
                         foreach (string anim_file in baseAnim.frame_list)
-                        {
                             if (editor_handle.platform_id == 3) file_writer.WriteLine("this.addFrame(Image.createImage(\"/Data/" + encryptFileName(Path.GetFileNameWithoutExtension(anim_file)) + ".X" + "\"));"); else file_writer.WriteLine("this.addFrame(ImageIO.read(new File(\"/Data/" + encryptFileName(Path.GetFileNameWithoutExtension(anim_file)) + ".X" + "\")));");
-                        }
 
                         file_writer.WriteLine("} \n catch (IOException ex) {");
                         file_writer.WriteLine("}");
                     }
-                    else if (editor_handle.platform_id == 4)
+                    else if (editor_handle.platform_id == 4 || editor_handle.platform_id == 5)
                     {
                         // Header File.
                         StreamWriter header_writer = new StreamWriter(editor_handle.project_default_dir + "\\Game-Scripts\\" + Path.GetFileNameWithoutExtension(path).Replace(" ","") + "_Animation.h");
@@ -2869,21 +2899,18 @@ namespace Heavy_Engine
                         file_writer.WriteLine("#include \"" + Path.GetFileNameWithoutExtension(path).Replace(" ","") + "_Animation.h\"");
                         file_writer.WriteLine(Path.GetFileNameWithoutExtension(path).Replace(' ', '_') + "_Animation::" + Path.GetFileNameWithoutExtension(path).Replace(' ', '_') + "_Animation(GameObject_Scene* baseObject,bool isRepeating) : Animation(baseObject," + baseAnim.animation_speed.ToString( ) + ",isRepeating) {");
 
-                        foreach (string anim_file in baseAnim.frame_list)
-                        {
-                            file_writer.WriteLine("this->addFrame(\"./Data/" + encryptFileName(Path.GetFileNameWithoutExtension(anim_file)) + ".X" + "\");");
-                        }
+                        foreach (string anim_file in baseAnim.frame_list) file_writer.WriteLine("this->addFrame(\"./Data/" + encryptFileName(Path.GetFileNameWithoutExtension(anim_file)) + ".X" + "\");");
                     }
 
                     file_writer.WriteLine("}"); // End of constructor.
-                    if (editor_handle.platform_id != 4) file_writer.WriteLine("}"); // End of class.
+                    if (editor_handle.platform_id != 4 && editor_handle.platform_id != 5) file_writer.WriteLine("}"); // End of class.
 
                     file_writer.Flush();
 
                     file_writer.Close();
 
                     rem_files.Add(editor_handle.project_default_dir + "\\Game-Scripts\\" + Path.GetFileNameWithoutExtension(path) + "_Animation" + platform_ext);
-                    if (editor_handle.platform_id == 4) rem_files.Add(editor_handle.project_default_dir + "\\Game-Scripts\\" + Path.GetFileNameWithoutExtension(path).Replace(" ","") + "_Animation.h");
+                    if (editor_handle.platform_id == 4 || editor_handle.platform_id == 5) rem_files.Add(editor_handle.project_default_dir + "\\Game-Scripts\\" + Path.GetFileNameWithoutExtension(path).Replace(" ","") + "_Animation.h");
                 }
             }
 
@@ -2898,18 +2925,9 @@ namespace Heavy_Engine
 
             StreamWriter stm_wr = null;
 
-            if (editor_handle.platform_id == 1)
-            {
-                stm_wr = new StreamWriter(editor_handle.project_default_dir + "\\__build");
-            }
-            else if (editor_handle.platform_id == 2 || editor_handle.platform_id == 3)
-            {
-                stm_wr = new StreamWriter(editor_handle.project_default_dir + "\\AppMain.java");
-            }
-            else
-            {
-                stm_wr = new StreamWriter(editor_handle.project_default_dir + "\\AppMain.cpp");
-            }
+            if (editor_handle.platform_id == 1) stm_wr = new StreamWriter(editor_handle.project_default_dir + "\\__build");
+            else if (editor_handle.platform_id == 2 || editor_handle.platform_id == 3) stm_wr = new StreamWriter(editor_handle.project_default_dir + "\\AppMain.java");
+            else stm_wr = new StreamWriter(editor_handle.project_default_dir + "\\AppMain.cpp");
 
             StreamReader stm_rd = null; // new StreamReader(Application.StartupPath + "\\__code");
             List<Editor.GameObject_Scene> object_array = new List<Editor.GameObject_Scene>();
@@ -2925,217 +2943,152 @@ namespace Heavy_Engine
             foreach(char ch in line)
             {
                 if (isString)
-                {
                     if (ch == '@')
                     {
                         isString = false;
                         token_list.Add(cur_token);
                         cur_token = "";
                     }
-                    else
-                    {
-                        cur_token += ch;
-                    }
-                }
+                    else cur_token += ch;
                 else
-                {
                     if (ch == ' ')
-                    {
                         if (cur_token != "")
                         {
                             token_list.Add(cur_token);
                             cur_token = "";
                         }
-                    }
+                        else ;
                     else if (ch == '@')
-                    {
                         if (!isString)
                         {
                             isString = true;
                             cur_token = "@";
                         }
-                    }
-                    else
-                    {
-                        cur_token += ch;
-                    }
-                }
+                        else ;
+                    else cur_token += ch;
             }
 
-            if (cur_token != "")
-            {
-                token_list.Add(cur_token);
-            }
+            if (cur_token != "") token_list.Add(cur_token);
 
             string cur_action = "";
 
-            foreach(object obj in token_list)
+            foreach (object obj in token_list)
             {
                 if (cur_action == "")
-                {
-                    if ((string) obj == "Level_Name:")
-                    {
-                        cur_action = "Level_Name";
-                    }
-                    else if ((string) obj == "Speed:")
-                    {
-                        cur_action = "Speed";
-                    }
-                    else if ((string) obj == "Back_Colour:")
-                    {
-                        cur_action = "Back_Colour";
-                    }
-                    else if ((string) obj == "Object:")
-                    {
-                        cur_action = "Object";
-                    }
-                    // Object loading left with level-object loading.
-                } 
+                    if ((string)obj == "Level_Name:") cur_action = "Level_Name";
+                    else if ((string)obj == "Speed:") cur_action = "Speed";
+                    else if ((string)obj == "Back_Colour:") cur_action = "Back_Colour";
+                    else if ((string)obj == "Object:") cur_action = "Object";
+                    else ;
                 else
                 {
-                     if (cur_action == "Level_Name")
-                    {
-                        string str = (string)obj;
+                    string str = (string)obj;
 
-                        if (str.Substring(0, 1) == "@")
-                        {
-                            level.level_name = str.Substring(1, str.Length - 1);
-                        }
+                    if (cur_action == "Level_Name")
+                    {
+                        if (str.Substring(0, 1) == "@") level.level_name = str.Substring(1, str.Length - 1);
 
                         cur_action = "";
                     }
                     else if (cur_action == "Speed")
                     {
-                        string str = (string)obj;
                         level.level_speed = int.Parse(str);
                         cur_action = "";
                     }
                     else if (cur_action == "Back_Colour")
                     {
-                        string str = (string)obj;
                         level.back_color = Color.FromArgb(int.Parse(str), 0, 0, 0);
                         cur_action = "Back_ColourR";
                     }
                     else if (cur_action == "Back_ColourR")
                     {
-                        string str = (string)obj;
                         level.back_color = Color.FromArgb(level.back_color.A, int.Parse(str), 0, 0);
                         cur_action = "Back_ColourG";
                     }
                     else if (cur_action == "Back_ColourG")
                     {
-                        string str = (string)obj;
                         level.back_color = Color.FromArgb(level.back_color.A, level.back_color.R, int.Parse(str), 0);
                         cur_action = "Back_ColourB";
                     }
                     else if (cur_action == "Back_ColourB")
                     {
-                        string str = (string)obj;
                         level.back_color = Color.FromArgb(level.back_color.A, level.back_color.R, level.back_color.G, int.Parse(str));
                         cur_action = "";
                     }
                     else if (cur_action == "Object")
                     {
-                        string str = (string)obj;
+                        //  MessageBox.Show(str.Substring(1, str.Length - 1));
 
-                      //  MessageBox.Show(str.Substring(1, str.Length - 1));
-
-                        if (str.Substring(0,1) == "@")
-                        {
-                            foreach(Editor.GameObject gameObj in editor_handle.gameObject_list)
-                            {
-                                if (gameObj.object_name == str.Substring(1,str.Length - 1))
+                        if (str.Substring(0, 1) == "@")
+                            foreach (Editor.GameObject gameObj in editor_handle.gameObject_list)
+                                if (gameObj.object_name == str.Substring(1, str.Length - 1))
                                 {
                                     gameObject.mainObject = gameObj;
                                     gameObject.Initialize();
                                 }
-                            }
-                        }
 
                         cur_action = "Object_NAME";
                     }
                     else if (cur_action == "Object_NAME")
                     {
-                        string str = (string)obj;
-
-                        if (str.Substring(0,1) == "@")
-                        {
-                            gameObject.instance_name = str.Substring(1, str.Length - 1);
-                        }
+                        if (str.Substring(0, 1) == "@") gameObject.instance_name = str.Substring(1, str.Length - 1);
 
                         cur_action = "Object_PositionX";
                     }
                     else if (cur_action == "Object_PositionX")
                     {
-                        string str = (string)obj;
-
                         gameObject.position_x = int.Parse(str);
 
                         cur_action = "Object_PositionY";
                     }
                     else if (cur_action == "Object_PositionY")
                     {
-                        string str = (string)obj;
-
                         gameObject.position_y = int.Parse(str);
 
                         cur_action = "Object_Depth";
                     }
-                     else if (cur_action == "Object_Depth")
-                     {
-                         string str = (string)obj;
+                    else if (cur_action == "Object_Depth")
+                    {
+                        gameObject.depth = int.Parse(str);
 
-                         gameObject.depth = int.Parse(str);
+                        cur_action = "Object_Tiled";
+                    }
+                    else if (cur_action == "Object_Tiled")
+                    {
+                        gameObject.isTile = bool.Parse(str);
 
-                         cur_action = "Object_Tiled";
-                     }
-                     else if (cur_action == "Object_Tiled")
-                     {
-                         string str = (string)obj;
+                        cur_action = "Object_Rotation";
+                    }
+                    else if (cur_action == "Object_Rotation")
+                    {
+                        gameObject.rotation_angle = float.Parse(str);
+                        gameObject.ApplyRotation(-gameObject.rotation_angle);
 
-                         gameObject.isTile = bool.Parse(str);
+                        cur_action = "Object_Scale";
+                    }
+                    else if (cur_action == "Object_Scale")
+                    {
+                        gameObject.scaling_rate = float.Parse(str);
 
-                         cur_action = "Object_Rotation";
-                     }
-                     else if (cur_action == "Object_Rotation")
-                     {
-                         string str = (string)obj;
+                        cur_action = "Object_Childs";
+                    }
+                    else if (cur_action == "Object_Childs")
+                        if (str == ";")
+                        {
+                            cur_action = "";
+                            object_array.Add(gameObject);
+                            gameObject = new Editor.GameObject_Scene();
+                        }
+                        else
+                        {
+                            Editor.GameObject_Scene gameObj = new Editor.GameObject_Scene();
 
-                         gameObject.rotation_angle = float.Parse(str);
-                         gameObject.ApplyRotation(-gameObject.rotation_angle);
+                            gameObj.instance_name = str;
 
-                         cur_action = "Object_Scale";
-                     }
-                     else if (cur_action == "Object_Scale")
-                     {
-                         string str = (string)obj;
-
-                         gameObject.scaling_rate = float.Parse(str);
-
-                         cur_action = "Object_Childs";
-                     }
-                     else if (cur_action == "Object_Childs")
-                     {
-                         string str = (string)obj;
-                         
-                         if (str == ";")
-                         {
-                             cur_action = "";
-                             object_array.Add(gameObject);
-                             gameObject = new Editor.GameObject_Scene();
-                         }
-                         else
-                         {
-                             Editor.GameObject_Scene gameObj = new Editor.GameObject_Scene();
-
-                             gameObj.instance_name = str;
-
-                             gameObject.child_list.Add(gameObj);
-                         }
-                     }
-
+                            gameObject.child_list.Add(gameObj);
+                        }
                 }
-             }
+               }
             };
 
             // Copy Content of the defination file.
@@ -3169,7 +3122,7 @@ namespace Heavy_Engine
                 stm_wr.WriteLine("public void pauseApp( ) {  } \n");
                 stm_wr.WriteLine("public void startApp( ) { \n");
             }
-            else if (editor_handle.platform_id == 4)
+            else if (editor_handle.platform_id == 4 || editor_handle.platform_id == 5)
             {
                 stm_wr.WriteLine("#pragma comment(lib,\"SDL2main.lib\")");
                 stm_wr.WriteLine("#pragma comment(lib,\"SDL2.lib\")");
@@ -3180,55 +3133,35 @@ namespace Heavy_Engine
                 stm_wr.WriteLine("#pragma comment(lib,\"NativeRuntime.lib\")");
 
                 foreach(string path in Directory.GetFiles(editor_handle.project_default_dir + "\\Game-Plugins"))
-                {
-                    if (Path.GetExtension(path) == ".lib" || Path.GetExtension(path) == "lib")
-                    {
-                        stm_wr.WriteLine("#pragma comment(lib,\"" + Path.GetFileName(path) + "\")");
-                    }
-                }
+                    if (Path.GetExtension(path) == ".lib" || Path.GetExtension(path) == "lib") stm_wr.WriteLine("#pragma comment(lib,\"" + Path.GetFileName(path) + "\")");
 
                 stm_wr.WriteLine("#include<HeavyEngine.h>");
                 stm_wr.WriteLine("#include \"Scripts.h\"");
                 stm_wr.WriteLine("int main(int argc , char * argv[]) {");
             }
 
-            if (editor_handle.platform_id == 3) stm_wr.WriteLine("HApplication.Initialize(\"" + editor_handle.project_info.project_name + "\",this);"); else if (editor_handle.platform_id == 1 || editor_handle.platform_id == 2) stm_wr.WriteLine("HApplication.Initialize(\"" + editor_handle.project_info.project_name + "\");"); else stm_wr.WriteLine("HApplication::Initialize(\"" + editor_handle.project_info.project_name + "\");");
+            if (editor_handle.platform_id == 3) stm_wr.WriteLine("HApplication.Initialize(\"" + editor_handle.project_info.project_name + "\",this);"); 
+            else if (editor_handle.platform_id == 1 || editor_handle.platform_id == 2) stm_wr.WriteLine("HApplication.Initialize(\"" + editor_handle.project_info.project_name + "\");"); 
+            else stm_wr.WriteLine("HApplication::Initialize(\"" + editor_handle.project_info.project_name + "\");");
 
             Thread.Sleep(100);
 
             log_window.addLog("Generating Objects...");
 
             for (int cntr = 0;cntr < editor_handle.gameObject_list.Count; cntr++)
-            {
-                if (editor_handle.platform_id == 1)
-                {
-                    stm_wr.WriteLine("ObjectManager.loadObject(\"" + editor_handle.gameObject_list[cntr].object_name + "\",\"" + editor_handle.gameObject_list[cntr].object_text + "\",Application.StartupPath + \"\\\\Data\\\\" + encryptFileName(Path.GetFileNameWithoutExtension(editor_handle.gameObject_list[cntr].path)) + ".X" + "\"," + editor_handle.gameObject_list[cntr].object_tag + "," + editor_handle.gameObject_list[cntr].isStatic.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_physics.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_rigid.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_collider.ToString().ToLower() + ");");
-                }
-                else if (editor_handle.platform_id == 2 || editor_handle.platform_id == 3)
-                {
-                    stm_wr.WriteLine("ObjectManager.loadObject(\"" + editor_handle.gameObject_list[cntr].object_name + "\",\"" + editor_handle.gameObject_list[cntr].object_text + "\",\"" + "/Data/" + encryptFileName(Path.GetFileNameWithoutExtension(editor_handle.gameObject_list[cntr].path)) + ".X" + "\"," + editor_handle.gameObject_list[cntr].object_tag + "," + editor_handle.gameObject_list[cntr].isStatic.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_physics.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_rigid.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_collider.ToString().ToLower() + ");");
-                }
-                else if (editor_handle.platform_id == 4)
-                {
+                if (editor_handle.platform_id == 1) stm_wr.WriteLine("ObjectManager.loadObject(\"" + editor_handle.gameObject_list[cntr].object_name + "\",\"" + editor_handle.gameObject_list[cntr].object_text + "\",Application.StartupPath + \"\\\\Data\\\\" + encryptFileName(Path.GetFileNameWithoutExtension(editor_handle.gameObject_list[cntr].path)) + ".X" + "\"," + editor_handle.gameObject_list[cntr].object_tag + "," + editor_handle.gameObject_list[cntr].isStatic.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_physics.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_rigid.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_collider.ToString().ToLower() + ");");
+                else if (editor_handle.platform_id == 2 || editor_handle.platform_id == 3) stm_wr.WriteLine("ObjectManager.loadObject(\"" + editor_handle.gameObject_list[cntr].object_name + "\",\"" + editor_handle.gameObject_list[cntr].object_text + "\",\"" + "/Data/" + encryptFileName(Path.GetFileNameWithoutExtension(editor_handle.gameObject_list[cntr].path)) + ".X" + "\"," + editor_handle.gameObject_list[cntr].object_tag + "," + editor_handle.gameObject_list[cntr].isStatic.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_physics.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_rigid.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_collider.ToString().ToLower() + ");");
+                else if (editor_handle.platform_id == 4 || editor_handle.platform_id == 5)
                     if (editor_handle.gameObject_list[cntr].object_img != null)
-                    {
                         stm_wr.WriteLine("ObjectManager::loadObject(\"" + editor_handle.gameObject_list[cntr].object_name + "\",\"" + editor_handle.gameObject_list[cntr].object_text + "\",\"" + "./Data/" + encryptFileName(Path.GetFileNameWithoutExtension(editor_handle.gameObject_list[cntr].path)) + ".X" + "\"," + editor_handle.gameObject_list[cntr].object_tag + "," + editor_handle.gameObject_list[cntr].isStatic.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_physics.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_rigid.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_collider.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_img.Width + "," + editor_handle.gameObject_list[cntr].object_img.Height + ");");
-                    }
                     else
-                    {
                         stm_wr.WriteLine("ObjectManager::loadObject(\"" + editor_handle.gameObject_list[cntr].object_name + "\",\"" + editor_handle.gameObject_list[cntr].object_text + "\",\"" + "./Data/" + encryptFileName(Path.GetFileNameWithoutExtension(editor_handle.gameObject_list[cntr].path)) + ".X" + "\"," + editor_handle.gameObject_list[cntr].object_tag + "," + editor_handle.gameObject_list[cntr].isStatic.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_physics.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_rigid.ToString().ToLower() + "," + editor_handle.gameObject_list[cntr].object_collider.ToString().ToLower() + ",0,0);");
-                    }
-                }
-            }
 
             stm_wr.WriteLine("Scene firstScene;");
          
-            if (Directory.GetFiles(editor_handle.project_default_dir + "\\Game-Levels").Length > 1)
-            {
-                stm_wr.WriteLine("Scene newScene;");
-            }
+            if (Directory.GetFiles(editor_handle.project_default_dir + "\\Game-Levels").Length > 1) stm_wr.WriteLine("Scene newScene;");
 
-            if (editor_handle.platform_id != 4) stm_wr.WriteLine("GameObject_Scene obj;"); else stm_wr.WriteLine("GameObject_Scene * obj;");
+            if (editor_handle.platform_id != 4 && editor_handle.platform_id != 5) stm_wr.WriteLine("GameObject_Scene obj;"); else stm_wr.WriteLine("GameObject_Scene * obj;");
 
             Thread.Sleep(100);
 
@@ -3238,14 +3171,11 @@ namespace Heavy_Engine
             {
                 stm_rd = new StreamReader(path);
 
-                while (!stm_rd.EndOfStream)
-                {
-                    processLine_code(stm_rd.ReadLine());
-                }
+                while (!stm_rd.EndOfStream) processLine_code(stm_rd.ReadLine());
 
                 if (level.level_name == Path.GetFileNameWithoutExtension(editor_handle.project_info.project_firstlevel))
                 {
-                    if (editor_handle.platform_id != 4) stm_wr.WriteLine("firstScene = new Scene( );"); else stm_wr.WriteLine("firstScene = Scene( );");
+                    if (editor_handle.platform_id != 4 && editor_handle.platform_id != 5) stm_wr.WriteLine("firstScene = new Scene( );"); else stm_wr.WriteLine("firstScene = Scene( );");
                     //stm_wr.WriteLine("obj = new GameObject_Scene( );");
                     stm_wr.WriteLine("firstScene.name = \"" + level.level_name + "\";");
                     stm_wr.WriteLine("firstScene.speed = " + level.level_speed + ";");
@@ -3256,7 +3186,7 @@ namespace Heavy_Engine
                 }
                 else
                 {
-                    if (editor_handle.platform_id != 4) stm_wr.WriteLine("newScene = new Scene( );"); else stm_wr.WriteLine("newScene = Scene( );");
+                    if (editor_handle.platform_id != 4 && editor_handle.platform_id != 5) stm_wr.WriteLine("newScene = new Scene( );"); else stm_wr.WriteLine("newScene = Scene( );");
                    // stm_wr.WriteLine("obj = new GameObject_Scene( );");
                     stm_wr.WriteLine("newScene.name = \"" + level.level_name + "\";");
                     stm_wr.WriteLine("newScene.speed = " + level.level_speed + ";");
@@ -3270,7 +3200,7 @@ namespace Heavy_Engine
                 {
                     stm_wr.WriteLine("obj = new GameObject_Scene( );");
                     
-                    if (editor_handle.platform_id != 4)
+                    if (editor_handle.platform_id != 4 && editor_handle.platform_id != 5)
                     {
                         stm_wr.WriteLine("obj.pos_x = " + object_array[cntr].position_x + ";");
                         stm_wr.WriteLine("obj.pos_y = " + object_array[cntr].position_y + ";");
@@ -3339,55 +3269,39 @@ namespace Heavy_Engine
                 }
 
                 if (level.level_name == Path.GetFileNameWithoutExtension(editor_handle.project_info.project_firstlevel))
-                {
-                    if (editor_handle.platform_id != 4) stm_wr.WriteLine("SceneManager.addScene(firstScene);"); else stm_wr.WriteLine("SceneManager::addScene(firstScene);"); 
-                }
+                    if (editor_handle.platform_id != 4 && editor_handle.platform_id != 5) stm_wr.WriteLine("SceneManager.addScene(firstScene);"); else stm_wr.WriteLine("SceneManager::addScene(firstScene);"); 
                 else
-                {
-                    if (editor_handle.platform_id != 4) stm_wr.WriteLine("SceneManager.addScene(newScene);"); else stm_wr.WriteLine("SceneManager::addScene(newScene);");
-                }
+                    if (editor_handle.platform_id != 4 && editor_handle.platform_id != 5) stm_wr.WriteLine("SceneManager.addScene(newScene);"); else stm_wr.WriteLine("SceneManager::addScene(newScene);");
 
                 object_array.Clear();
                 level = new Editor.GameLevel();
                 stm_rd.Close();
             }
 
-            if (editor_handle.platform_id != 4) stm_wr.WriteLine("HApplication.loadScene(firstScene);"); else stm_wr.WriteLine("HApplication::loadScene(firstScene);");
+            if (editor_handle.platform_id != 4 && editor_handle.platform_id != 5) stm_wr.WriteLine("HApplication.loadScene(firstScene);"); else stm_wr.WriteLine("HApplication::loadScene(firstScene);");
 
-            if (editor_handle.platform_id != 3 && editor_handle.platform_id != 4)
-            {
-                stm_wr.WriteLine("firstScene.startScene(HApplication.getCanvas( ));");
-            }
+            if (editor_handle.platform_id != 3 && editor_handle.platform_id != 4 && editor_handle.platform_id != 5) stm_wr.WriteLine("firstScene.startScene(HApplication.getCanvas( ));");
             else if (editor_handle.platform_id == 3)
             {
                 stm_wr.WriteLine("Display.getDisplay(this).setCurrent(firstScene);");
                 stm_wr.WriteLine("firstScene.startScene();");
             }
-            else
-            {
-                stm_wr.WriteLine("HApplication::start( );");
-            }
+            else stm_wr.WriteLine("HApplication::start( );");
 
-            if (editor_handle.platform_id == 1)
-            {
-                stm_wr.WriteLine("Application.Run(HApplication.getWindowHandle( ));");
-            }
+            if (editor_handle.platform_id == 1) stm_wr.WriteLine("Application.Run(HApplication.getWindowHandle( ));");
 
-            if (editor_handle.platform_id == 4) stm_wr.WriteLine("return 0;");
+            if (editor_handle.platform_id == 4 || editor_handle.platform_id == 5) stm_wr.WriteLine("return 0;");
 
             stm_wr.WriteLine("}"); // For Function
-            if (editor_handle.platform_id != 4) stm_wr.WriteLine("}"); // For Class
+            if (editor_handle.platform_id != 4 && editor_handle.platform_id != 5) stm_wr.WriteLine("}"); // For Class
 
       
             if (editor_handle.platform_id == 1) stm_wr.WriteLine("}"); // For Namespace
             stm_wr.Flush();
             stm_wr.Close();
 
-           
-            if (Directory.Exists(editor_handle.project_default_dir + "\\Build")) // Clean the whole directory.
-            {
-                flushDirectories(editor_handle.project_default_dir + "\\Build");
-            }
+
+            if (Directory.Exists(editor_handle.project_default_dir + "\\Build")) flushDirectories(editor_handle.project_default_dir + "\\Build",false); // Clean the whole directory.
 
             Thread.Sleep(250);
             log_window.addLog("Generating Base Complete...");
@@ -3397,19 +3311,15 @@ namespace Heavy_Engine
 jmp:
             DirectoryInfo info = null;
 
-           info =  Directory.CreateDirectory(editor_handle.project_default_dir + "\\Build");
+            info = Directory.CreateDirectory(editor_handle.project_default_dir + "\\Build");
            
-           if (!info.Exists)
-            {
-                goto jmp;
-            }
+           if (!info.Exists) goto jmp;
 
             build_progress.progress();
             Thread.Sleep(500);
 
             if (editor_handle.platform_id == 1) // For Compiling Windows.
             {
-
                 log_window.addLog("Running C# Compiler...");
 
                 CSharpCodeProvider cs_code_prov = new CSharpCodeProvider();
@@ -3419,20 +3329,16 @@ jmp:
                 comp_param.GenerateExecutable = true;
                 comp_param.OutputAssembly = editor_handle.project_default_dir + "\\Build\\" + editor_handle.project_info.project_name + ".exe";
                 comp_param.MainClass = "App.AppMain";
+                comp_param.TreatWarningsAsErrors = false;
 
-                foreach (Assembly path in AppDomain.CurrentDomain.GetAssemblies())
-                {
-                    comp_param.ReferencedAssemblies.Add(path.Location);
-                }
+                foreach (Assembly path in AppDomain.CurrentDomain.GetAssemblies()) comp_param.ReferencedAssemblies.Add(path.Location);
 
                 foreach (string path in Directory.GetFiles(editor_handle.project_default_dir + "\\Game-Plugins"))
-                {
                         if (Path.GetExtension(path) == ".dll" || Path.GetExtension(path) == "dll")
                         {
                             comp_param.ReferencedAssemblies.Add(path);
                             File.Copy(path, editor_handle.project_default_dir + "\\Build\\" + Path.GetFileName(path));
                         }
-                }
 
                 comp_param.ReferencedAssemblies.Add(Application.StartupPath + "\\JVLIB.dll");
                 comp_param.ReferencedAssemblies.Add(Application.StartupPath + "\\Runtime.dll");
@@ -3440,13 +3346,11 @@ jmp:
                 string[] src_array = new string[0];
 
                 foreach (string path in Directory.GetFiles(editor_handle.project_default_dir + "\\Game-Scripts"))
-                {
                     if (Path.GetExtension(path).ToLower() == ".cs" || Path.GetExtension(path).ToLower() == "cs")
                     {
                         Array.Resize<string>(ref src_array, src_array.Length + 1);
                         src_array[src_array.Length - 1] = path;
                     }
-                }
 
                 Array.Resize<string>(ref src_array, src_array.Length + 1);
                 src_array[src_array.Length - 1] = editor_handle.project_default_dir + "\\__build";
@@ -3474,7 +3378,7 @@ jmp:
                     foreach (string path in rem_files)
                     {
                         File.Delete(path);
-                    }
+                    } 
                 }
                 else
                 {
@@ -4021,7 +3925,7 @@ jmp:
                         MessageBox.Show("Error found in scripts!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         MessageBox.Show("Build Failed!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         File.Delete(editor_handle.project_default_dir + "\\AppMain.cpp");
-                        flushDirectories(editor_handle.project_default_dir + "\\Build");
+                        flushDirectories(editor_handle.project_default_dir + "\\Build",false);
                         log_window.Show();
                         build_progress.Close();
 
@@ -4038,7 +3942,7 @@ jmp:
 
                     File.Copy(editor_handle.project_default_dir + "\\Build\\Debug\\" + editor_handle.project_info.project_name + ".exe", editor_handle.project_default_dir + "\\Build\\" + editor_handle.project_info.project_name + ".exe");
 
-                    flushDirectories(editor_handle.project_default_dir + "\\Build\\Debug");
+                    flushDirectories(editor_handle.project_default_dir + "\\Build\\Debug",false);
                     File.Delete(editor_handle.project_default_dir + "\\Build\\" + editor_handle.project_info.project_name + ".vcxproj");
                     File.Delete(editor_handle.project_default_dir + "\\AppMain.cpp");
 
@@ -4084,15 +3988,281 @@ jmp:
                 build_progress.Close();
                 log_window.Show();
             }
+            else if (editor_handle.platform_id == 5)
+            {
+                // Linux Platform Generation.
+                
+                build_progress.progress();
+                Thread.Sleep(500);
+
+                log_window.addLog("Running C++ Compiler...");
+
+                CppResourceCopy copyResources = delegate(bool isBuild)
+                {
+                    string script_list = "";
+                    string header_list = "";
+                    StreamWriter script_header_wr = null;
+
+                    script_header_wr = new StreamWriter(editor_handle.project_default_dir + "\\Build\\Scripts.h"); 
+                    script_header_wr.WriteLine("#ifndef SCRIPT_H");
+
+                    foreach (string path in Directory.GetFiles(editor_handle.project_default_dir + "\\Game-Scripts"))
+                         if (Path.GetExtension(path) == ".cpp" || Path.GetExtension(path) == "cpp")
+                         {
+                                if (isBuild) script_list += "<ClCompile Include = \"" + Path.GetFileName(path) + "\" />\n";
+                                File.Copy(path, editor_handle.project_default_dir + "\\Build\\" + Path.GetFileName(path));
+                         }
+                         else if (Path.GetExtension(path) == ".h" || Path.GetExtension(path) == "h")
+                         {
+                                if (isBuild) header_list += "<ClInclude Include = \"" + Path.GetFileName(path) + "\" />\n"; 
+                                script_header_wr.WriteLine("#include \"" + Path.GetFileName(path) + "\"");
+                                File.Copy(path, editor_handle.project_default_dir + "\\Build\\" + Path.GetFileName(path));
+                         }
+
+                    script_header_wr.WriteLine("#endif"); 
+                    script_header_wr.Flush(); 
+                    script_header_wr.Close();
+
+                    Directory.CreateDirectory(editor_handle.project_default_dir + "\\Build\\Data");
+
+                    foreach (string file in Directory.GetFiles(editor_handle.project_default_dir + "\\Game-Resouces"))
+                        File.Copy(file, editor_handle.project_default_dir + "\\Build\\Data\\" + encryptFileName(Path.GetFileNameWithoutExtension(file)) + ".X");
+
+                    // Copy DLL / Runtime Libraries.
+                    foreach (string file in Directory.GetFiles(Application.StartupPath + "\\Runtime"))
+                        if (Path.GetExtension(file) == ".so" || Path.GetExtension(file) == "so") File.Copy(file, editor_handle.project_default_dir + "\\Build\\" + Path.GetFileName(file));
+
+                    foreach (string file in Directory.GetFiles(editor_handle.project_default_dir + "\\Game-Plugins"))
+                        if (Path.GetExtension(file) == ".so" || Path.GetExtension(file) == "so" || Path.GetExtension(file) == ".a" || Path.GetExtension(file) == "a") File.Copy(file, editor_handle.project_default_dir + "\\Build\\" + Path.GetFileName(file));
+
+                    File.Copy(editor_handle.project_default_dir + "\\AppMain.cpp", editor_handle.project_default_dir + "\\Build\\AppMain.cpp");
+
+                    if (isBuild)
+                    {
+                        StreamWriter project_file_wr = new StreamWriter(editor_handle.project_default_dir + "\\Build\\" + editor_handle.project_info.project_name + ".vcxproj");
+
+                        // Generate VC++ Project.
+                        project_file_wr.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                                                  "<Project DefaultTargets=\"Build\" ToolsVersion=\"10.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n" +
+                                                  "<ItemGroup>\n" +
+                                                  "<ProjectConfiguration Include=\"Debug|Win32\">\n" +
+                                                  "<Configuration>Debug</Configuration>\n" +
+                                                  "<Platform>Win32</Platform>\n" +
+                                                  "</ProjectConfiguration>\n" +
+                                                  "<ProjectConfiguration Include=\"Release|Win32\">\n" +
+                                                  "<Configuration>Release</Configuration>\n" +
+                                                  "<Platform>Win32</Platform>\n" +
+                                                  "</ProjectConfiguration>\n" +
+                                                  "</ItemGroup>\n" +
+                                                  "<Import Project=\"$(VCTargetsPath)\\Microsoft.Cpp.default.props\" />\n" +
+                                                  "<PropertyGroup>\n" +
+                                                  "<ConfigurationType>Application</ConfigurationType>\n" +
+                                                  "<PlatformToolset>v120</PlatformToolset>\n" +
+                                                  "</PropertyGroup>\n" +
+                                                  "<Import Project=\"$(VCTargetsPath)\\Microsoft.Cpp.props\" />\n" +
+                                                  "<ItemGroup>\n" +
+                                                  "<ClCompile Include=\"AppMain.cpp\" />\n" +
+                                                  script_list +
+                                                  "</ItemGroup>\n" +
+                                                  "<ItemGroup>\n" +
+                                                  "<ClInclude Include=\"Scripts.h\" />\n" +
+                                                  header_list +
+                                                  "</ItemGroup>\n" +
+                                                  "<Import Project=\"$(VCTargetsPath)\\Microsoft.Cpp.Targets\" />\n" +
+                                                  "<PropertyGroup>\n" +
+                                                  "<IncludePath>" + Application.StartupPath + "\\header_includes;$(IncludePath)</IncludePath>\n" +
+                                                  "<LibraryPath>" + Application.StartupPath + "\\lib;" + editor_handle.project_default_dir + "\\Game-Plugins;$(LibraryPath)</LibraryPath>\n" +
+                                                  "</PropertyGroup>\n" +
+                                                  "<ItemDefinitionGroup>\n" +
+                                                  "<Link>\n" +
+                                                  "<GenerateDebugInformation>true</GenerateDebugInformation>\n" +
+                                                  "<SubSystem>Console</SubSystem>\n" +
+                                                  "</Link>\n" +
+                                                  "<ClCompile>\n" +
+                                                  "<RuntimeLibrary Condition=\"'$(Configuration)|$(Platform)'=='Debug|Win32'\">MultiThreadedDebugDLL</RuntimeLibrary>\n" +
+                                                  "</ClCompile>\n" +
+                                                  "</ItemDefinitionGroup>\n" +
+                                                  "</Project>");
+
+                        project_file_wr.Flush();
+                        project_file_wr.Close();
+                    }
+                };
+
+                copyResources(true);
+
+               /* StreamWriter project_file_wr = new StreamWriter(editor_handle.project_default_dir + "\\Build\\" + editor_handle.project_info.project_name + ".vcxproj");
+
+                // Generate VC++ Project.
+                project_file_wr.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                                          "<Project DefaultTargets=\"Build\" ToolsVersion=\"10.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n" +
+                                          "<ItemGroup>\n" +
+                                          "<ProjectConfiguration Include=\"Debug|Win32\">\n" +
+                                          "<Configuration>Debug</Configuration>\n" +
+                                          "<Platform>Win32</Platform>\n" +
+                                          "</ProjectConfiguration>\n" +
+                                          "<ProjectConfiguration Include=\"Release|Win32\">\n" +
+                                          "<Configuration>Release</Configuration>\n" +
+                                          "<Platform>Win32</Platform>\n" +
+                                          "</ProjectConfiguration>\n" +
+                                          "</ItemGroup>\n" +
+                                          "<Import Project=\"$(VCTargetsPath)\\Microsoft.Cpp.default.props\" />\n" +
+                                          "<PropertyGroup>\n" +
+                                          "<ConfigurationType>Application</ConfigurationType>\n" +
+                                          "<PlatformToolset>v120</PlatformToolset>\n" +
+                                          "</PropertyGroup>\n" +
+                                          "<Import Project=\"$(VCTargetsPath)\\Microsoft.Cpp.props\" />\n" +
+                                          "<ItemGroup>\n" +
+                                          "<ClCompile Include=\"AppMain.cpp\" />\n" +
+                                          script_list +
+                                          "</ItemGroup>\n" +
+                                          "<ItemGroup>\n" +
+                                          "<ClInclude Include=\"Scripts.h\" />\n" +
+                                          header_list +
+                                          "</ItemGroup>\n" +
+                                          "<Import Project=\"$(VCTargetsPath)\\Microsoft.Cpp.Targets\" />\n" +
+                                          "<PropertyGroup>\n" +
+                                          "<IncludePath>" + Application.StartupPath + "\\header_includes;$(IncludePath)</IncludePath>\n" +
+                                          "<LibraryPath>" + Application.StartupPath + "\\lib;" + editor_handle.project_default_dir + "\\Game-Plugins;$(LibraryPath)</LibraryPath>\n" +
+                                          "</PropertyGroup>\n" +
+                                          "<ItemDefinitionGroup>\n" +
+                                          "<Link>\n" +
+                                          "<GenerateDebugInformation>true</GenerateDebugInformation>\n" +
+                                          "<SubSystem>Console</SubSystem>\n" +
+                                          "</Link>\n" +
+                                          "<ClCompile>\n" +
+                                          "<RuntimeLibrary Condition=\"'$(Configuration)|$(Platform)'=='Debug|Win32'\">MultiThreadedDebugDLL</RuntimeLibrary>\n" +
+                                          "</ClCompile>\n" +
+                                          "</ItemDefinitionGroup>\n" +
+                                          "</Project>");
+
+                project_file_wr.Flush();
+                project_file_wr.Close(); */
+
+                // Run MSBuild and compile the scripts on Windows.
+                try
+                {
+                    //Process process_handle = Process.Start("MSBuild", editor_handle.project_default_dir + "\\Build\\" + editor_handle.project_info.project_name + ".vcxproj /p:configuration=debug");
+
+                    ProcessStartInfo pinfo = new ProcessStartInfo();
+
+                    pinfo.Arguments = editor_handle.project_default_dir + "\\Build\\" + editor_handle.project_info.project_name + ".vcxproj /p:configuration=debug";
+                    pinfo.FileName = "MSBuild";
+                    pinfo.UseShellExecute = false;
+                    pinfo.RedirectStandardOutput = true;
+                    pinfo.RedirectStandardError = true;
+                    pinfo.CreateNoWindow = true;
+
+                    Process process_handle = Process.Start(pinfo);
+
+                    log_window.addLog(process_handle.StandardOutput.ReadToEnd());
+                    log_window.addLog(process_handle.StandardError.ReadToEnd());
+
+                re:
+                    if (!process_handle.HasExited) goto re;
+
+                    if (process_handle.ExitCode % 2 == 0x1)
+                    {
+                        Thread.Sleep(250);
+
+                        log_window.addLog("Compile Failed!...");
+                        log_window.addLog("Build Failed!...");
+
+                        MessageBox.Show("Error found in scripts!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Build Failed!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        File.Delete(editor_handle.project_default_dir + "\\AppMain.cpp");
+                        flushDirectories(editor_handle.project_default_dir + "\\Build",false);
+                        log_window.Show();
+                        build_progress.Close();
+
+                        foreach (string path in rem_files) File.Delete(path);
+
+                        return false;
+                    }
+
+                    build_progress.progress();
+                    Thread.Sleep(500);
+
+                    flushDirectories(editor_handle.project_default_dir + "\\Build");
+                   
+                    copyResources(false); // Copy the resources again for final packing.
+
+
+                    /*
+                     *  Copy all the lib files to the build directory.
+                     */
+                    StreamWriter stm_wr_libs = new StreamWriter(editor_handle.project_default_dir + "\\Build\\Libs.prop");
+                    
+                    foreach (string file in Directory.GetFiles(editor_handle.project_default_dir + "\\Game-Plugins"))
+                        if (Path.GetExtension(file) == ".a" || Path.GetExtension(file) == "a" || Path.GetExtension(file) == ".so" || Path.GetExtension(file) == "so") { stm_wr_libs.WriteLine(Path.GetFileNameWithoutExtension(file).Substring(3, Path.GetFileNameWithoutExtension(file).Length - 3)); File.Copy(file, editor_handle.project_default_dir + "\\Build\\" + Path.GetFileName(file)); }
+
+                    stm_wr_libs.Flush();
+                    stm_wr_libs.Close();
+
+                    foreach (string file in Directory.GetFiles(Application.StartupPath + "\\lib"))
+                        if (Path.GetExtension(file) == ".a" || Path.GetExtension(file) == "a") File.Copy(file, editor_handle.project_default_dir + "\\Build\\" + Path.GetFileName(file));
+
+                    // Packup the files in a pak file.
+                    pinfo.FileName = Application.StartupPath + "\\FileZip.exe";
+                    pinfo.Arguments = "-1 -o \"" + editor_handle.project_default_dir + "\\Build\\GameData.pak\" -i";
+
+                    foreach (string file in Directory.GetFiles(editor_handle.project_default_dir + "\\Build")) pinfo.Arguments += " \"" + file + "\""; // Copy all files from build folder.
+                    foreach (string file in Directory.GetFiles(editor_handle.project_default_dir + "\\Build\\Data")) pinfo.Arguments += " \"" + file + "\""; // Copy all files from data folder.
+                    foreach (string file in Directory.GetFiles(Application.StartupPath + "\\header_includes")) pinfo.Arguments += " \"" + file + "\""; // Copy all files from header folder.
+
+                    process_handle = Process.Start(pinfo); // Call FileZip.
+
+                    process_handle.WaitForExit();
+
+                    log_window.addLog(process_handle.StandardOutput.ReadToEnd());
+                    log_window.addLog(process_handle.StandardError.ReadToEnd());
+
+                    File.Copy(Application.StartupPath + "\\FileZip.elf", editor_handle.project_default_dir + "\\Build\\FileZip.elf");
+                    File.Copy(Application.StartupPath + "\\GameBuilder.elf", editor_handle.project_default_dir + "\\Build\\GameBuilder.elf");
+                    flushDirectories(editor_handle.project_default_dir + "\\Build\\Data",false);
+
+                    foreach (string file in Directory.GetFiles(editor_handle.project_default_dir + "\\Build"))
+                        if ((Path.GetExtension(file) != ".elf" && Path.GetExtension(file) != "elf") && (Path.GetExtension(file) != ".pak" && Path.GetExtension(file) != "pak")) File.Delete(file);
+
+                    File.Delete(editor_handle.project_default_dir + "\\AppMain.cpp");
+                    
+                    build_progress.progress();
+                    Thread.Sleep(500);
+
+                    log_window.addLog("Compile Completed!...");
+                    log_window.addLog("Build Complete");
+
+                    // Finish.
+                    MessageBox.Show("Build Succesfull!", "Succesfull", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    foreach (string path in rem_files) File.Delete(path);
+
+                    build_progress.Close();
+                    log_window.Show();
+
+                    return true;
+                }
+                catch (Win32Exception ex)
+                {
+                    MessageBox.Show("MSBuild not installed properly!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    log_window.addLog("MSBuild Installation Not Found ! Please Install MSBuild v12.0 For Heavy Engine And ReBuild");
+                    log_window.addLog("Build Failed...");
+                }
+
+                foreach (string path in rem_files) File.Delete(path);
+
+                build_progress.Close();
+                log_window.Show();
+            }
 
             return false;
         }
 
-        private void flushDirectories(string path)
+        private void flushDirectories(string path,bool KeepCurrentDirectory = true)
         {
             foreach (string dir_path in Directory.GetDirectories(path))
             {
-                flushDirectories(dir_path);
+                flushDirectories(dir_path,false);
             }
 
             foreach (string file_path in Directory.GetFiles(path))
@@ -4100,8 +4270,10 @@ jmp:
                 File.Delete(file_path);
             }
 
-            Directory.Delete(path);
+            if (!KeepCurrentDirectory) Directory.Delete(path);
         }
+
+        delegate void CppResourceCopy( bool isBuild );
     }
 
 

@@ -11,19 +11,19 @@ import java.util.*;
  *
  * @author Riju
  */
-public class NavigationManager 
+public class NavigationManager
 {
-      static Vector navigator_list = new Vector();
+      static ArrayList<Navigator> navigator_list = new ArrayList<Navigator>();
         
         public static void registerNavigation(Navigator navigator)
         {
-            navigator_list.addElement(navigator);
+            navigator_list.add(navigator);
             if (!navigator.isNavigating()) navigator.start();
         }
 
         public static void updateNavigation()
         {
-             int cnt = 0;
+            int cnt = 0;
             boolean toRepeat = false;
             
             do
@@ -32,12 +32,12 @@ public class NavigationManager
                 
             for (; cnt < navigator_list.size( );cnt++ )
                 {
-                    Navigator nav =(Navigator)  navigator_list.elementAt(cnt);
+                    Navigator nav = navigator_list.get(cnt);
 
                     if (!nav.isNavigating())
                     {
                        // nav.stop();
-                        navigator_list.removeElementAt(cnt);
+                        navigator_list.remove(cnt);
                         toRepeat = true;
                         break;
                     }
@@ -48,5 +48,10 @@ public class NavigationManager
                 }
             
             } while (toRepeat);
+        }
+        
+        public static void updateNavigatorTargets(Vector2 pos) // Called by camera class only.
+        {
+            for(Navigator nav : navigator_list) nav.cameraUpdatePoints(pos);
         }
 }

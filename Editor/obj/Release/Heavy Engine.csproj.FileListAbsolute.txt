@@ -58,4 +58,3 @@ E:\Projects\Heavy Engine\obj\Release\Heavy_Engine.TileMapEditor.resources
 E:\Projects\Heavy Engine\obj\Release\Heavy_Engine.RotationScaleEditor.resources
 E:\Projects\Heavy Engine\obj\Release\Heavy_Engine.CreatePackage.resources
 E:\Projects\Heavy Engine\obj\Release\Heavy_Engine.ChildEditor.resources
-E:\Projects\Heavy Engine\obj\Release\Heavy Engine.csprojResolveAssemblyReference.cache

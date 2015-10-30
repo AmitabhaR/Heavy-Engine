@@ -47,6 +47,10 @@
             this.menuItem_LoadLevel = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_SaveLevel = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemSeperator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.menuItem_Recents = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItem_Recent1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItem_Recent2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItem_Recent3 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_BackToMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_Exit = new System.Windows.Forms.ToolStripMenuItem();
             this.menuContainer_Edit = new System.Windows.Forms.ToolStripMenuItem();
@@ -76,6 +80,7 @@
             this.menuItem_ImportHeader = new System.Windows.Forms.ToolStripMenuItem();
             this.menuContainer_Packages = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_ImportPackage = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItem_CreatePackage = new System.Windows.Forms.ToolStripMenuItem();
             this.menuContainer_Project = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_RunProject = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_BuildProject = new System.Windows.Forms.ToolStripMenuItem();
@@ -103,7 +108,6 @@
             this.list_div = new System.Windows.Forms.TableLayoutPanel();
             this.file_tree = new System.Windows.Forms.TreeView();
             this.lb_objects = new System.Windows.Forms.ListBox();
-            this.menuItem_CreatePackage = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).BeginInit();
             this.bottom_dataview.SuspendLayout();
             this.top_menu_container.SuspendLayout();
@@ -219,6 +223,7 @@
             this.menuItem_LoadLevel,
             this.menuItem_SaveLevel,
             this.menuItemSeperator2,
+            this.menuItem_Recents,
             this.menuItem_BackToMenu,
             this.menuItem_Exit});
             this.menuContainer_File.Name = "menuContainer_File";
@@ -228,66 +233,94 @@
             // menuItem_NewProject
             // 
             this.menuItem_NewProject.Name = "menuItem_NewProject";
-            this.menuItem_NewProject.Size = new System.Drawing.Size(147, 22);
+            this.menuItem_NewProject.Size = new System.Drawing.Size(152, 22);
             this.menuItem_NewProject.Text = "New Project";
             this.menuItem_NewProject.Click += new System.EventHandler(this.menuItem_NewProject_Click);
             // 
             // menuItem_LoadProject
             // 
             this.menuItem_LoadProject.Name = "menuItem_LoadProject";
-            this.menuItem_LoadProject.Size = new System.Drawing.Size(147, 22);
+            this.menuItem_LoadProject.Size = new System.Drawing.Size(152, 22);
             this.menuItem_LoadProject.Text = "Load Project";
             this.menuItem_LoadProject.Click += new System.EventHandler(this.menuItem_LoadProject_Click);
             // 
             // menuItem_SaveProject
             // 
             this.menuItem_SaveProject.Name = "menuItem_SaveProject";
-            this.menuItem_SaveProject.Size = new System.Drawing.Size(147, 22);
+            this.menuItem_SaveProject.Size = new System.Drawing.Size(152, 22);
             this.menuItem_SaveProject.Text = "Save Project";
             this.menuItem_SaveProject.Click += new System.EventHandler(this.menuItem_SaveProject_Click);
             // 
             // menuItemSeperator1
             // 
             this.menuItemSeperator1.Name = "menuItemSeperator1";
-            this.menuItemSeperator1.Size = new System.Drawing.Size(144, 6);
+            this.menuItemSeperator1.Size = new System.Drawing.Size(149, 6);
             // 
             // menuItem_NewLevel
             // 
             this.menuItem_NewLevel.Name = "menuItem_NewLevel";
-            this.menuItem_NewLevel.Size = new System.Drawing.Size(147, 22);
+            this.menuItem_NewLevel.Size = new System.Drawing.Size(152, 22);
             this.menuItem_NewLevel.Text = "New Level";
             this.menuItem_NewLevel.Click += new System.EventHandler(this.menuItem_NewLevel_Click);
             // 
             // menuItem_LoadLevel
             // 
             this.menuItem_LoadLevel.Name = "menuItem_LoadLevel";
-            this.menuItem_LoadLevel.Size = new System.Drawing.Size(147, 22);
+            this.menuItem_LoadLevel.Size = new System.Drawing.Size(152, 22);
             this.menuItem_LoadLevel.Text = "Load Level";
             this.menuItem_LoadLevel.Click += new System.EventHandler(this.menuItem_LoadLevel_Click);
             // 
             // menuItem_SaveLevel
             // 
             this.menuItem_SaveLevel.Name = "menuItem_SaveLevel";
-            this.menuItem_SaveLevel.Size = new System.Drawing.Size(147, 22);
+            this.menuItem_SaveLevel.Size = new System.Drawing.Size(152, 22);
             this.menuItem_SaveLevel.Text = "Save Level";
             this.menuItem_SaveLevel.Click += new System.EventHandler(this.menuItem_SaveLevel_Click);
             // 
             // menuItemSeperator2
             // 
             this.menuItemSeperator2.Name = "menuItemSeperator2";
-            this.menuItemSeperator2.Size = new System.Drawing.Size(144, 6);
+            this.menuItemSeperator2.Size = new System.Drawing.Size(149, 6);
+            // 
+            // menuItem_Recents
+            // 
+            this.menuItem_Recents.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItem_Recent1,
+            this.menuItem_Recent2,
+            this.menuItem_Recent3});
+            this.menuItem_Recents.Name = "menuItem_Recents";
+            this.menuItem_Recents.Size = new System.Drawing.Size(152, 22);
+            this.menuItem_Recents.Text = "Recents";
+            // 
+            // menuItem_Recent1
+            // 
+            this.menuItem_Recent1.Name = "menuItem_Recent1";
+            this.menuItem_Recent1.Size = new System.Drawing.Size(152, 22);
+            this.menuItem_Recent1.Click += new System.EventHandler(this.menuItem_Recent1_Click);
+            // 
+            // menuItem_Recent2
+            // 
+            this.menuItem_Recent2.Name = "menuItem_Recent2";
+            this.menuItem_Recent2.Size = new System.Drawing.Size(152, 22);
+            this.menuItem_Recent2.Click += new System.EventHandler(this.menuItem_Recent2_Click);
+            // 
+            // menuItem_Recent3
+            // 
+            this.menuItem_Recent3.Name = "menuItem_Recent3";
+            this.menuItem_Recent3.Size = new System.Drawing.Size(152, 22);
+            this.menuItem_Recent3.Click += new System.EventHandler(this.menuItem_Recent3_Click);
             // 
             // menuItem_BackToMenu
             // 
             this.menuItem_BackToMenu.Name = "menuItem_BackToMenu";
-            this.menuItem_BackToMenu.Size = new System.Drawing.Size(147, 22);
+            this.menuItem_BackToMenu.Size = new System.Drawing.Size(152, 22);
             this.menuItem_BackToMenu.Text = "Back to menu";
             this.menuItem_BackToMenu.Click += new System.EventHandler(this.backToMenuToolStripMenuItem_Click);
             // 
             // menuItem_Exit
             // 
             this.menuItem_Exit.Name = "menuItem_Exit";
-            this.menuItem_Exit.Size = new System.Drawing.Size(147, 22);
+            this.menuItem_Exit.Size = new System.Drawing.Size(152, 22);
             this.menuItem_Exit.Text = "Exit";
             this.menuItem_Exit.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -499,6 +532,13 @@
             this.menuItem_ImportPackage.Size = new System.Drawing.Size(157, 22);
             this.menuItem_ImportPackage.Text = "Import Package";
             this.menuItem_ImportPackage.Click += new System.EventHandler(this.menuItem_ImportPackage_Click);
+            // 
+            // menuItem_CreatePackage
+            // 
+            this.menuItem_CreatePackage.Name = "menuItem_CreatePackage";
+            this.menuItem_CreatePackage.Size = new System.Drawing.Size(157, 22);
+            this.menuItem_CreatePackage.Text = "Create Package";
+            this.menuItem_CreatePackage.Click += new System.EventHandler(this.menuItem_CreatePackage_Click);
             // 
             // menuContainer_Project
             // 
@@ -787,13 +827,6 @@
             this.lb_objects.Size = new System.Drawing.Size(136, 276);
             this.lb_objects.TabIndex = 1;
             // 
-            // menuItem_CreatePackage
-            // 
-            this.menuItem_CreatePackage.Name = "menuItem_CreatePackage";
-            this.menuItem_CreatePackage.Size = new System.Drawing.Size(157, 22);
-            this.menuItem_CreatePackage.Text = "Create Package";
-            this.menuItem_CreatePackage.Click += new System.EventHandler(this.menuItem_CreatePackage_Click);
-            // 
             // Editor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -916,5 +949,9 @@
         private System.Windows.Forms.ToolStripMenuItem menuContainer_Packages;
         private System.Windows.Forms.ToolStripMenuItem menuItem_ImportPackage;
         private System.Windows.Forms.ToolStripMenuItem menuItem_CreatePackage;
+        private System.Windows.Forms.ToolStripMenuItem menuItem_Recents;
+        private System.Windows.Forms.ToolStripMenuItem menuItem_Recent1;
+        private System.Windows.Forms.ToolStripMenuItem menuItem_Recent2;
+        private System.Windows.Forms.ToolStripMenuItem menuItem_Recent3;
     }
 }

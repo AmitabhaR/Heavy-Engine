@@ -70,6 +70,9 @@ In the pre-compiled folder , we have compiled and given you the latest build . Y
 # Protection
 For protection from decompilation , you can use Esiriz .NET Reactor for encryting / encoding the source code . This is only for official purposes only.
 
+# Notice
+We are not providing the source code of FileZip and GameBuilder because according to the terms and conditions of the FileZip software , the software is free but not be shared it's source code . GameBuilder also contains the same license.
+
 Release Version : 2.0 Beta 1.1
 
 #### 															Reo Studio 2015 - 2016

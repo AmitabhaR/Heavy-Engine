@@ -1,29 +1,34 @@
+package jruntime;
+
+import jruntime.CollisionHandler;
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.io.*;
+import net.coobird.thumbnailator.Thumbnails;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package jruntime;
 
-import java.util.*;
-import javax.microedition.lcdui.*;
-import javax.microedition.lcdui.game.*;
 /**
  *
  * @author Riju
  */
-public class Scene extends GameCanvas implements CommandListener,Runnable
+public class Scene implements Runnable , Cloneable
 {
-    Vector object_array;  
+    ArrayList object_array;
+    JPanel canvas;        
     public int A = 0,R = 0,G = 0,B = 0;
     public int speed = 1;
     public int gravity = 0;
     public String name = "";
     private boolean isRunning = false;
-    private Vector collision_handlers;	
-    private Vector touch_handlers;
+    public ArrayList collision_handlers;	
     DrawableGameObject[] sortedArray;
-    Command exit_com;
     
     class DrawableGameObject
     {
@@ -33,19 +38,14 @@ public class Scene extends GameCanvas implements CommandListener,Runnable
     
     public Scene( )
     {
-        super(false);
-        object_array = new Vector( );
-        collision_handlers = new Vector( );
-        touch_handlers = new Vector( );
+        object_array = new ArrayList( );
+        collision_handlers = new ArrayList( );
         sortedArray = new DrawableGameObject[0];
-        exit_com = new Command("Exit",Command.BACK,0);
-        
-        this.addCommand(exit_com);
-        this.setCommandListener(this);
     }
     
-    public void startScene()
+    public void startScene(JPanel canvas)
     {
+         this.canvas = canvas;
          isRunning = true;
          makeSorting( );
          
@@ -53,49 +53,12 @@ public class Scene extends GameCanvas implements CommandListener,Runnable
          t.start();
     }
     
-    private Image resizeImage(Image img , int width , int height)
-    {
-        int[] rawInput = new int[img.getHeight() * img.getWidth()];
-        img.getRGB(rawInput, 0, img.getWidth(), 0, 0, img.getWidth(), img.getHeight());
-
-        int[] rawOutput = new int[width * height];
-
-        // YD compensates for the x loop by subtracting the width back out
-        int YD = (img.getHeight() / height) * img.getWidth() - img.getWidth();
-        int YR = img.getHeight() % height;
-        int XD = img.getWidth() / width;
-        int XR = img.getWidth() % width;
-        int outOffset = 0;
-        int inOffset = 0;
-
-        for (int y = height, YE = 0; y > 0; y--) {
-          for (int x = width, XE = 0; x > 0; x--) {
-            rawOutput[outOffset++] = rawInput[inOffset];
-            inOffset += XD;
-            XE += XR;
-            if (XE >= width) {
-              XE -= width;
-              inOffset++;
-            }
-          }
-          inOffset += YD;
-          YE += YR;
-          if (YE >= height) {
-            YE -= height;
-            inOffset += img.getWidth();
-          }
-        }
-        rawInput = null;
-        return Image.createRGBImage(rawOutput, width, height, true);
-    }
-    
+    @Override
     public void run( )
     {
         while(isRunning)
         {
             updateScene( );
-            drawScene(getGraphics( ));
-            flushGraphics( );
             
             try
             {
@@ -107,15 +70,7 @@ public class Scene extends GameCanvas implements CommandListener,Runnable
             }
         }
     }
-	
-    public void commandAction(Command com,Displayable dis)
-    {
-        if (exit_com == com)
-        {
-          HApplication.exitApp();
-        }
-    }
-    
+		
 		private void updateScene()
 		{
                    boolean hasDeleted = false,hasDel = false; 
@@ -126,9 +81,9 @@ public class Scene extends GameCanvas implements CommandListener,Runnable
                        
                        for(int cnt = 0;cnt < object_array.size();cnt++)
                        {
-                           if (((GameObject_Scene) object_array.elementAt(cnt)).isDestroyed)
+                           if (((GameObject_Scene) object_array.get(cnt)).isDestroyed)
                            {
-                               object_array.removeElementAt(cnt);
+                               object_array.remove(cnt);
                                hasDeleted = true;
                                hasDel = true;
                                break;
@@ -141,14 +96,14 @@ public class Scene extends GameCanvas implements CommandListener,Runnable
                    
                    
 		   for (int cnt = 0;cnt < object_array.size();cnt++)
-           {
-			     if (((GameObject_Scene) object_array.elementAt(cnt)).obj_instance._static == false)
+                   {
+			     if (((GameObject_Scene) object_array.get(cnt)).obj_instance._static == false)
 				 {
-					if (((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.physics)
+					if (((GameObject_Scene) object_array.get(cnt)).obj_instance.physics)
 					{
-						if (((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.rigidbody)
+						if (((GameObject_Scene) object_array.get(cnt)).obj_instance.rigidbody)
 						{
-							((GameObject_Scene) object_array.elementAt(cnt)).Translate(0,gravity);
+							((GameObject_Scene) object_array.get(cnt)).Translate(0,gravity);
 						}
 						
 						for(int cnt0 = 0;cnt0 < object_array.size( );cnt0++)
@@ -159,14 +114,14 @@ public class Scene extends GameCanvas implements CommandListener,Runnable
 							  }
 							  else
 						      {
-							    if (((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.img != null && ((GameObject_Scene) object_array.elementAt(cnt0)).obj_instance.img != null && ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.physics && ((GameObject_Scene) object_array.elementAt(cnt0)).obj_instance.physics && ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.collider && ((GameObject_Scene) object_array.elementAt(cnt0)).obj_instance.collider)
+							    if (((GameObject_Scene) object_array.get(cnt)).obj_instance.img != null && ((GameObject_Scene) object_array.get(cnt0)).obj_instance.img != null && ((GameObject_Scene) object_array.get(cnt)).obj_instance.physics && ((GameObject_Scene) object_array.get(cnt0)).obj_instance.physics && ((GameObject_Scene) object_array.get(cnt)).obj_instance.collider && ((GameObject_Scene) object_array.get(cnt0)).obj_instance.collider)
 								{
-									if (((GameObject_Scene) object_array.elementAt(cnt)).pos_x + ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.img.getWidth( ) > ((GameObject_Scene) object_array.elementAt(cnt0)).pos_x && ((GameObject_Scene) object_array.elementAt(cnt)).pos_x < ((GameObject_Scene) object_array.elementAt(cnt0)).pos_x + ((GameObject_Scene) object_array.elementAt(cnt0)).obj_instance.img.getWidth( ) && ((GameObject_Scene) object_array.elementAt(cnt)).pos_y + ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.img.getHeight( ) > ((GameObject_Scene) object_array.elementAt(cnt0)).pos_y && ((GameObject_Scene) object_array.elementAt(cnt)).pos_y < ((GameObject_Scene) object_array.elementAt(cnt0)).pos_y + ((GameObject_Scene) object_array.elementAt(cnt0)).obj_instance.img.getHeight( ) && ((GameObject_Scene) object_array.elementAt(cnt)).depth == ((GameObject_Scene) object_array.elementAt(cnt0)).depth)
+									if (((GameObject_Scene) object_array.get(cnt)).pos_x + ((GameObject_Scene) object_array.get(cnt)).obj_instance.img.getWidth( ) > ((GameObject_Scene) object_array.get(cnt0)).pos_x && ((GameObject_Scene) object_array.get(cnt)).pos_x < ((GameObject_Scene) object_array.get(cnt0)).pos_x + ((GameObject_Scene) object_array.get(cnt0)).obj_instance.img.getWidth( ) && ((GameObject_Scene) object_array.get(cnt)).pos_y + ((GameObject_Scene) object_array.get(cnt)).obj_instance.img.getHeight( ) > ((GameObject_Scene) object_array.get(cnt0)).pos_y && ((GameObject_Scene) object_array.get(cnt)).pos_y < ((GameObject_Scene) object_array.get(cnt0)).pos_y + ((GameObject_Scene) object_array.get(cnt0)).obj_instance.img.getHeight( ) && ((GameObject_Scene) object_array.get(cnt)).depth == ((GameObject_Scene) object_array.get(cnt0)).depth)
 									{
                                                                             
                                                                             for(int c = 0;c < collision_handlers.size( );c++)
                                                                             {
-                                                                                ((CollisionHandler) collision_handlers.elementAt(c)).onCollision((GameObject_Scene) object_array.elementAt(cnt),(GameObject_Scene) object_array.elementAt(cnt0));
+                                                                                ((CollisionHandler) collision_handlers.get(c)).onCollision((GameObject_Scene) object_array.get(cnt),(GameObject_Scene) object_array.get(cnt0));
                                                                             }
 									}
 								}
@@ -174,12 +129,13 @@ public class Scene extends GameCanvas implements CommandListener,Runnable
 						}
 					}
                                  }
-                           
-                           ((GameObject_Scene) object_array.elementAt(cnt)).processScripts();
-		   }
+                       
+                             ((GameObject_Scene) object_array.get(cnt)).processScripts();
+		   }	
                    
                    NavigationManager.updateNavigation();
                    AnimationManager.updateAnimation();
+                   NetworkManager.updateNetwork();
 		}
 		
                  public boolean checkSorted(DrawableGameObject[] index_array)
@@ -221,11 +177,11 @@ public class Scene extends GameCanvas implements CommandListener,Runnable
         private void makeSorting()
         {
             sortedArray = new DrawableGameObject[object_array.size()];
-            
+
             for (int cnt = 0; cnt < object_array.size( ); cnt++)
             {
                 sortedArray[cnt] = new DrawableGameObject( );
-                sortedArray[cnt].depth = ((GameObject_Scene) object_array.elementAt(cnt)).depth;
+                sortedArray[cnt].depth = ((GameObject_Scene) object_array.get(cnt)).depth;
                 sortedArray[cnt].index = cnt;
             }
 
@@ -234,24 +190,29 @@ public class Scene extends GameCanvas implements CommandListener,Runnable
                 sortElements(sortedArray);
             }
         }
-                
+           
+         public ArrayList<GameObject_Scene> getAllGameObjects( ){ return object_array; }
+        
 		public void drawScene(Graphics g)
 		{
-                    g.setColor(R,G,B);
-		    g.fillRect(0,0,getWidth( ),getHeight( ));
+                    g.setColor(new Color(R,G,B,A));
+		    g.fillRect(0,0,canvas.getWidth(),canvas.getHeight());
 			
 		    for(int cnt = 0;cnt < object_array.size();cnt++)
 			{
-               if (((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.img != null)
+               if (((GameObject_Scene) object_array.get(cnt)).obj_instance.img != null)
 			   {
-                               
-                            g.drawImage(resizeImage(((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.img,((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.img.getWidth() + ((GameObject_Scene) object_array.elementAt(cnt)).GetScale(),((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.img.getHeight() + ((GameObject_Scene) object_array.elementAt(cnt)).GetScale()),((GameObject_Scene) object_array.elementAt(cnt)).pos_x,((GameObject_Scene) object_array.elementAt(cnt)).pos_y,Graphics.TOP | Graphics.LEFT);				   
+                             try
+                             {
+                                 g.drawImage(Thumbnails.of(((GameObject_Scene) object_array.get(cnt)).obj_instance.img).forceSize(((GameObject_Scene) object_array.get(cnt)).obj_instance.img.getWidth() + (int) ((GameObject_Scene) object_array.get(cnt)).GetScale(), ((GameObject_Scene) object_array.get(cnt)).obj_instance.img.getHeight() + (int) ((GameObject_Scene) object_array.get(cnt)).GetScale()).asBufferedImage(),((GameObject_Scene) object_array.get(cnt)).pos_x,((GameObject_Scene) object_array.get(cnt)).pos_y,null);
+                             }
+                             catch(IOException ex) { }
 			   }			   
-			   else if (((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.text != "")
+			   else if (!((GameObject_Scene) object_array.get(cnt)).obj_instance.text.equals(""))
 			   {
-                               g.setFont(((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.font);
-                               g.setColor(((GameObject_Scene)  object_array.elementAt(cnt)).obj_instance.txt_R,((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.txt_G,((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.txt_B);
-                               g.drawString(((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.text,((GameObject_Scene) object_array.elementAt(cnt)).pos_x,((GameObject_Scene) object_array.elementAt(cnt)).pos_y,Graphics.TOP | Graphics.LEFT);				  
+                               g.setFont(new Font(((GameObject_Scene) object_array.get(cnt)).obj_instance.font_name,Font.PLAIN,((GameObject_Scene) object_array.get(cnt)).obj_instance.font_size));
+                               g.setColor(((GameObject_Scene)  object_array.get(cnt)).obj_instance.color);
+                  g.drawString(((GameObject_Scene) object_array.get(cnt)).obj_instance.text,((GameObject_Scene) object_array.get(cnt)).pos_x,((GameObject_Scene) object_array.get(cnt)).pos_y);				  
 			   }
 			}
 		}
@@ -263,21 +224,20 @@ public class Scene extends GameCanvas implements CommandListener,Runnable
 		
 		public boolean loadGameObject(GameObject_Scene gameObject)
 		{
-                   if (gameObject.instance_name == "")
+                   if (gameObject.instance_name.equals(""))
                    {
                        return false;
                    } 
                    
                    for(int cnt = 0;cnt < object_array.size();cnt++)
                    {
-                       if (((GameObject_Scene) object_array.elementAt(cnt)).instance_name == gameObject.instance_name)
+                       if (((GameObject_Scene) object_array.get(cnt)).instance_name.equals(gameObject.instance_name))
                        {
                            return false;
                        }
                    }
                    
-                    
-                   object_array.addElement(gameObject);
+                   object_array.add(gameObject);
                    makeSorting( );
                    
                    return true;
@@ -287,9 +247,9 @@ public class Scene extends GameCanvas implements CommandListener,Runnable
                 { 
                     for(int cnt = 0;cnt < object_array.size( );cnt++)
                     {
-                        if (((GameObject_Scene) object_array.elementAt(cnt)).instance_name == instance_name)
+                        if (((GameObject_Scene) object_array.get(cnt)).instance_name.equals(instance_name))
                         {
-                            ((GameObject_Scene) object_array.elementAt(cnt)).isDestroyed = true;
+                            ((GameObject_Scene) object_array.get(cnt)).isDestroyed = true;
                             return;
                         }
                     }
@@ -299,77 +259,38 @@ public class Scene extends GameCanvas implements CommandListener,Runnable
 		{
 			for(int cnt = 0;cnt < object_array.size( );cnt++)
 			{
-                            if ( ((GameObject_Scene) object_array.elementAt(cnt)).instance_name == name)
+                            if ( ((GameObject_Scene) object_array.get(cnt)).instance_name.equals(name))
 			   {
-					return (GameObject_Scene) object_array.elementAt(cnt);
+					return (GameObject_Scene) object_array.get(cnt);
 			   }			   
 			}
 			
 			return null;
 		}
                 
-           public Vector findGameObject(int tag)
-           {
-               Vector ret_list = new Vector( );
+                 public  ArrayList<GameObject_Scene> findGameObject(int tag)
+                 {
+                    ArrayList<GameObject_Scene> ret_list = new ArrayList<GameObject_Scene>( );
                
-          for(int cnt = 0;cnt < object_array.size( );cnt++)
-          {
-		      if (((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.tag == tag)
+                    for(int cnt = 0;cnt < object_array.size( );cnt++)
+                    {
+                          if (((GameObject_Scene) object_array.get(cnt)).obj_instance.tag == tag)
 			  {
-                              GameObject null_obj = new GameObject( );
-                              
-                              null_obj.name = ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.name;
-                              null_obj.tag = ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.tag;
-                              null_obj.text =  ((GameObject_Scene)  object_array.elementAt(cnt)).obj_instance.text;
-                              null_obj.img = ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.img;
-                              null_obj._static = ((GameObject_Scene)  object_array.elementAt(cnt)).obj_instance._static;
-                              null_obj.collider = ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.collider;
-                              null_obj.txt_R  = ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.txt_R;
-                              null_obj.txt_G = ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.txt_G;
-                              null_obj.txt_B = ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.txt_R;
-                              null_obj.rigidbody = ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.rigidbody;
-                              null_obj.physics = ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.physics;
-                              null_obj.font = ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.font;
-                              
-                              ret_list.addElement(null_obj);
+                              ret_list.add((GameObject_Scene) object_array.get(cnt));
 			  }
-		  }		  
+                    }		  
 		  
-		  return ret_list;
-	   }
+                    return ret_list;
+                 }
                 
                 public void registerCollisionHandler(CollisionHandler handle)
                 {
-                    collision_handlers.addElement(handle);
+                    collision_handlers.add(handle);
                 }
                 
-                public void registerTouchHandler(TouchHandler handler)
+                @Override
+                protected Object clone( ) throws CloneNotSupportedException
                 {
-                    touch_handlers.addElement(handler);
+                    return super.clone();
                 }
-                
-                  protected void pointerPressed(int x ,int y)
-                 {
-                     for(int cnt = 0;cnt < touch_handlers.size();cnt++)
-                     {
-                         ((TouchHandler) touch_handlers.elementAt(cnt)).onTouch(x, y);
-                     }
-                  }
-      
-                 protected void pointerDragged(int x,int y)
-                {
-                      for(int cnt = 0;cnt < touch_handlers.size();cnt++)
-                     {
-                         ((TouchHandler) touch_handlers.elementAt(cnt)).onTouchMoved(x, y);
-                     }
-                }
-      
-                protected void pointerReleased(int x , int y )
-                {
-                    for(int cnt = 0;cnt < touch_handlers.size();cnt++)
-                     {
-                         ((TouchHandler) touch_handlers.elementAt(cnt)).onTouchReleased(x, y);
-                     }
-                }
-                
-}
+	}

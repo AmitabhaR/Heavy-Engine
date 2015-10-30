@@ -146,12 +146,12 @@
         #endregion
 
         private System.Windows.Forms.Label lbl_window_title;
-        private System.Windows.Forms.TextBox txt_path;
+        public System.Windows.Forms.TextBox txt_path;
         private System.Windows.Forms.Label lbl_path;
         private System.Windows.Forms.Button btn_load;
         private System.Windows.Forms.Button btn_browse;
         private System.Windows.Forms.Button btn_back;
         private System.Windows.Forms.Label lbl_project_name;
-        private System.Windows.Forms.TextBox txt_project_name;
+        public System.Windows.Forms.TextBox txt_project_name;
     }
 }

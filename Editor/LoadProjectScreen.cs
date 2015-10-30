@@ -35,7 +35,7 @@ namespace Heavy_Engine
             txt_project_name.Text = txt_path.Text.Substring(txt_path.Text.LastIndexOf('\\') + 1,txt_path.Text.Length - (txt_path.Text.LastIndexOf('\\') + 1));
         }
 
-        private void btn_load_Click(object sender, EventArgs e)
+        public void btn_load_Click(object sender, EventArgs e)
         {
             bool succes = false;
 

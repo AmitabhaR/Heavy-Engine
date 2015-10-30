@@ -49,4 +49,9 @@ public class NavigationManager
             
             } while (toRepeat);
         }
+        
+        public static void updateNavigatorTargets(Vector2 pos) // Called by camera class only.
+        {
+            for(int cntr = 0;cntr < navigator_list.size();cntr++) ((Navigator) navigator_list.elementAt(cntr)).cameraUpdatePoints(pos);
+        }
 }

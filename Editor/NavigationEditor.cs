@@ -517,6 +517,8 @@ namespace Heavy_Engine
 
             stm_wr.Flush();
             stm_wr.Close();
+
+            editor_handle.reloadFileTree();
         }
 
         private NavigationPoint pointAt(int count)

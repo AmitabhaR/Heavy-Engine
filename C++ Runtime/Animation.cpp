@@ -58,6 +58,7 @@ void Animation::update()
 				std::list<HImage>::iterator cur_image = images.begin();
 				current_frame = 0;
 				this->baseGameObject->setImage(*cur_image);
+				this->baseGameObject->SetRotationAngle(this->baseGameObject->GetRotationAngle());
 				update_counter = 0;
 			}
 			else
@@ -75,10 +76,12 @@ void Animation::update()
 				if (cntr == current_frame)
 				{
 					img = *cur_image;
+					break;
 				}
 			}
 
 			this->baseGameObject->setImage(img);
+			this->baseGameObject->SetRotationAngle(this->baseGameObject->GetRotationAngle());
 			current_frame++;
 			update_counter = 0;
 		}

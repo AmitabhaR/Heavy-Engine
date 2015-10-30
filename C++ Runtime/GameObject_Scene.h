@@ -20,6 +20,8 @@ public:
 	std::string instance_name;
 	int depth;
 	bool isDestroyed = false;
+	bool AllowCameraTranslation = false;
+	bool AllowCameraRotation = false;
 
 	void Initialize();
 
