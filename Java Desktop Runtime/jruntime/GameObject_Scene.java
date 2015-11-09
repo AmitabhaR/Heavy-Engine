@@ -25,7 +25,7 @@ public class GameObject_Scene
     private ArrayList scripts;
     public boolean isDestroyed = false;
     public boolean AllowCameraTranslation = false;
-    public boolean AllowCameraRotation = false;
+    public boolean AllowCameraRotation = true;
     public int depth;
     private float rotation_angle;
     private float scale_rate;

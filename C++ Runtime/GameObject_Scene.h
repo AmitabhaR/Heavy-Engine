@@ -21,7 +21,7 @@ public:
 	int depth;
 	bool isDestroyed = false;
 	bool AllowCameraTranslation = false;
-	bool AllowCameraRotation = false;
+	bool AllowCameraRotation = true;
 
 	void Initialize();
 

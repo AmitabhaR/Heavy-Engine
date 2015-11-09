@@ -29,6 +29,8 @@ public class Camera
             camera_rotation += rotate_angle;
             for(GameObject_Scene gameObject : HApplication.getActiveScene().getAllGameObjects()) 
                 if (gameObject.AllowCameraRotation) gameObject.Rotate(-rotate_angle);
+            
+            NavigationManager.updateNavigatorTargets(-rotate_angle);
      }
 
      public static Vector2 getCameraPosition() { return camera_pos;  }

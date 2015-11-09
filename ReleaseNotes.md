@@ -42,6 +42,8 @@ Release Notes (Beta 1.0.3)
 	15. Navigation path dis-order bug fixed . Smooth navigation system implemented.
 	16. Now a inital code is generated for native builds also.
 	17. After saving a navigation file , sometimes the file is not viewed in the editor's file tree . Bug is fixed . Also same for Animation files.
+	18. Fixed rotation while animating bug.
+	19. Fixed package manager problem for not extracting header files.
 	
 ### Notice
 	1. Bosch Scripts are updated with latest features of the engine.

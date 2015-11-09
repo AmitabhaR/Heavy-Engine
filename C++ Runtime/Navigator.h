@@ -19,9 +19,13 @@ private:
 	int pos_x = 0, pos_y = 0;
  	int update_counter = 0, total_updates = 0;
 
-	void makePath(Vector2, Vector2);
+	void makePath(Vector2, Vector2,bool isPosChange = true);
 
 public:
+
+	bool isCameraTranslationAllowed();
+	bool isCameraRotationAllowed();
+
 	Navigator(GameObject_Scene * , int );
 
 	void addPoint(Vector2 );
@@ -37,6 +41,8 @@ public:
 	void update();
 
 	void cameraUpdatePoints(Vector2);
+
+	void cameraRotatePoints(float);
 };
 
 typedef Navigator * Navigator_ptr;

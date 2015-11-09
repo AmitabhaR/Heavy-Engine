@@ -1,3 +1,4 @@
+#include "HeavyEngine.h"
 #include "Navigator.h"
 #include<math.h>
 
@@ -19,6 +20,9 @@ static void setPointElementAt(list<Vector2> & point_list, Vector2 & value , int 
 		if (index == counter) { *cur_point = value; break; }
 }
 
+
+bool Navigator::isCameraTranslationAllowed() { return this->baseObject->AllowCameraTranslation; }
+bool Navigator::isCameraRotationAllowed() { return this->baseObject->AllowCameraRotation;  }
 
 Navigator::Navigator(GameObject_Scene * baseObject, int navigation_speed)
 {
@@ -86,7 +90,28 @@ void Navigator::cameraUpdatePoints(Vector2 pos)
 	}
 }
 
-void Navigator::makePath(Vector2 begin_point, Vector2 end_point)
+void Navigator::cameraRotatePoints(float rotate_angle)
+{
+	for (int cntr = 0; cntr < nav_points.size(); cntr++)
+	{
+		Vector2 nav_point = getPointElementAt(nav_points, cntr);
+		// Point rotation.
+		double angle = (rotate_angle * M_PI / 180);
+		double cos_value = cos((double)angle);
+		double sin_value = sin((double)angle);
+		int dx = nav_point.x - (HApplication::getSize().w >> 1);
+		int dy = nav_point.y - (HApplication::getSize().h >> 1);
+
+		nav_point.x = (int)(cos_value * dx - sin_value * dy + (HApplication::getSize().w >> 1));
+		nav_point.y = (int)(sin_value * dx + cos_value * dy + (HApplication::getSize().h >> 1));
+
+		setPointElementAt(nav_points, nav_point , cntr);
+	}
+
+	if (current_frame < nav_points.size() && current_frame + 1 < nav_points.size()) makePath(getPointElementAt(nav_points,current_frame), getPointElementAt(nav_points,(current_frame + 1)), false);
+}
+
+void Navigator::makePath(Vector2 begin_point, Vector2 end_point,bool isPosChange)
 {
 	deltaY = (end_point.y - begin_point.y);
 	deltaX = (end_point.x - begin_point.x);
@@ -95,10 +120,13 @@ void Navigator::makePath(Vector2 begin_point, Vector2 end_point)
 	else slope = deltaX / deltaY;
 
 	total_updates = (int)(((float)sqrt((double)pow(abs(deltaX), 2) + pow(abs(deltaY), 2))) / navigation_speed);
-	update_counter = 0;
-
-	pos_x = begin_point.x;
-	pos_y = begin_point.y;
+	
+	if (isPosChange)
+	{
+		update_counter = 0;
+		pos_x = begin_point.x;
+		pos_y = begin_point.y;
+	}
 }
 
 void Navigator::update()
@@ -114,19 +142,24 @@ void Navigator::update()
 			}
 			else
 			{
+				Vector2 deltaPos;
+
 				if (abs(deltaX) >= abs(deltaY))
 				{
-					baseObject->pos_x = pos_x;
-					baseObject->pos_y = (int)(slope * (pos_x - getPointElementAt(nav_points, current_frame).x) + getPointElementAt(nav_points, current_frame).y);
+					deltaPos.x = navigation_speed * ((deltaX < 0) ? -1 : (deltaX > 0) ? 1 : 0);
+					deltaPos.y = (int)(slope * (pos_x - getPointElementAt(nav_points, current_frame).x) + getPointElementAt(nav_points, current_frame).y) - baseObject->pos_y;
+
 					pos_x += navigation_speed * ((deltaX < 0) ? -1 : (deltaX > 0) ? 1 : 0);
 				}
 				else
 				{
-					baseObject->pos_y = pos_y;
-					baseObject->pos_x = (int)(slope * (pos_y - getPointElementAt(nav_points, current_frame).y) + getPointElementAt(nav_points, current_frame).x);
+					deltaPos.y = navigation_speed * ((deltaY < 0) ? -1 : (deltaY > 0) ? 1 : 0);
+					deltaPos.x = (int)(slope * (pos_y - getPointElementAt(nav_points, current_frame).y) + getPointElementAt(nav_points, current_frame).x) - baseObject->pos_x;
+
 					pos_y += navigation_speed * ((deltaY < 0) ? -1 : (deltaY > 0) ? 1 : 0);
 				}
 
+				baseObject->Translate(deltaPos.x, deltaPos.y);
 				update_counter++;
 			}
 		else;

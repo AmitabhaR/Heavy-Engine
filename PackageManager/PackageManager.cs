@@ -156,7 +156,7 @@ namespace PackageManager
                         WriteBytes( File.Create(project_path + "\\Game-Plugins\\" + pak_file.file_name + "." + pak_file.file_ext), pak_file.bytes_handle);
                     }
                 }
-                else if (pak_file.file_ext == "cs" || pak_file.file_ext == "java" || pak_file.file_ext == "cpp" || pak_file.file_ext == "bs")
+                else if (pak_file.file_ext == "cs" || pak_file.file_ext == "java" || pak_file.file_ext == "cpp" || pak_file.file_ext == "h" || pak_file.file_ext == "bs")
                 {
                     if (!File.Exists(project_path + "\\Game-Scripts\\" + pak_file.file_name + pak_file.file_ext))
                     {

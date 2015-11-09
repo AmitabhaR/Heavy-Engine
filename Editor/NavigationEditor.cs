@@ -21,6 +21,7 @@ namespace Heavy_Engine
         private NavigationPoint selected_nav_point = null;
         private int camX = 0;
         private int camY = 0;
+        private float cam_angle = 0;
         private MenuItem shortmenu_createPoint = new MenuItem("Create Point");
         private MenuItem shortmenu_deletePoint = new MenuItem("Delete Point");
         private MenuItem shortmenu_selectPoint = new MenuItem("Select Point");
@@ -39,6 +40,10 @@ namespace Heavy_Engine
             {
                 cur_file = "new_file";
             }
+
+            camX = editor_handle.cam_x;
+            camY = editor_handle.cam_y;
+            cam_angle = editor_handle.cam_angle;
 
             InitializeComponent();
         }
@@ -284,6 +289,7 @@ namespace Heavy_Engine
             lbl_mouseY.Text = "Mouse Y : " + mouseY;
             lbl_cameraX.Text = "Camera X : " + camX;
             lbl_cameraY.Text = "Camera Y : " + camY;
+            lbl_cam_angle.Text = "Camera Angle : " + cam_angle;
 
             this.canvas.Refresh();
         }
@@ -652,6 +658,33 @@ namespace Heavy_Engine
             }
 
             camX += 5;
+        }
+
+        private void rotateCamera()
+        {
+            for (int cntr = 0; cntr < gameObject_list.Count; cntr++)
+                if (gameObject_list[cntr].mainObject.object_img != null)
+                {
+                    Editor.GameObject_Scene gameObj = gameObject_list[cntr];
+
+                    gameObj.ApplyRotation(-cam_angle);
+
+                    gameObject_list[cntr] = gameObj;
+                }
+        }
+
+        private void btn_rotate_right_Click(object sender, EventArgs e)
+        {
+            cam_angle--;
+
+            rotateCamera();
+        }
+
+        private void btn_rotate_left_Click(object sender, EventArgs e)
+        {
+            cam_angle++;
+
+            rotateCamera();
         }
     }
 

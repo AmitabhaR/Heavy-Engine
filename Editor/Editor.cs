@@ -36,6 +36,7 @@ namespace Heavy_Engine
         int zoom_rate = 10;
         public int cam_x = 0;
         public int cam_y = 0;
+        public float cam_angle = 0f;
         public int platform_id = 1; // Default : Windows.
         bool isLcontrol = false;
         public bool canClose = true;
@@ -1140,104 +1141,49 @@ namespace Heavy_Engine
 
             foreach(object obj in token_list)
             {
+                string str = (string)obj;
+
                 if (cur_action == "")
-                {
-                    if ((string) obj ==  "Project_Name:")
-                    {
-                        cur_action =  "Project_Name";
-                    }
-                    else if ((string) obj == "Project_Version:")
-                    {
-                        cur_action = "Project_Version";
-                    }
-                    else if ((string) obj == "Project_Author:")
-                    {
-                        cur_action = "Project_Author";
-                    }
-                    else if ((string) obj == "Project_About:")
-                    {
-                        cur_action = "Project_About";
-                    }
-                    else if ((string) obj == "Project_FirstLevel:")
-                    {
-                        cur_action = "Project_FirstLevel";
-                    }
-                    else if ((string) obj == "Project_Platform:")
-                    {
-                        cur_action = "Project_Platform";
-                    }
-                    else if ((string) obj == "Level_Name:")
-                    {
-                        cur_action = "Level_Name";
-                    }
-                    else if ((string) obj == "Speed:")
-                    {
-                        cur_action = "Speed";
-                    }
-                    else if ((string) obj == "Back_Colour:")
-                    {
-                        cur_action = "Back_Colour";
-                    }
-                    else if ((string) obj == "Object:")
-                    {
-                        cur_action = "Object";
-                    }
-                    // Object loading left with level-object loading.
-                } 
+                    if (str == "Project_Name:") cur_action = "Project_Name";
+                    else if (str == "Project_Version:") cur_action = "Project_Version";
+                    else if (str == "Project_Author:") cur_action = "Project_Author";
+                    else if (str == "Project_About:") cur_action = "Project_About";
+                    else if (str == "Project_FirstLevel:") cur_action = "Project_FirstLevel";
+                    else if (str == "Project_Platform:") cur_action = "Project_Platform";
+                    else if (str == "Level_Name:") cur_action = "Level_Name";
+                    else if (str == "Speed:") cur_action = "Speed";
+                    else if (str == "Back_Colour:") cur_action = "Back_Colour";
+                    else if (str == "Object:") cur_action = "Object";
+                    else ;
                 else
                 {
                     if (cur_action == "Project_Name")
                     {
-                        string str = (string) obj;
-
-                        if (str.Substring(0, 1) == "@")
-                        {
-                            project_info.project_name = str.Substring(1, str.Length - 1);
-                        }
+                        if (str.Substring(0, 1) == "@") project_info.project_name = str.Substring(1, str.Length - 1);
 
                         cur_action = "";
                     }
                     else if (cur_action == "Project_Version")
                     {
-                        string str = (string) obj;
-
-                        if (str.Substring(0, 1) == "@")
-                        {
-                            project_info.project_version = str.Substring(1, str.Length - 1);
-                        }
+                        if (str.Substring(0, 1) == "@") project_info.project_version = str.Substring(1, str.Length - 1);
 
                         cur_action = "";
                     }
                     else if (cur_action == "Project_Author")
                     {
-                        string str = (string)obj;
-
-                        if (str.Substring(0, 1) == "@")
-                        {
-                            project_info.project_author = str.Substring(1, str.Length - 1);
-                        }
+                        if (str.Substring(0, 1) == "@") project_info.project_author = str.Substring(1, str.Length - 1);
 
                         cur_action = "";
                     }
                     else if (cur_action == "Project_About")
                     {
-                        string str = (string)obj;
-
-                        if (str.Substring(0, 1) == "@")
-                        {
-                            project_info.project_about = str.Substring(1, str.Length - 1);
-                        }
+                        if (str.Substring(0, 1) == "@") project_info.project_about = str.Substring(1, str.Length - 1);
 
                         cur_action = "";
                     }
                     else if (cur_action == "Project_FirstLevel")
                     {
-                        string str = (string)obj;
-
-                        if (File.Exists(project_default_dir + "\\" + str))
-                        {
-                            project_info.project_firstlevel = project_default_dir + "\\" + str;
-                        }
+                        if (File.Exists(project_default_dir + "\\" + str)) project_info.project_firstlevel = project_default_dir + "\\" + str;
                         else
                         {
                             MessageBox.Show("The default level file not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1248,59 +1194,44 @@ namespace Heavy_Engine
                     }
                     else if (cur_action == "Project_Platform")
                     {
-                        string str = (string)obj;
-
                         platform_id = int.Parse(str);
 
                         cur_action = "";
                     }
                     else if (cur_action == "Level_Name")
                     {
-                        string str = (string)obj;
-
-                        if (str.Substring(0, 1) == "@")
-                        {
-                            current_level.level_name = str.Substring(1, str.Length - 1);
-                        }
+                        if (str.Substring(0, 1) == "@") current_level.level_name = str.Substring(1, str.Length - 1);
 
                         cur_action = "";
                     }
                     else if (cur_action == "Speed")
                     {
-                        string str = (string)obj;
                         current_level.level_speed = int.Parse(str);
                         cur_action = "";
                     }
                     else if (cur_action == "Back_Colour")
                     {
-                        string str = (string)obj;
                         current_level.back_color = Color.FromArgb(int.Parse(str), 0, 0, 0);
                         cur_action = "Back_ColourR";
                     }
                     else if (cur_action == "Back_ColourR")
                     {
-                        string str = (string)obj;
                         current_level.back_color = Color.FromArgb(current_level.back_color.A, int.Parse(str), 0, 0);
                         cur_action = "Back_ColourG";
                     }
                     else if (cur_action == "Back_ColourG")
                     {
-                        string str = (string)obj;
                         current_level.back_color = Color.FromArgb(current_level.back_color.A, current_level.back_color.R, int.Parse(str), 0);
                         cur_action = "Back_ColourB";
                     }
                     else if (cur_action == "Back_ColourB")
                     {
-                        string str = (string)obj;
                         current_level.back_color = Color.FromArgb(current_level.back_color.A, current_level.back_color.R, current_level.back_color.G, int.Parse(str));
                         cur_action = "";
                     }
                     else if (cur_action == "Object")
                     {
-                        string str = (string)obj;
-
                       //  MessageBox.Show(str.Substring(1, str.Length - 1));
-
                         if (str.Substring(0,1) == "@")
                         {
                             foreach(GameObject gameObj in gameObject_list)
@@ -1317,19 +1248,12 @@ namespace Heavy_Engine
                     }
                     else if (cur_action == "Object_NAME")
                     {
-                        string str = (string)obj;
-
-                        if (str.Substring(0,1) == "@")
-                        {
-                            gameObject.instance_name = str.Substring(1, str.Length - 1);
-                        }
+                        if (str.Substring(0,1) == "@") gameObject.instance_name = str.Substring(1, str.Length - 1);
 
                         cur_action = "Object_PositionX";
                     }
                     else if (cur_action == "Object_PositionX")
                     {
-                        string str = (string)obj;
-
                         gameObject.position_x = int.Parse(str);
                         gameObject.position_scene_x = gameObject.position_x;
 
@@ -1337,8 +1261,6 @@ namespace Heavy_Engine
                     }
                     else if (cur_action == "Object_PositionY")
                     {
-                        string str = (string)obj;
-
                         gameObject.position_y = int.Parse(str);
                         gameObject.position_scene_y = gameObject.position_y;
 
@@ -1346,24 +1268,18 @@ namespace Heavy_Engine
                     }
                     else if (cur_action == "Object_Depth")
                     {
-                        string str = (string)obj;
-
                         gameObject.depth = int.Parse(str);
 
                         cur_action = "Object_Tiled";
                     }
                     else if (cur_action == "Object_Tiled")
                     {
-                        string str = (string)obj;
-
                         gameObject.isTile = bool.Parse(str);
 
                         cur_action = "Object_Rotation";
                     }
                     else if (cur_action == "Object_Rotation")
                     {
-                        string str = (string)obj;
-
                         gameObject.rotation_angle = float.Parse(str);
                         gameObject.ApplyRotation(-gameObject.rotation_angle);
 
@@ -1371,16 +1287,24 @@ namespace Heavy_Engine
                     }
                     else if (cur_action == "Object_Scale")
                     {
-                        string str = (string)obj;
-
                         gameObject.scaling_rate = float.Parse(str);
+
+                        cur_action = "Object_CameraTranslation";
+                    }
+                    else if (cur_action == "Object_CameraTranslation")
+                    {
+                        gameObject.AllowCameraTranslation = bool.Parse(str);
+
+                        cur_action = "Object_CameraRotation";
+                    }
+                    else if (cur_action == "Object_CameraRotation")
+                    {
+                        gameObject.AllowCameraRotation = bool.Parse(str);
 
                         cur_action = "Object_Childs";
                     }
                     else if (cur_action == "Object_Childs")
                     {
-                        string str = (string)obj;
-
                         if (str == ";")
                         {
                             cur_action = "";
@@ -1492,7 +1416,7 @@ namespace Heavy_Engine
             // Loop for printing object position.
             foreach(GameObject_Scene gameObject in gameObjectScene_list)
             {
-                string obj_line = "Object: @" + gameObject.mainObject.object_name + "@ @" + gameObject.instance_name + "@ " + gameObject.position_x + " " + gameObject.position_y + " " + gameObject.depth + " " + gameObject.isTile + " " + gameObject.rotation_angle + " " + gameObject.scaling_rate;
+                string obj_line = "Object: @" + gameObject.mainObject.object_name + "@ @" + gameObject.instance_name + "@ " + gameObject.position_x + " " + gameObject.position_y + " " + gameObject.depth + " " + gameObject.isTile + " " + gameObject.rotation_angle + " " + gameObject.scaling_rate + " " + gameObject.AllowCameraTranslation + " " + gameObject.AllowCameraRotation;
 
                 foreach(GameObject_Scene gameObj in gameObject.child_list)
                 {
@@ -1567,6 +1491,8 @@ namespace Heavy_Engine
             public float rotation_angle;
             public float scaling_rate;
             public List<GameObject_Scene> child_list;
+            public bool AllowCameraTranslation;
+            public bool AllowCameraRotation;
             private Image source_img;
 
             public void Initialize( )
@@ -1574,6 +1500,8 @@ namespace Heavy_Engine
                 source_img = mainObject.object_img;
 
                 if (child_list == null) child_list = new List<GameObject_Scene>();
+                AllowCameraTranslation = false;
+                AllowCameraRotation = true;
             }
 
             public void UpdateChildPosition(int rate_x,int rate_y,bool isParent)
@@ -1740,6 +1668,7 @@ namespace Heavy_Engine
         {
             lbl_view_x.Text = "Camera X : " + cam_x;
             lbl_view_y.Text = "Camera Y : " + cam_y;
+            lbl_cam_angle.Text = "Camera Angle : " + cam_angle;
 
            if (this.WindowState != FormWindowState.Maximized) this.WindowState = FormWindowState.Maximized;
 
@@ -1827,9 +1756,13 @@ namespace Heavy_Engine
                 re:
                     if (!process_handle.HasExited) goto re;
                 }
-                else
+                else if (platform_id == 2 || platform_id == 3)
                 {
                     MessageBox.Show("Java platform programs cannot run directly ! Goto to build directory in your project folder and run Build.bat to get a executable jar file","Message",MessageBoxButtons.OK,MessageBoxIcon.Exclamation);
+                }
+                else if (platform_id == 5)
+                {
+                    MessageBox.Show("Linux platform programs cannot run directly ! A linux platform is required with all required libraries to compile to linux platforms . For more information , visit linux platform page.", "Message", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
             }
         }
@@ -2346,6 +2279,33 @@ namespace Heavy_Engine
            if (Directory.Exists(menuItem_Recent3.Text)) LoadProjectDirectly(menuItem_Recent3.Text);
            else MessageBox.Show("Directory dosen't exist anymore.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
        }
+       
+       private void rotateCamera()
+       {
+           for (int cntr = 0; cntr < gameObjectScene_list.Count; cntr++)
+               if (gameObjectScene_list[cntr].mainObject.object_img != null)
+               {
+                   GameObject_Scene gameObj = gameObjectScene_list[cntr];
+
+                   gameObj.ApplyRotation(-cam_angle);
+
+                   gameObjectScene_list[cntr] = gameObj;
+               }
+       }
+
+       private void btn_rotate_left_Click(object sender, EventArgs e)
+       {
+           cam_angle++;
+
+           rotateCamera();
+       }
+
+       private void btn_rotate_right_Click(object sender, EventArgs e)
+       {
+           cam_angle--;
+
+           rotateCamera();
+       }
     }
 
     public class GameObject_Scene_EDITOR
@@ -2492,6 +2452,18 @@ namespace Heavy_Engine
                     }
                 }
             }
+        }
+
+        public bool AllowCameraTranslation
+        {
+            get { return obj.AllowCameraTranslation; }
+            set { obj.AllowCameraTranslation = value; }
+        }
+
+        public bool AllowCameraRotation
+        {
+            get { return obj.AllowCameraRotation; }
+            set { obj.AllowCameraRotation = value; }
         }
     }
 
@@ -2974,16 +2946,16 @@ namespace Heavy_Engine
 
             foreach (object obj in token_list)
             {
+                string str = (string)obj;
+
                 if (cur_action == "")
-                    if ((string)obj == "Level_Name:") cur_action = "Level_Name";
-                    else if ((string)obj == "Speed:") cur_action = "Speed";
-                    else if ((string)obj == "Back_Colour:") cur_action = "Back_Colour";
-                    else if ((string)obj == "Object:") cur_action = "Object";
+                    if (str == "Level_Name:") cur_action = "Level_Name";
+                    else if (str == "Speed:") cur_action = "Speed";
+                    else if (str == "Back_Colour:") cur_action = "Back_Colour";
+                    else if (str == "Object:") cur_action = "Object";
                     else ;
                 else
                 {
-                    string str = (string)obj;
-
                     if (cur_action == "Level_Name")
                     {
                         if (str.Substring(0, 1) == "@") level.level_name = str.Substring(1, str.Length - 1);
@@ -3069,6 +3041,18 @@ namespace Heavy_Engine
                     else if (cur_action == "Object_Scale")
                     {
                         gameObject.scaling_rate = float.Parse(str);
+
+                        cur_action = "Object_CameraTranslation";
+                    }
+                    else if (cur_action == "Object_CameraTranslation")
+                    {
+                        gameObject.AllowCameraTranslation = bool.Parse(str);
+
+                        cur_action = "Object_CameraRotation";
+                    }
+                    else if (cur_action == "Object_CameraRotation")
+                    {
+                        gameObject.AllowCameraRotation = bool.Parse(str);
 
                         cur_action = "Object_Childs";
                     }
@@ -3210,6 +3194,8 @@ namespace Heavy_Engine
                         stm_wr.WriteLine("obj.Initialize();");
                         stm_wr.WriteLine("obj.SetScale(" + object_array[cntr].scaling_rate + ");");
                         stm_wr.WriteLine("obj.SetRotationAngle(" + object_array[cntr].rotation_angle + ");");
+                        stm_wr.WriteLine("obj.AllowCameraTranslation = " + object_array[cntr].AllowCameraTranslation.ToString().ToLower() + ";");
+                        stm_wr.WriteLine("obj.AllowCameraRotation = " + object_array[cntr].AllowCameraRotation.ToString().ToLower() + ";");
 
                         for (int cnt = 0; cnt < object_array[cntr].child_list.Count;cnt++ )
                         {
@@ -3246,6 +3232,8 @@ namespace Heavy_Engine
                         stm_wr.WriteLine("obj->Initialize();");
                         stm_wr.WriteLine("obj->SetScale(" + ((object_array[cntr].scaling_rate == 0) ? 1 : object_array[cntr].scaling_rate) + ");");
                         stm_wr.WriteLine("obj->SetRotationAngle(" + object_array[cntr].rotation_angle + ");");
+                        stm_wr.WriteLine("obj->AllowCameraTranslation = " + object_array[cntr].AllowCameraTranslation.ToString().ToLower( ) + ";");
+                        stm_wr.WriteLine("obj->AllowCameraRotation = " + object_array[cntr].AllowCameraRotation.ToString().ToLower() + ";");
 
                         for (int cnt = 0; cnt < object_array[cntr].child_list.Count; cnt++)
                         {

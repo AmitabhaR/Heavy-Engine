@@ -1,3 +1,4 @@
+#include "HeavyEngine.h"
 #include "NavigationManager.h"
 
 static std::list<Navigator *> navigator_list;
@@ -41,4 +42,9 @@ x:
 void NavigationManager::updateNavigatorTargets(Vector2 pos) // Called by camera class only.
 {
 	for(register std::list<Navigator *>::iterator cur_nav = navigator_list.begin();cur_nav != navigator_list.end( );cur_nav++) (*cur_nav)->cameraUpdatePoints(pos);
+}
+
+void NavigationManager::updateNavigatorTargets(float rotation_angle) // Called by camera class only.
+{
+	for(std::list<Navigator *>::iterator cur_obj = navigator_list.begin( );cur_obj != navigator_list.end( );cur_obj++) if ((*cur_obj)->isCameraRotationAllowed()) (*cur_obj)->cameraRotatePoints(rotation_angle);
 }

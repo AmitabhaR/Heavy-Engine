@@ -6,8 +6,9 @@
 
 #include "compile_parser.hpp"
 #include <fstream>
+#include <string>
 
-Parser::Parser(list<string> tokens , int gen_code)
+Parser::Parser(register list<string> & tokens , register int gen_code)
 {
     this->tokens = tokens;
     this->gen_code = gen_code;
@@ -23,7 +24,7 @@ bool Parser::parse(string class_name , string dir)
     list<string> header_files;
     Variable def_var;
 	
-    for(list<string>::iterator token = tokens.begin();token != tokens.end( );token++)
+    for(register list<string>::iterator token = tokens.begin();token != tokens.end( );token++)
     {
         string cur_token = *token;
 
@@ -35,13 +36,13 @@ bool Parser::parse(string class_name , string dir)
 				cur_token == "object_setText" || cur_token == "object_getText" || cur_token == "object_setRotation" || cur_token == "object_getRotation" || cur_token == "object_setScale" || cur_token == "object_getScale" ||
 				cur_token == "scene_addGameObject" || cur_token == "scene_destroyGameObject" || cur_token == "scene_activate" || cur_token == "native" || cur_token == "navigation_start" || cur_token == "animation_start" || 
 				cur_token == "network_startServer" || cur_token == "network_connectServer" || cur_token == "network_createGameObject" || cur_token == "network_updateGameObject" || cur_token == "network_destroyGameObject" || cur_token == "network_disconnect" ||
-				cur_token == "object_addChild")
+				cur_token == "object_addChild" || cur_token == "camera_translate" || cur_token == "camera_rotate")
             {
                 cur_action = cur_token;
             }
 			else if (cur_token == "import_header")
 			{
-				if (gen_code == 0x4)
+				if (gen_code == 0x4 || gen_code == 0x5 || gen_code == 0x6)
 				{
 					cur_action = "import_header";
 				}
@@ -3726,7 +3727,149 @@ bool Parser::parse(string class_name , string dir)
                 }
 
                 cur_action = "end_line";
-			} 
+			}
+			else if (cur_action == "camera_translate")
+			{
+				bool isSuccess = false;
+
+				for (list<Variable>::iterator cur_var = variable_list.begin(); cur_var != variable_list.end(); cur_var++)
+				{
+					if (cur_var->var_name == cur_token && cur_var->var_type != "string")
+					{
+						isSuccess = true;
+						break;
+					}
+				}
+
+				if (!isSuccess)
+				{
+					bool isNum = true;
+
+					for (int cnt = 0; cnt < cur_token.length(); cnt++)
+					{
+						string cur_dig = cur_token.substr(cnt, 1);
+
+						if (cur_dig != "0" && cur_dig != "1" && cur_dig != "2" && cur_dig != "3" && cur_dig != "4" && cur_dig != "5" && cur_dig != "6" && cur_dig != "7" && cur_dig != "8" && cur_dig != "9")
+						{
+							isSuccess = false;
+							isNum = false;
+							break;
+						}
+					}
+
+					if (isNum)
+					{
+						isSuccess = true;
+					}
+				}
+
+				if (isSuccess)
+				{
+					cur_code = "Camera::TranslateCamera(" + cur_token;
+				}
+				else
+				{
+					this->errors.push_back("Error : Value or Variable Expected!");
+				}
+
+				cur_comma_param = "camera_translate_y";
+				cur_action = "comma";
+			}
+			else if (cur_action == "camera_translate_y")
+			{
+				bool isSuccess = false;
+
+				for (list<Variable>::iterator cur_var = variable_list.begin(); cur_var != variable_list.end(); cur_var++)
+				{
+					if (cur_var->var_name == cur_token && cur_var->var_type != "string")
+					{
+						isSuccess = true;
+						break;
+					}
+				}
+
+				if (!isSuccess)
+				{
+					bool isNum = true;
+
+					for (int cnt = 0; cnt < cur_token.length(); cnt++)
+					{
+						string cur_dig = cur_token.substr(cnt, 1);
+
+						if (cur_dig != "0" && cur_dig != "1" && cur_dig != "2" && cur_dig != "3" && cur_dig != "4" && cur_dig != "5" && cur_dig != "6" && cur_dig != "7" && cur_dig != "8" && cur_dig != "9")
+						{
+							isSuccess = false;
+							isNum = false;
+							break;
+						}
+					}
+
+					if (isNum)
+					{
+						isSuccess = true;
+					}
+				}
+
+				if (isSuccess)
+				{
+					cur_code += "," + cur_token + ");";
+					this->generated_codes.push_back(cur_code);
+				}
+				else
+				{
+					this->errors.push_back("Error : Value or Variable Expected!");
+				}
+				
+				cur_action = "end_line";
+			}
+			else if (cur_action == "camera_rotate")
+			{
+				bool isSuccess = false;
+
+				for (list<Variable>::iterator cur_var = variable_list.begin(); cur_var != variable_list.end(); cur_var++)
+				{
+					if (cur_var->var_name == cur_token && cur_var->var_type != "string")
+					{
+						isSuccess = true;
+						break;
+					}
+				}
+
+				if (!isSuccess)
+				{
+					bool isNum = true;
+
+					for (int cnt = 0; cnt < cur_token.length(); cnt++)
+					{
+						string cur_dig = cur_token.substr(cnt, 1);
+
+						if (cur_dig != "0" && cur_dig != "1" && cur_dig != "2" && cur_dig != "3" && cur_dig != "4" && cur_dig != "5" && cur_dig != "6" && cur_dig != "7" && cur_dig != "8" && cur_dig != "9")
+						{
+							isSuccess = false;
+							isNum = false;
+							break;
+						}
+					}
+
+					if (isNum)
+					{
+						isSuccess = true;
+					}
+				}
+
+				if (isSuccess)
+				{
+					cur_code = "Camera::RotateCamera(" + cur_token + ");";
+
+					this->generated_codes.push_back(cur_code);
+				}
+				else
+				{
+					this->errors.push_back("Error : Value or Variable Expected!");
+				}
+
+				cur_action = "end_line";
+			}
             else if (cur_action == "native")
             {
             	if (cur_token.substr(0,1) == "@")
@@ -3861,7 +4004,7 @@ list<string> Parser::getErrors ( )
     return errors;
 }
 
-void Parser::parseIf( list<Variable> & var_list, list<string>::iterator & token , list<string> jump_points )
+void Parser::parseIf( list<Variable> & var_list, register list<string>::iterator & token , list<string> & jump_points )
 {
     string cur_action;
     string cur_code;
@@ -3869,7 +4012,7 @@ void Parser::parseIf( list<Variable> & var_list, list<string>::iterator & token 
     list<Variable> variable_list; // Static variable list.
     Variable def_var;
 	
-	for(list<Variable>::iterator var = var_list.begin();var != var_list.end();var++) variable_list.push_back(*var);
+	for(register list<Variable>::iterator var = var_list.begin();var != var_list.end();var++) variable_list.push_back(*var);
 	
     for(;token != tokens.end( );token++)
     {
@@ -3883,7 +4026,7 @@ void Parser::parseIf( list<Variable> & var_list, list<string>::iterator & token 
 				cur_token == "object_setText" || cur_token == "object_getText" || cur_token == "object_setRotation" || cur_token == "object_getRotation" || cur_token == "object_setScale" || cur_token == "object_getScale" ||
 				cur_token == "scene_addGameObject" || cur_token == "scene_destroyGameObject" || cur_token == "scene_activate" || cur_token == "native" || cur_token == "navigation_start" || cur_token == "animation_start" || 
 				cur_token == "network_startServer" || cur_token == "network_connectServer" || cur_token == "network_createGameObject" || cur_token == "network_updateGameObject" || cur_token == "network_destroyGameObject" || cur_token == "network_disconnect" ||
-				cur_token == "object_addChild")
+				cur_token == "object_addChild" || cur_token == "camera_translate" || cur_token == "camera_rotate")
             {
                 cur_action = cur_token;
             }
@@ -7503,6 +7646,148 @@ void Parser::parseIf( list<Variable> & var_list, list<string>::iterator & token 
 
                 cur_action = "end_line";
 			} 
+			else if (cur_action == "camera_translate")
+			{
+				bool isSuccess = false;
+
+				for (list<Variable>::iterator cur_var = variable_list.begin(); cur_var != variable_list.end(); cur_var++)
+				{
+					if (cur_var->var_name == cur_token && cur_var->var_type != "string")
+					{
+						isSuccess = true;
+						break;
+					}
+				}
+
+				if (!isSuccess)
+				{
+					bool isNum = true;
+
+					for (int cnt = 0; cnt < cur_token.length(); cnt++)
+					{
+						string cur_dig = cur_token.substr(cnt, 1);
+
+						if (cur_dig != "0" && cur_dig != "1" && cur_dig != "2" && cur_dig != "3" && cur_dig != "4" && cur_dig != "5" && cur_dig != "6" && cur_dig != "7" && cur_dig != "8" && cur_dig != "9")
+						{
+							isSuccess = false;
+							isNum = false;
+							break;
+						}
+					}
+
+					if (isNum)
+					{
+						isSuccess = true;
+					}
+				}
+
+				if (isSuccess)
+				{
+					cur_code = "Camera::TranslateCamera(" + cur_token;
+				}
+				else
+				{
+					this->errors.push_back("Error : Value or Variable Expected!");
+				}
+
+				cur_comma_param = "camera_translate_y";
+				cur_action = "comma";
+			}
+			else if (cur_action == "camera_translate_y")
+			{
+				bool isSuccess = false;
+
+				for (list<Variable>::iterator cur_var = variable_list.begin(); cur_var != variable_list.end(); cur_var++)
+				{
+					if (cur_var->var_name == cur_token && cur_var->var_type != "string")
+					{
+						isSuccess = true;
+						break;
+					}
+				}
+
+				if (!isSuccess)
+				{
+					bool isNum = true;
+
+					for (int cnt = 0; cnt < cur_token.length(); cnt++)
+					{
+						string cur_dig = cur_token.substr(cnt, 1);
+
+						if (cur_dig != "0" && cur_dig != "1" && cur_dig != "2" && cur_dig != "3" && cur_dig != "4" && cur_dig != "5" && cur_dig != "6" && cur_dig != "7" && cur_dig != "8" && cur_dig != "9")
+						{
+							isSuccess = false;
+							isNum = false;
+							break;
+						}
+					}
+
+					if (isNum)
+					{
+						isSuccess = true;
+					}
+				}
+
+				if (isSuccess)
+				{
+					cur_code += "," + cur_token + ");";
+					this->generated_codes.push_back(cur_code);
+				}
+				else
+				{
+					this->errors.push_back("Error : Value or Variable Expected!");
+				}
+
+				cur_action = "end_line";
+			}
+			else if (cur_action == "camera_rotate")
+			{
+				bool isSuccess = false;
+
+				for (list<Variable>::iterator cur_var = variable_list.begin(); cur_var != variable_list.end(); cur_var++)
+				{
+					if (cur_var->var_name == cur_token && cur_var->var_type != "string")
+					{
+						isSuccess = true;
+						break;
+					}
+				}
+
+				if (!isSuccess)
+				{
+					bool isNum = true;
+
+					for (int cnt = 0; cnt < cur_token.length(); cnt++)
+					{
+						string cur_dig = cur_token.substr(cnt, 1);
+
+						if (cur_dig != "0" && cur_dig != "1" && cur_dig != "2" && cur_dig != "3" && cur_dig != "4" && cur_dig != "5" && cur_dig != "6" && cur_dig != "7" && cur_dig != "8" && cur_dig != "9")
+						{
+							isSuccess = false;
+							isNum = false;
+							break;
+						}
+					}
+
+					if (isNum)
+					{
+						isSuccess = true;
+					}
+				}
+
+				if (isSuccess)
+				{
+					cur_code = "Camera::RotateCamera(" + cur_token + ");";
+
+					this->generated_codes.push_back(cur_code);
+				}
+				else
+				{
+					this->errors.push_back("Error : Value or Variable Expected!");
+				}
+
+				cur_action = "end_line";
+			}
             else if (cur_action == "native")
             {
             	if (cur_token.substr(0,1) == "@")

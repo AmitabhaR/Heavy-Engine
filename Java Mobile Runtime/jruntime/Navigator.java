@@ -21,7 +21,17 @@ public class Navigator
         private float deltaX = 0f, deltaY = 0f;
         private int pos_x = 0 , pos_y = 0;
         private int update_counter = 0, total_updates = 0;
+        
+        public boolean isCameraTranslationAllowed( )
+        {
+            return baseObject.AllowCameraTranslation;
+        }
 
+        public boolean isCameraRotationAllowed( ) 
+        {
+            return baseObject.AllowCameraRotation;         
+        }
+        
         public Navigator(GameObject_Scene baseObject,int navigation_speed)
         {
             this.baseObject = baseObject;
@@ -55,7 +65,7 @@ public class Navigator
             return sum;
         }
         
-        private void makePath(Vector2 begin_point , Vector2 end_point)
+        private void makePath(Vector2 begin_point , Vector2 end_point,boolean isPosChange)
         {
             deltaY = (end_point.y - begin_point.y);
             deltaX = (end_point.x - begin_point.x);
@@ -65,10 +75,12 @@ public class Navigator
 
             total_updates = (int)(((float)Math.sqrt((double)pow(Math.abs(deltaX), 2) + pow(Math.abs(deltaY), 2))) / navigation_speed);
             
-            update_counter = 0;
-
-            pos_x = begin_point.x;
-            pos_y = begin_point.y;
+            if (isPosChange)
+            {
+                update_counter = 0;
+                pos_x = begin_point.x;
+                pos_y = begin_point.y;
+            }
         }
         
         public void start()
@@ -80,7 +92,7 @@ public class Navigator
 
                 if (current_frame < nav_points.size() && current_frame + 1 < nav_points.size())
                 {
-                    makePath((Vector2) nav_points.elementAt(current_frame), (Vector2) nav_points.elementAt(current_frame + 1)); 
+                    makePath((Vector2) nav_points.elementAt(current_frame), (Vector2) nav_points.elementAt(current_frame + 1),true); 
                     baseObject.pos_x = pos_x;
                     baseObject.pos_y = pos_y;
                 }
@@ -106,6 +118,25 @@ public class Navigator
             }
         }
         
+        public void cameraRotatePoints(float rotate_angle)
+        {
+            for (int cntr = 0; cntr < nav_points.size( ); cntr++)
+            {
+                Vector2 nav_point = (Vector2 ) nav_points.elementAt(cntr);
+                // Point rotation.
+                double angle = (rotate_angle * Math.PI / 180);
+                double cos = Math.cos(angle);
+                double sin = Math.sin(angle);
+                int dx = nav_point.x - (HApplication.getActiveScene().getWidth() >> 1);
+                int dy = nav_point.y - (HApplication.getActiveScene().getHeight() >> 1);
+                
+                nav_point.x = (int) (cos * dx - sin * dy + (HApplication.getActiveScene().getWidth() >> 1));
+                nav_point.y = (int) (sin * dx + cos * dy + (HApplication.getActiveScene().getHeight() >> 1));
+            }
+
+            if (current_frame < nav_points.size() && current_frame + 1 < nav_points.size()) makePath((Vector2) nav_points.elementAt(current_frame),(Vector2) nav_points.elementAt(current_frame + 1), false);
+        }
+        
         public void update()
         {
             if (current_frame < nav_points.size( ) && current_frame + 1 < nav_points.size())
@@ -114,24 +145,29 @@ public class Navigator
                     {
                         current_frame++;
 
-                        if (current_frame < nav_points.size( ) && current_frame + 1 < nav_points.size( )) makePath(((Vector2) nav_points.elementAt(current_frame)), ((Vector2) nav_points.elementAt(current_frame + 1)));
+                        if (current_frame < nav_points.size( ) && current_frame + 1 < nav_points.size( )) makePath(((Vector2) nav_points.elementAt(current_frame)), ((Vector2) nav_points.elementAt(current_frame + 1)),true);
                         else stop();
                     }
                     else
                     {
+                        Vector2 deltaPos = new Vector2( 0 , 0 );
+
                         if (Math.abs(deltaX) >= Math.abs(deltaY))
                         {
-                            baseObject.pos_x = pos_x;
-                            baseObject.pos_y = (int)(slope * (pos_x - ((Vector2) nav_points.elementAt(current_frame)).x) + ((Vector2) nav_points.elementAt(current_frame)).y);
+                            deltaPos.x = navigation_speed * ((deltaX < 0) ? -1 : (deltaX > 0) ? 1 : 0);
+                            deltaPos.y = (int)(slope * (pos_x - ((Vector2) nav_points.elementAt(current_frame)).x) + ((Vector2) nav_points.elementAt(current_frame)).y) - baseObject.pos_y;
+
                             pos_x += navigation_speed * ((deltaX < 0) ? -1 : (deltaX > 0) ? 1 : 0);
                         }
                         else
                         {
-                            baseObject.pos_y = pos_y;
-                            baseObject.pos_x = (int)(slope * (pos_y - ((Vector2) nav_points.elementAt(current_frame)).y) + ((Vector2) nav_points.elementAt(current_frame)).x);
+                            deltaPos.y = navigation_speed * ((deltaY < 0) ? -1 : (deltaY > 0) ? 1 : 0);
+                            deltaPos.x = (int)(slope * (pos_y - ((Vector2) nav_points.elementAt(current_frame)).y) + ((Vector2) nav_points.elementAt(current_frame)).x) - baseObject.pos_x;
+
                             pos_y += navigation_speed * ((deltaY < 0) ? -1 : (deltaY > 0) ? 1 : 0);
                         }
 
+                        baseObject.Translate(deltaPos.x, deltaPos.y);
                         update_counter++;
                     }
                 else ;

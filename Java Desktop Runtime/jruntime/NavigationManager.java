@@ -52,6 +52,11 @@ public class NavigationManager
         
         public static void updateNavigatorTargets(Vector2 pos) // Called by camera class only.
         {
-            for(Navigator nav : navigator_list) nav.cameraUpdatePoints(pos);
+            for(Navigator nav : navigator_list) if (nav.isCameraTranslationAllowed()) nav.cameraUpdatePoints(pos);
+        }
+        
+        public static void updateNavigatorTargets(float rotate_angle)
+        {
+            for(Navigator nav : navigator_list) if (nav.isCameraRotationAllowed()) nav.cameraRotatePoints(rotate_angle);
         }
 }

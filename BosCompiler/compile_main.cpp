@@ -7,6 +7,7 @@
 #include "compile_main.hpp"
 #include "compile_scanner.hpp"
 #include "compile_parser.hpp"
+#include <string>
 
 Compiler::Compiler( string in , string out , int gen_code )
 {

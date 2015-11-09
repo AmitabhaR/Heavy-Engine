@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
 #include "compile_main.hpp"
 
 using namespace std;

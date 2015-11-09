@@ -29,14 +29,14 @@ class Parser
 {
 public:
 
-    Parser(list<string> , int );
+    Parser(list<string> & , int );
 
     bool parse(string , string );
     list<string> getCodes( );
     list<string> getErrors( );
 
 private:
-    void parseIf(list<Variable> & var_list, list<string>::iterator& , list<string> );
+    void parseIf(list<Variable> & , list<string>::iterator & , list<string> & );
 
     list<string> tokens;
     list<string> generated_codes;

@@ -43,14 +43,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Heavy Engine.exe" size="375808">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Heavy Engine.exe" size="378880">
       <assemblyIdentity name="Heavy Engine" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>c1hnPW5/6s+JXQgIAedX8xE0vOLvnD/7yFurjiEH7pI=</dsig:DigestValue>
+        <dsig:DigestValue>LnpQbhBfZ5qcyc6kdLQXyHjdZLgIrXfZ743ym3YRLog=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -62,7 +62,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>zIUoO/wtA/H4yxTt0Gd2dJgzSf/cNdJJ3BiTU/BuvcI=</dsig:DigestValue>
+        <dsig:DigestValue>Uc/NSPZcShHNyUO+aphtm0Ew8P17InonH3zjKMX2K0s=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

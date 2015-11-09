@@ -23,6 +23,8 @@ void Camera::RotateCamera(float rotate_angle)
 
 	for (register std::list<GameObject_Scene_ptr>::iterator cur_obj = gameObject_list.begin(); cur_obj != gameObject_list.end(); cur_obj++)
 		if ((*cur_obj)->AllowCameraRotation) (*cur_obj)->Rotate(-rotate_angle);
+
+	NavigationManager::updateNavigatorTargets(-rotate_angle);
 }
 
 Vector2 Camera::getCameraPosition() { return camera_pos; }

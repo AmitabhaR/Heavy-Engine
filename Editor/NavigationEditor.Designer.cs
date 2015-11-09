@@ -49,11 +49,14 @@
             this.tmr_draw = new System.Windows.Forms.Timer(this.components);
             this.mainContainer = new System.Windows.Forms.TableLayoutPanel();
             this.buttonContainer = new System.Windows.Forms.Panel();
+            this.btn_rotate_right = new System.Windows.Forms.Button();
+            this.btn_rotate_left = new System.Windows.Forms.Button();
             this.lbl_moveRight = new System.Windows.Forms.Button();
             this.btn_moveLeft = new System.Windows.Forms.Button();
             this.btn_moveDown = new System.Windows.Forms.Button();
             this.btn_moveUp = new System.Windows.Forms.Button();
             this.lbl_cameraFunctions = new System.Windows.Forms.Label();
+            this.lbl_cam_angle = new System.Windows.Forms.ToolStripStatusLabel();
             this.topStrip_menu.SuspendLayout();
             this.downStrip.SuspendLayout();
             this.baseContainer.SuspendLayout();
@@ -135,7 +138,8 @@
             this.lbl_mouseX,
             this.lbl_mouseY,
             this.lbl_cameraX,
-            this.lbl_cameraY});
+            this.lbl_cameraY,
+            this.lbl_cam_angle});
             this.downStrip.Location = new System.Drawing.Point(0, 510);
             this.downStrip.Name = "downStrip";
             this.downStrip.Size = new System.Drawing.Size(688, 22);
@@ -232,6 +236,8 @@
             // 
             // buttonContainer
             // 
+            this.buttonContainer.Controls.Add(this.btn_rotate_right);
+            this.buttonContainer.Controls.Add(this.btn_rotate_left);
             this.buttonContainer.Controls.Add(this.lbl_moveRight);
             this.buttonContainer.Controls.Add(this.btn_moveLeft);
             this.buttonContainer.Controls.Add(this.btn_moveDown);
@@ -242,6 +248,28 @@
             this.buttonContainer.Name = "buttonContainer";
             this.buttonContainer.Size = new System.Drawing.Size(682, 70);
             this.buttonContainer.TabIndex = 3;
+            // 
+            // btn_rotate_right
+            // 
+            this.btn_rotate_right.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_rotate_right.Location = new System.Drawing.Point(437, 35);
+            this.btn_rotate_right.Name = "btn_rotate_right";
+            this.btn_rotate_right.Size = new System.Drawing.Size(95, 23);
+            this.btn_rotate_right.TabIndex = 6;
+            this.btn_rotate_right.Text = "Rotate Right";
+            this.btn_rotate_right.UseVisualStyleBackColor = true;
+            this.btn_rotate_right.Click += new System.EventHandler(this.btn_rotate_right_Click);
+            // 
+            // btn_rotate_left
+            // 
+            this.btn_rotate_left.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_rotate_left.Location = new System.Drawing.Point(336, 35);
+            this.btn_rotate_left.Name = "btn_rotate_left";
+            this.btn_rotate_left.Size = new System.Drawing.Size(95, 23);
+            this.btn_rotate_left.TabIndex = 5;
+            this.btn_rotate_left.Text = "Rotate Left";
+            this.btn_rotate_left.UseVisualStyleBackColor = true;
+            this.btn_rotate_left.Click += new System.EventHandler(this.btn_rotate_left_Click);
             // 
             // lbl_moveRight
             // 
@@ -296,6 +324,12 @@
             this.lbl_cameraFunctions.Size = new System.Drawing.Size(116, 16);
             this.lbl_cameraFunctions.TabIndex = 0;
             this.lbl_cameraFunctions.Text = "Camera Functions";
+            // 
+            // lbl_cam_angle
+            // 
+            this.lbl_cam_angle.Name = "lbl_cam_angle";
+            this.lbl_cam_angle.Size = new System.Drawing.Size(88, 17);
+            this.lbl_cam_angle.Text = "Camera Angle :";
             // 
             // NavigationEditor
             // 
@@ -356,5 +390,8 @@
         private System.Windows.Forms.Button btn_moveDown;
         private System.Windows.Forms.Button btn_moveUp;
         private System.Windows.Forms.Label lbl_cameraFunctions;
+        private System.Windows.Forms.Button btn_rotate_left;
+        private System.Windows.Forms.Button btn_rotate_right;
+        private System.Windows.Forms.ToolStripStatusLabel lbl_cam_angle;
     }
 }

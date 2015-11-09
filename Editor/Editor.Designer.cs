@@ -93,7 +93,7 @@
             this.btn_down = new System.Windows.Forms.Button();
             this.btn_left = new System.Windows.Forms.Button();
             this.btn_right = new System.Windows.Forms.Button();
-            this.lbl_editor_movement = new System.Windows.Forms.Label();
+            this.lbl_camera_controls = new System.Windows.Forms.Label();
             this.lbl_zoom = new System.Windows.Forms.Label();
             this.btn_cancel = new System.Windows.Forms.Button();
             this.contpane_base = new System.Windows.Forms.TableLayoutPanel();
@@ -102,12 +102,15 @@
             this.contpane_camerazoom = new System.Windows.Forms.Panel();
             this.tb_zoom = new System.Windows.Forms.TrackBar();
             this.contpane_movement = new System.Windows.Forms.Panel();
+            this.btn_rotate_right = new System.Windows.Forms.Button();
+            this.btn_rotate_left = new System.Windows.Forms.Button();
             this.contpane_canvas = new System.Windows.Forms.Panel();
             this.contpane_buttons = new System.Windows.Forms.Panel();
             this.base_container = new System.Windows.Forms.SplitContainer();
             this.list_div = new System.Windows.Forms.TableLayoutPanel();
             this.file_tree = new System.Windows.Forms.TreeView();
             this.lb_objects = new System.Windows.Forms.ListBox();
+            this.lbl_cam_angle = new System.Windows.Forms.ToolStripStatusLabel();
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).BeginInit();
             this.bottom_dataview.SuspendLayout();
             this.top_menu_container.SuspendLayout();
@@ -132,7 +135,7 @@
             this.canvas.Dock = System.Windows.Forms.DockStyle.Fill;
             this.canvas.Location = new System.Drawing.Point(0, 0);
             this.canvas.Name = "canvas";
-            this.canvas.Size = new System.Drawing.Size(1046, 474);
+            this.canvas.Size = new System.Drawing.Size(1046, 470);
             this.canvas.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.canvas.TabIndex = 0;
             this.canvas.TabStop = false;
@@ -147,7 +150,7 @@
             this.gameObject_editor.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.gameObject_editor.Location = new System.Drawing.Point(1055, 3);
             this.gameObject_editor.Name = "gameObject_editor";
-            this.gameObject_editor.Size = new System.Drawing.Size(187, 474);
+            this.gameObject_editor.Size = new System.Drawing.Size(187, 470);
             this.gameObject_editor.TabIndex = 1;
             this.gameObject_editor.ViewBackColor = System.Drawing.Color.Gray;
             // 
@@ -158,8 +161,9 @@
             this.mouse_positionX,
             this.mouse_positionY,
             this.lbl_view_x,
-            this.lbl_view_y});
-            this.bottom_dataview.Location = new System.Drawing.Point(0, 589);
+            this.lbl_view_y,
+            this.lbl_cam_angle});
+            this.bottom_dataview.Location = new System.Drawing.Point(0, 585);
             this.bottom_dataview.Name = "bottom_dataview";
             this.bottom_dataview.Size = new System.Drawing.Size(1391, 22);
             this.bottom_dataview.TabIndex = 2;
@@ -233,54 +237,54 @@
             // menuItem_NewProject
             // 
             this.menuItem_NewProject.Name = "menuItem_NewProject";
-            this.menuItem_NewProject.Size = new System.Drawing.Size(152, 22);
+            this.menuItem_NewProject.Size = new System.Drawing.Size(147, 22);
             this.menuItem_NewProject.Text = "New Project";
             this.menuItem_NewProject.Click += new System.EventHandler(this.menuItem_NewProject_Click);
             // 
             // menuItem_LoadProject
             // 
             this.menuItem_LoadProject.Name = "menuItem_LoadProject";
-            this.menuItem_LoadProject.Size = new System.Drawing.Size(152, 22);
+            this.menuItem_LoadProject.Size = new System.Drawing.Size(147, 22);
             this.menuItem_LoadProject.Text = "Load Project";
             this.menuItem_LoadProject.Click += new System.EventHandler(this.menuItem_LoadProject_Click);
             // 
             // menuItem_SaveProject
             // 
             this.menuItem_SaveProject.Name = "menuItem_SaveProject";
-            this.menuItem_SaveProject.Size = new System.Drawing.Size(152, 22);
+            this.menuItem_SaveProject.Size = new System.Drawing.Size(147, 22);
             this.menuItem_SaveProject.Text = "Save Project";
             this.menuItem_SaveProject.Click += new System.EventHandler(this.menuItem_SaveProject_Click);
             // 
             // menuItemSeperator1
             // 
             this.menuItemSeperator1.Name = "menuItemSeperator1";
-            this.menuItemSeperator1.Size = new System.Drawing.Size(149, 6);
+            this.menuItemSeperator1.Size = new System.Drawing.Size(144, 6);
             // 
             // menuItem_NewLevel
             // 
             this.menuItem_NewLevel.Name = "menuItem_NewLevel";
-            this.menuItem_NewLevel.Size = new System.Drawing.Size(152, 22);
+            this.menuItem_NewLevel.Size = new System.Drawing.Size(147, 22);
             this.menuItem_NewLevel.Text = "New Level";
             this.menuItem_NewLevel.Click += new System.EventHandler(this.menuItem_NewLevel_Click);
             // 
             // menuItem_LoadLevel
             // 
             this.menuItem_LoadLevel.Name = "menuItem_LoadLevel";
-            this.menuItem_LoadLevel.Size = new System.Drawing.Size(152, 22);
+            this.menuItem_LoadLevel.Size = new System.Drawing.Size(147, 22);
             this.menuItem_LoadLevel.Text = "Load Level";
             this.menuItem_LoadLevel.Click += new System.EventHandler(this.menuItem_LoadLevel_Click);
             // 
             // menuItem_SaveLevel
             // 
             this.menuItem_SaveLevel.Name = "menuItem_SaveLevel";
-            this.menuItem_SaveLevel.Size = new System.Drawing.Size(152, 22);
+            this.menuItem_SaveLevel.Size = new System.Drawing.Size(147, 22);
             this.menuItem_SaveLevel.Text = "Save Level";
             this.menuItem_SaveLevel.Click += new System.EventHandler(this.menuItem_SaveLevel_Click);
             // 
             // menuItemSeperator2
             // 
             this.menuItemSeperator2.Name = "menuItemSeperator2";
-            this.menuItemSeperator2.Size = new System.Drawing.Size(149, 6);
+            this.menuItemSeperator2.Size = new System.Drawing.Size(144, 6);
             // 
             // menuItem_Recents
             // 
@@ -289,38 +293,38 @@
             this.menuItem_Recent2,
             this.menuItem_Recent3});
             this.menuItem_Recents.Name = "menuItem_Recents";
-            this.menuItem_Recents.Size = new System.Drawing.Size(152, 22);
+            this.menuItem_Recents.Size = new System.Drawing.Size(147, 22);
             this.menuItem_Recents.Text = "Recents";
             // 
             // menuItem_Recent1
             // 
             this.menuItem_Recent1.Name = "menuItem_Recent1";
-            this.menuItem_Recent1.Size = new System.Drawing.Size(152, 22);
+            this.menuItem_Recent1.Size = new System.Drawing.Size(67, 22);
             this.menuItem_Recent1.Click += new System.EventHandler(this.menuItem_Recent1_Click);
             // 
             // menuItem_Recent2
             // 
             this.menuItem_Recent2.Name = "menuItem_Recent2";
-            this.menuItem_Recent2.Size = new System.Drawing.Size(152, 22);
+            this.menuItem_Recent2.Size = new System.Drawing.Size(67, 22);
             this.menuItem_Recent2.Click += new System.EventHandler(this.menuItem_Recent2_Click);
             // 
             // menuItem_Recent3
             // 
             this.menuItem_Recent3.Name = "menuItem_Recent3";
-            this.menuItem_Recent3.Size = new System.Drawing.Size(152, 22);
+            this.menuItem_Recent3.Size = new System.Drawing.Size(67, 22);
             this.menuItem_Recent3.Click += new System.EventHandler(this.menuItem_Recent3_Click);
             // 
             // menuItem_BackToMenu
             // 
             this.menuItem_BackToMenu.Name = "menuItem_BackToMenu";
-            this.menuItem_BackToMenu.Size = new System.Drawing.Size(152, 22);
+            this.menuItem_BackToMenu.Size = new System.Drawing.Size(147, 22);
             this.menuItem_BackToMenu.Text = "Back to menu";
             this.menuItem_BackToMenu.Click += new System.EventHandler(this.backToMenuToolStripMenuItem_Click);
             // 
             // menuItem_Exit
             // 
             this.menuItem_Exit.Name = "menuItem_Exit";
-            this.menuItem_Exit.Size = new System.Drawing.Size(152, 22);
+            this.menuItem_Exit.Size = new System.Drawing.Size(147, 22);
             this.menuItem_Exit.Text = "Exit";
             this.menuItem_Exit.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -646,15 +650,15 @@
             this.btn_right.UseVisualStyleBackColor = true;
             this.btn_right.Click += new System.EventHandler(this.btn_right_Click);
             // 
-            // lbl_editor_movement
+            // lbl_camera_controls
             // 
-            this.lbl_editor_movement.AutoSize = true;
-            this.lbl_editor_movement.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_editor_movement.Location = new System.Drawing.Point(3, 1);
-            this.lbl_editor_movement.Name = "lbl_editor_movement";
-            this.lbl_editor_movement.Size = new System.Drawing.Size(109, 16);
-            this.lbl_editor_movement.TabIndex = 9;
-            this.lbl_editor_movement.Text = "Editor Movement";
+            this.lbl_camera_controls.AutoSize = true;
+            this.lbl_camera_controls.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_camera_controls.Location = new System.Drawing.Point(3, 1);
+            this.lbl_camera_controls.Name = "lbl_camera_controls";
+            this.lbl_camera_controls.Size = new System.Drawing.Size(108, 16);
+            this.lbl_camera_controls.TabIndex = 9;
+            this.lbl_camera_controls.Text = "Camera Controls";
             // 
             // lbl_zoom
             // 
@@ -692,14 +696,14 @@
             this.contpane_base.RowCount = 2;
             this.contpane_base.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 84.97317F));
             this.contpane_base.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15.02683F));
-            this.contpane_base.Size = new System.Drawing.Size(1245, 565);
+            this.contpane_base.Size = new System.Drawing.Size(1245, 561);
             this.contpane_base.TabIndex = 16;
             // 
             // contpane_tools
             // 
             this.contpane_tools.Controls.Add(this.contpane_tabs);
             this.contpane_tools.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.contpane_tools.Location = new System.Drawing.Point(3, 483);
+            this.contpane_tools.Location = new System.Drawing.Point(3, 479);
             this.contpane_tools.Name = "contpane_tools";
             this.contpane_tools.Size = new System.Drawing.Size(1046, 79);
             this.contpane_tools.TabIndex = 5;
@@ -707,8 +711,8 @@
             // contpane_tabs
             // 
             this.contpane_tabs.ColumnCount = 2;
-            this.contpane_tabs.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.contpane_tabs.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.contpane_tabs.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 63.47992F));
+            this.contpane_tabs.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 36.52008F));
             this.contpane_tabs.Controls.Add(this.contpane_camerazoom, 1, 0);
             this.contpane_tabs.Controls.Add(this.contpane_movement, 0, 0);
             this.contpane_tabs.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -724,14 +728,14 @@
             this.contpane_camerazoom.Controls.Add(this.tb_zoom);
             this.contpane_camerazoom.Controls.Add(this.lbl_zoom);
             this.contpane_camerazoom.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.contpane_camerazoom.Location = new System.Drawing.Point(526, 3);
+            this.contpane_camerazoom.Location = new System.Drawing.Point(666, 3);
             this.contpane_camerazoom.Name = "contpane_camerazoom";
-            this.contpane_camerazoom.Size = new System.Drawing.Size(517, 73);
+            this.contpane_camerazoom.Size = new System.Drawing.Size(377, 73);
             this.contpane_camerazoom.TabIndex = 16;
             // 
             // tb_zoom
             // 
-            this.tb_zoom.Location = new System.Drawing.Point(0, 20);
+            this.tb_zoom.Location = new System.Drawing.Point(3, 19);
             this.tb_zoom.Minimum = 2;
             this.tb_zoom.Name = "tb_zoom";
             this.tb_zoom.Size = new System.Drawing.Size(104, 45);
@@ -742,7 +746,9 @@
             // 
             // contpane_movement
             // 
-            this.contpane_movement.Controls.Add(this.lbl_editor_movement);
+            this.contpane_movement.Controls.Add(this.btn_rotate_right);
+            this.contpane_movement.Controls.Add(this.btn_rotate_left);
+            this.contpane_movement.Controls.Add(this.lbl_camera_controls);
             this.contpane_movement.Controls.Add(this.btn_up);
             this.contpane_movement.Controls.Add(this.btn_right);
             this.contpane_movement.Controls.Add(this.btn_down);
@@ -750,8 +756,30 @@
             this.contpane_movement.Dock = System.Windows.Forms.DockStyle.Fill;
             this.contpane_movement.Location = new System.Drawing.Point(3, 3);
             this.contpane_movement.Name = "contpane_movement";
-            this.contpane_movement.Size = new System.Drawing.Size(517, 73);
+            this.contpane_movement.Size = new System.Drawing.Size(657, 73);
             this.contpane_movement.TabIndex = 15;
+            // 
+            // btn_rotate_right
+            // 
+            this.btn_rotate_right.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_rotate_right.Location = new System.Drawing.Point(506, 30);
+            this.btn_rotate_right.Name = "btn_rotate_right";
+            this.btn_rotate_right.Size = new System.Drawing.Size(93, 24);
+            this.btn_rotate_right.TabIndex = 11;
+            this.btn_rotate_right.Text = "&Rotate Right";
+            this.btn_rotate_right.UseVisualStyleBackColor = true;
+            this.btn_rotate_right.Click += new System.EventHandler(this.btn_rotate_right_Click);
+            // 
+            // btn_rotate_left
+            // 
+            this.btn_rotate_left.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_rotate_left.Location = new System.Drawing.Point(407, 31);
+            this.btn_rotate_left.Name = "btn_rotate_left";
+            this.btn_rotate_left.Size = new System.Drawing.Size(93, 23);
+            this.btn_rotate_left.TabIndex = 10;
+            this.btn_rotate_left.Text = "&Rotate Left";
+            this.btn_rotate_left.UseVisualStyleBackColor = true;
+            this.btn_rotate_left.Click += new System.EventHandler(this.btn_rotate_left_Click);
             // 
             // contpane_canvas
             // 
@@ -759,7 +787,7 @@
             this.contpane_canvas.Dock = System.Windows.Forms.DockStyle.Fill;
             this.contpane_canvas.Location = new System.Drawing.Point(3, 3);
             this.contpane_canvas.Name = "contpane_canvas";
-            this.contpane_canvas.Size = new System.Drawing.Size(1046, 474);
+            this.contpane_canvas.Size = new System.Drawing.Size(1046, 470);
             this.contpane_canvas.TabIndex = 7;
             // 
             // contpane_buttons
@@ -767,7 +795,7 @@
             this.contpane_buttons.Controls.Add(this.btn_save);
             this.contpane_buttons.Controls.Add(this.btn_cancel);
             this.contpane_buttons.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.contpane_buttons.Location = new System.Drawing.Point(1055, 483);
+            this.contpane_buttons.Location = new System.Drawing.Point(1055, 479);
             this.contpane_buttons.Name = "contpane_buttons";
             this.contpane_buttons.Size = new System.Drawing.Size(187, 79);
             this.contpane_buttons.TabIndex = 6;
@@ -785,7 +813,7 @@
             // base_container.Panel2
             // 
             this.base_container.Panel2.Controls.Add(this.contpane_base);
-            this.base_container.Size = new System.Drawing.Size(1391, 565);
+            this.base_container.Size = new System.Drawing.Size(1391, 561);
             this.base_container.SplitterDistance = 142;
             this.base_container.TabIndex = 17;
             // 
@@ -801,7 +829,7 @@
             this.list_div.RowCount = 2;
             this.list_div.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.list_div.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.list_div.Size = new System.Drawing.Size(142, 565);
+            this.list_div.Size = new System.Drawing.Size(142, 561);
             this.list_div.TabIndex = 0;
             // 
             // file_tree
@@ -809,9 +837,9 @@
             this.file_tree.BackColor = System.Drawing.Color.Silver;
             this.file_tree.Dock = System.Windows.Forms.DockStyle.Fill;
             this.file_tree.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.file_tree.Location = new System.Drawing.Point(3, 285);
+            this.file_tree.Location = new System.Drawing.Point(3, 283);
             this.file_tree.Name = "file_tree";
-            this.file_tree.Size = new System.Drawing.Size(136, 277);
+            this.file_tree.Size = new System.Drawing.Size(136, 275);
             this.file_tree.TabIndex = 0;
             // 
             // lb_objects
@@ -824,15 +852,21 @@
             this.lb_objects.ItemHeight = 15;
             this.lb_objects.Location = new System.Drawing.Point(3, 3);
             this.lb_objects.Name = "lb_objects";
-            this.lb_objects.Size = new System.Drawing.Size(136, 276);
+            this.lb_objects.Size = new System.Drawing.Size(136, 274);
             this.lb_objects.TabIndex = 1;
+            // 
+            // lbl_cam_angle
+            // 
+            this.lbl_cam_angle.Name = "lbl_cam_angle";
+            this.lbl_cam_angle.Size = new System.Drawing.Size(88, 17);
+            this.lbl_cam_angle.Text = "Camera Angle :";
             // 
             // Editor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.DimGray;
-            this.ClientSize = new System.Drawing.Size(1391, 611);
+            this.ClientSize = new System.Drawing.Size(1391, 607);
             this.Controls.Add(this.base_container);
             this.Controls.Add(this.bottom_dataview);
             this.Controls.Add(this.top_menu_container);
@@ -919,7 +953,7 @@
         private System.Windows.Forms.Button btn_down;
         private System.Windows.Forms.Button btn_left;
         private System.Windows.Forms.Button btn_right;
-        private System.Windows.Forms.Label lbl_editor_movement;
+        private System.Windows.Forms.Label lbl_camera_controls;
         private System.Windows.Forms.Label lbl_zoom;
         private System.Windows.Forms.ToolStripMenuItem menuItem_open_editor;
         private System.Windows.Forms.ToolStripMenuItem menuItem_ObjectEditor;
@@ -953,5 +987,8 @@
         private System.Windows.Forms.ToolStripMenuItem menuItem_Recent1;
         private System.Windows.Forms.ToolStripMenuItem menuItem_Recent2;
         private System.Windows.Forms.ToolStripMenuItem menuItem_Recent3;
+        private System.Windows.Forms.Button btn_rotate_right;
+        private System.Windows.Forms.Button btn_rotate_left;
+        private System.Windows.Forms.ToolStripStatusLabel lbl_cam_angle;
     }
 }

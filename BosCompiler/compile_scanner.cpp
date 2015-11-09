@@ -5,6 +5,8 @@
 */
 
 #include "compile_scanner.hpp"
+#include <string>
+#include <iostream>
 
 Scanner::Scanner(string file)
 {

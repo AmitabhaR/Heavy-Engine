@@ -10,7 +10,7 @@ This is the official site of Heavy-Engine 2 .
 
 The project is licensed under GNU GPL v2.0 . Please see the LICENSE file for more information .
 We give you the source code with a strict aggrement that you will remove the name of the original author of the program .
-For more information , please contact us at help.reostudio@yahoo.com .
+For more information , please contact us at reo.studio@yahoo.com . Documentation on the way . 
 
 # Platforms
 	1. Windows PC (Managed)
@@ -35,6 +35,10 @@ For more information , please contact us at help.reostudio@yahoo.com .
 	2. Create a new project and add all the source files.
 	3. Build the EXE and compiling is finished.
 
+### Compile PackageManager
+	1. Open the .csproj file in the folder PackageManager
+	2. Run Build Solution that makes a dll file.
+	
 ### Compile C# Runtime
 	1. Create a visual studio class library project .
 	2. Add Runtime.cs file .
@@ -71,7 +75,9 @@ In the pre-compiled folder , we have compiled and given you the latest build . Y
 For protection from decompilation , you can use Esiriz .NET Reactor for encryting / encoding the source code . This is only for official purposes only.
 
 # Notice
-We are not providing the source code of FileZip and GameBuilder because according to the terms and conditions of the FileZip software , the software is free but not be shared it's source code . GameBuilder also contains the same license.
+1.We are not providing the source code of FileZip and GameBuilder because according to the terms and conditions of the FileZip software , the software is free but not be shared it's source code . GameBuilder also contains the same license.
+2.We are providing the bos compiler with x64 Optimized executable , if you need to make one , please prefer microsoft compilers.
+
 
 Release Version : 2.0 Beta 1.1
 

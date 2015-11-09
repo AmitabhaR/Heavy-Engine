@@ -37,6 +37,8 @@ public class Camera
             
             for(int cntr = 0;cntr < gameObject_list.size();cntr++)
                 if (((GameObject_Scene) gameObject_list.elementAt(cntr)).AllowCameraRotation) ((GameObject_Scene) gameObject_list.elementAt(cntr)).Rotate(-rotate_angle);
+            
+            NavigationManager.updateNavigatorTargets((float) -rotate_angle);
      }
 
      public static Vector2 getCameraPosition() { return camera_pos;  }
