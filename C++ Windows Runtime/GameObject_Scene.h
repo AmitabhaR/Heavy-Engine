@@ -16,12 +16,15 @@ private:
 public:
 	int pos_x;
 	int pos_y;
+	int CollisionRectX = 0, CollisionRectY = 0;
 	GameObject obj_instance;
 	std::string instance_name;
 	int depth;
 	bool isDestroyed = false;
 	bool AllowCameraTranslation = false;
 	bool AllowCameraRotation = true;
+	bool Visibility = true;
+
 
 	void Initialize();
 

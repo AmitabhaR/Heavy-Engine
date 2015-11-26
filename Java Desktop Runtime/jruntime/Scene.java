@@ -114,9 +114,20 @@ public class Scene implements Runnable , Cloneable
 							  }
 							  else
 						      {
-							    if (((GameObject_Scene) object_array.get(cnt)).obj_instance.img != null && ((GameObject_Scene) object_array.get(cnt0)).obj_instance.img != null && ((GameObject_Scene) object_array.get(cnt)).obj_instance.physics && ((GameObject_Scene) object_array.get(cnt0)).obj_instance.physics && ((GameObject_Scene) object_array.get(cnt)).obj_instance.collider && ((GameObject_Scene) object_array.get(cnt0)).obj_instance.collider)
+							    if (((GameObject_Scene) object_array.get(cnt)).obj_instance.img != null && ((GameObject_Scene) object_array.get(cnt)).Visibility && ((GameObject_Scene) object_array.get(cnt0)).obj_instance.img != null && ((GameObject_Scene) object_array.get(cnt0)).Visibility && ((GameObject_Scene) object_array.get(cnt)).obj_instance.physics && ((GameObject_Scene) object_array.get(cnt0)).obj_instance.physics && ((GameObject_Scene) object_array.get(cnt)).obj_instance.collider && ((GameObject_Scene) object_array.get(cnt0)).obj_instance.collider)
 								{
 									if (((GameObject_Scene) object_array.get(cnt)).pos_x + ((GameObject_Scene) object_array.get(cnt)).obj_instance.img.getWidth( ) > ((GameObject_Scene) object_array.get(cnt0)).pos_x && ((GameObject_Scene) object_array.get(cnt)).pos_x < ((GameObject_Scene) object_array.get(cnt0)).pos_x + ((GameObject_Scene) object_array.get(cnt0)).obj_instance.img.getWidth( ) && ((GameObject_Scene) object_array.get(cnt)).pos_y + ((GameObject_Scene) object_array.get(cnt)).obj_instance.img.getHeight( ) > ((GameObject_Scene) object_array.get(cnt0)).pos_y && ((GameObject_Scene) object_array.get(cnt)).pos_y < ((GameObject_Scene) object_array.get(cnt0)).pos_y + ((GameObject_Scene) object_array.get(cnt0)).obj_instance.img.getHeight( ) && ((GameObject_Scene) object_array.get(cnt)).depth == ((GameObject_Scene) object_array.get(cnt0)).depth)
+									{
+                                                                            
+                                                                            for(int c = 0;c < collision_handlers.size( );c++)
+                                                                            {
+                                                                                ((CollisionHandler) collision_handlers.get(c)).onCollision((GameObject_Scene) object_array.get(cnt),(GameObject_Scene) object_array.get(cnt0));
+                                                                            }
+									}
+								}
+                                                            else if (((GameObject_Scene) object_array.get(cnt)).obj_instance.img != null && ((GameObject_Scene) object_array.get(cnt)).obj_instance.text == "" && ((GameObject_Scene) object_array.get(cnt)).CollisionRectX > 0 && ((GameObject_Scene) object_array.get(cnt)).CollisionRectY > 0 && ((GameObject_Scene) object_array.get(cnt0)).obj_instance.img != null && ((GameObject_Scene) object_array.get(cnt0)).Visibility && ((GameObject_Scene) object_array.get(cnt)).obj_instance.physics && ((GameObject_Scene) object_array.get(cnt0)).obj_instance.physics && ((GameObject_Scene) object_array.get(cnt)).obj_instance.collider && ((GameObject_Scene) object_array.get(cnt0)).obj_instance.collider)
+								{
+									if (((GameObject_Scene) object_array.get(cnt)).pos_x + ((GameObject_Scene) object_array.get(cnt)).CollisionRectX > ((GameObject_Scene) object_array.get(cnt0)).pos_x && ((GameObject_Scene) object_array.get(cnt)).pos_x < ((GameObject_Scene) object_array.get(cnt0)).pos_x + ((GameObject_Scene) object_array.get(cnt0)).obj_instance.img.getWidth( ) && ((GameObject_Scene) object_array.get(cnt)).pos_y + ((GameObject_Scene) object_array.get(cnt)).CollisionRectY > ((GameObject_Scene) object_array.get(cnt0)).pos_y && ((GameObject_Scene) object_array.get(cnt)).pos_y < ((GameObject_Scene) object_array.get(cnt0)).pos_y + ((GameObject_Scene) object_array.get(cnt0)).obj_instance.img.getHeight( ) && ((GameObject_Scene) object_array.get(cnt)).depth == ((GameObject_Scene) object_array.get(cnt0)).depth)
 									{
                                                                             
                                                                             for(int c = 0;c < collision_handlers.size( );c++)
@@ -200,20 +211,21 @@ public class Scene implements Runnable , Cloneable
 			
 		    for(int cnt = 0;cnt < object_array.size();cnt++)
 			{
-               if (((GameObject_Scene) object_array.get(cnt)).obj_instance.img != null)
-			   {
+                            if (((GameObject_Scene) object_array.get(cnt)).Visibility)
+                            if (((GameObject_Scene) object_array.get(cnt)).obj_instance.img != null)
+			    {
                              try
                              {
                                  g.drawImage(Thumbnails.of(((GameObject_Scene) object_array.get(cnt)).obj_instance.img).forceSize(((GameObject_Scene) object_array.get(cnt)).obj_instance.img.getWidth() + (int) ((GameObject_Scene) object_array.get(cnt)).GetScale(), ((GameObject_Scene) object_array.get(cnt)).obj_instance.img.getHeight() + (int) ((GameObject_Scene) object_array.get(cnt)).GetScale()).asBufferedImage(),((GameObject_Scene) object_array.get(cnt)).pos_x,((GameObject_Scene) object_array.get(cnt)).pos_y,null);
                              }
                              catch(IOException ex) { }
-			   }			   
-			   else if (!((GameObject_Scene) object_array.get(cnt)).obj_instance.text.equals(""))
-			   {
+			    }			   
+			    else if (!((GameObject_Scene) object_array.get(cnt)).obj_instance.text.equals(""))
+			    {
                                g.setFont(new Font(((GameObject_Scene) object_array.get(cnt)).obj_instance.font_name,Font.PLAIN,((GameObject_Scene) object_array.get(cnt)).obj_instance.font_size));
                                g.setColor(((GameObject_Scene)  object_array.get(cnt)).obj_instance.color);
                   g.drawString(((GameObject_Scene) object_array.get(cnt)).obj_instance.text,((GameObject_Scene) object_array.get(cnt)).pos_x,((GameObject_Scene) object_array.get(cnt)).pos_y);				  
-			   }
+			    }
 			}
 		}
 		

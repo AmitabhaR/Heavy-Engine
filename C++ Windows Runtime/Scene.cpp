@@ -223,15 +223,27 @@ re:
 							}
 						}
 
-						if (obj->obj_instance.img.baseImage != NULL && cmp_obj->obj_instance.img.baseImage != NULL && obj->obj_instance.physics && cmp_obj->obj_instance.physics && obj->obj_instance.collider && cmp_obj->obj_instance.collider)
+						if (obj->obj_instance.img.baseImage != NULL && obj->Visibility && cmp_obj->obj_instance.img.baseImage != NULL && cmp_obj->Visibility && obj->obj_instance.physics && cmp_obj->obj_instance.physics && obj->obj_instance.collider && cmp_obj->obj_instance.collider)
 						{
-							if (obj->pos_x + obj->obj_instance.img.Width > cmp_obj->pos_x && obj->pos_x < cmp_obj->pos_x + cmp_obj->obj_instance.img.Width && obj->pos_y + obj->obj_instance.img.Height > cmp_obj->pos_y && cmp_obj->pos_y < cmp_obj->pos_y + cmp_obj->obj_instance.img.Height && obj->depth == cmp_obj->depth)
+							if (obj->pos_x + obj->obj_instance.img.Width > cmp_obj->pos_x && obj->pos_x < cmp_obj->pos_x + cmp_obj->obj_instance.img.Width && obj->pos_y + obj->obj_instance.img.Height > cmp_obj->pos_y && obj->pos_y < cmp_obj->pos_y + cmp_obj->obj_instance.img.Height && obj->depth == cmp_obj->depth)
 							{
 								std::list<OnCollisionHandler> col_handler = HApplication::getCollisionHandlers();
 
 								for (std::list<OnCollisionHandler>::iterator cur_handler = col_handler.begin(); cur_handler != col_handler.end(); cur_handler++)
 								{
 									(*cur_handler)(obj,cmp_obj);
+								}
+							}
+						}
+						else if (obj->obj_instance.img.baseImage == NULL && obj->obj_instance.text == "" && obj->CollisionRectX > 0 && obj->CollisionRectY > 0 && cmp_obj->obj_instance.img.baseImage != NULL && cmp_obj->Visibility && obj->obj_instance.physics && cmp_obj->obj_instance.physics && obj->obj_instance.collider && cmp_obj->obj_instance.collider)
+						{
+							if (obj->pos_x + obj->CollisionRectX > cmp_obj->pos_x && obj->pos_x < cmp_obj->pos_x + cmp_obj->obj_instance.img.Width && obj->pos_y + obj->CollisionRectY > cmp_obj->pos_y && obj->pos_y < cmp_obj->pos_y + cmp_obj->obj_instance.img.Height && obj->depth == cmp_obj->depth)
+							{
+								std::list<OnCollisionHandler> col_handler = HApplication::getCollisionHandlers();
+
+								for (std::list<OnCollisionHandler>::iterator cur_handler = col_handler.begin(); cur_handler != col_handler.end(); cur_handler++)
+								{
+									(*cur_handler)(obj, cmp_obj);
 								}
 							}
 						}
@@ -337,17 +349,18 @@ void Scene::drawScene()
 			}
 		}
 
-		if (base_obj->obj_instance.img.baseImage != NULL)
-		{
-			SDL_BlitSurface(rotozoomSurface(base_obj->obj_instance.img.baseImage,0,base_obj->GetScale( ),NULL), NULL, canvas,GetRectP(base_obj->pos_x,base_obj->pos_y,base_obj->obj_instance.img.Width,base_obj->obj_instance.img.Height));
-		}
-		else if (base_obj->obj_instance.text != "")
-		{
-			TTF_Font * baseFont = TTF_OpenFont(ResourceManager::getResource(base_obj->obj_instance.font_name).c_str(), base_obj->obj_instance.font_size + base_obj->GetScale( ));
-			SDL_Surface * baseSurface = TTF_RenderText_Solid(baseFont, base_obj->obj_instance.text.c_str(), base_obj->obj_instance.color);
+		if (base_obj->Visibility)
+			if (base_obj->obj_instance.img.baseImage != NULL)
+			{
+				SDL_BlitSurface(rotozoomSurface(base_obj->obj_instance.img.baseImage,0,base_obj->GetScale( ),NULL), NULL, canvas,GetRectP(base_obj->pos_x,base_obj->pos_y,base_obj->obj_instance.img.Width,base_obj->obj_instance.img.Height));
+			}
+			else if (base_obj->obj_instance.text != "")
+			{
+				TTF_Font * baseFont = TTF_OpenFont(ResourceManager::getResource(base_obj->obj_instance.font_name).c_str(), base_obj->obj_instance.font_size + base_obj->GetScale( ));
+				SDL_Surface * baseSurface = TTF_RenderText_Solid(baseFont, base_obj->obj_instance.text.c_str(), base_obj->obj_instance.color);
 			
-			SDL_BlitSurface(baseSurface, NULL, canvas, GetRectP(base_obj->pos_x,base_obj->pos_y,0,0));
-		}
+				SDL_BlitSurface(baseSurface, NULL, canvas, GetRectP(base_obj->pos_x,base_obj->pos_y,0,0));
+			}
 	}
 
 	SDL_UpdateWindowSurface(HApplication::getWindowHandle());

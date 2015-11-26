@@ -22,6 +22,8 @@ public class GameObject_Scene
     public boolean AllowCameraTranslation = false;
     public boolean AllowCameraRotation = true;
     public int depth;
+    public boolean Visibility = true;
+    public int CollisionRectX = 0,CollisionRectY = 0;
     private double rotate_angle;
     private int scale_rate;
     private Image source_img;

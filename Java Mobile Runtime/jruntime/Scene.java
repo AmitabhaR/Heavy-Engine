@@ -159,9 +159,20 @@ public class Scene extends GameCanvas implements CommandListener,Runnable
 							  }
 							  else
 						      {
-							    if (((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.img != null && ((GameObject_Scene) object_array.elementAt(cnt0)).obj_instance.img != null && ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.physics && ((GameObject_Scene) object_array.elementAt(cnt0)).obj_instance.physics && ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.collider && ((GameObject_Scene) object_array.elementAt(cnt0)).obj_instance.collider)
+							    if (((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.img != null && ((GameObject_Scene) object_array.elementAt(cnt)).Visibility && ((GameObject_Scene) object_array.elementAt(cnt0)).obj_instance.img != null && ((GameObject_Scene) object_array.elementAt(cnt0)).Visibility && ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.physics && ((GameObject_Scene) object_array.elementAt(cnt0)).obj_instance.physics && ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.collider && ((GameObject_Scene) object_array.elementAt(cnt0)).obj_instance.collider)
 								{
 									if (((GameObject_Scene) object_array.elementAt(cnt)).pos_x + ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.img.getWidth( ) > ((GameObject_Scene) object_array.elementAt(cnt0)).pos_x && ((GameObject_Scene) object_array.elementAt(cnt)).pos_x < ((GameObject_Scene) object_array.elementAt(cnt0)).pos_x + ((GameObject_Scene) object_array.elementAt(cnt0)).obj_instance.img.getWidth( ) && ((GameObject_Scene) object_array.elementAt(cnt)).pos_y + ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.img.getHeight( ) > ((GameObject_Scene) object_array.elementAt(cnt0)).pos_y && ((GameObject_Scene) object_array.elementAt(cnt)).pos_y < ((GameObject_Scene) object_array.elementAt(cnt0)).pos_y + ((GameObject_Scene) object_array.elementAt(cnt0)).obj_instance.img.getHeight( ) && ((GameObject_Scene) object_array.elementAt(cnt)).depth == ((GameObject_Scene) object_array.elementAt(cnt0)).depth)
+									{
+                                                                            
+                                                                            for(int c = 0;c < collision_handlers.size( );c++)
+                                                                            {
+                                                                                ((CollisionHandler) collision_handlers.elementAt(c)).onCollision((GameObject_Scene) object_array.elementAt(cnt),(GameObject_Scene) object_array.elementAt(cnt0));
+                                                                            }
+									}
+								}
+                                                            else if (((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.img == null && ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.text == "" && ((GameObject_Scene) object_array.elementAt(cnt)).CollisionRectX > 0 && ((GameObject_Scene) object_array.elementAt(cnt)).CollisionRectY > 0 && ((GameObject_Scene) object_array.elementAt(cnt0)).obj_instance.img != null && ((GameObject_Scene) object_array.elementAt(cnt0)).Visibility && ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.physics && ((GameObject_Scene) object_array.elementAt(cnt0)).obj_instance.physics && ((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.collider && ((GameObject_Scene) object_array.elementAt(cnt0)).obj_instance.collider)
+								{
+									if (((GameObject_Scene) object_array.elementAt(cnt)).pos_x + ((GameObject_Scene) object_array.elementAt(cnt)).CollisionRectX > ((GameObject_Scene) object_array.elementAt(cnt0)).pos_x && ((GameObject_Scene) object_array.elementAt(cnt)).pos_x < ((GameObject_Scene) object_array.elementAt(cnt0)).pos_x + ((GameObject_Scene) object_array.elementAt(cnt0)).obj_instance.img.getWidth( ) && ((GameObject_Scene) object_array.elementAt(cnt)).pos_y + ((GameObject_Scene) object_array.elementAt(cnt)).CollisionRectY > ((GameObject_Scene) object_array.elementAt(cnt0)).pos_y && ((GameObject_Scene) object_array.elementAt(cnt)).pos_y < ((GameObject_Scene) object_array.elementAt(cnt0)).pos_y + ((GameObject_Scene) object_array.elementAt(cnt0)).obj_instance.img.getHeight( ) && ((GameObject_Scene) object_array.elementAt(cnt)).depth == ((GameObject_Scene) object_array.elementAt(cnt0)).depth)
 									{
                                                                             
                                                                             for(int c = 0;c < collision_handlers.size( );c++)
@@ -244,6 +255,7 @@ public class Scene extends GameCanvas implements CommandListener,Runnable
 			
 		    for(int cnt = 0;cnt < object_array.size();cnt++)
 			{
+                            if (((GameObject_Scene) object_array.elementAt(cnt)).Visibility)
                if (((GameObject_Scene) object_array.elementAt(cnt)).obj_instance.img != null)
 			   {
                                

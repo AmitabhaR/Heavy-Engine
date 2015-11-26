@@ -37,6 +37,8 @@ namespace Runtime
         public bool isDestroyed = false;
         public bool AllowCameraRotation = true;
         public bool AllowCameraTranslation = false;
+        public bool Visibility = true;
+        public int CollisionRectX = 0, CollisionRectY = 0;
         private float rotation_angle;
         private float scale_rate;
         private Image source_img;
@@ -546,9 +548,19 @@ namespace Runtime
                                     }
                                     else
                                     {
-                                        if (object_array[cnt].obj_instance.img != null && object_array[cnt0].obj_instance.img != null && object_array[cnt].obj_instance.physics && object_array[cnt0].obj_instance.physics && object_array[cnt].obj_instance.collider && object_array[cnt0].obj_instance.collider)
+                                        if (object_array[cnt].obj_instance.img != null && object_array[cnt].Visibility && object_array[cnt0].obj_instance.img != null && object_array[cnt0].Visibility && object_array[cnt].obj_instance.physics && object_array[cnt0].obj_instance.physics && object_array[cnt].obj_instance.collider && object_array[cnt0].obj_instance.collider)
                                         {
                                             if (object_array[cnt].pos_x + object_array[cnt].obj_instance.img.Width > object_array[cnt0].pos_x && object_array[cnt].pos_x < object_array[cnt0].pos_x + object_array[cnt0].obj_instance.img.Width && object_array[cnt].pos_y + object_array[cnt].obj_instance.img.Height > object_array[cnt0].pos_y && object_array[cnt].pos_y < object_array[cnt0].pos_y + object_array[cnt0].obj_instance.img.Height && object_array[cnt].depth == object_array[cnt0].depth)
+                                            {
+                                                if (onCollision != null)
+                                                {
+                                                    onCollision(object_array[cnt], object_array[cnt0]);
+                                                }
+                                            }
+                                        }
+                                        else if (object_array[cnt].obj_instance.img == null && object_array[cnt].obj_instance.text == "" && object_array[cnt].CollisionRectX > 0 && object_array[cnt].CollisionRectY > 0 && object_array[cnt0].obj_instance.img != null && object_array[cnt0].Visibility && object_array[cnt].obj_instance.physics && object_array[cnt0].obj_instance.physics && object_array[cnt].obj_instance.collider && object_array[cnt0].obj_instance.collider)
+                                        {
+                                            if (object_array[cnt].pos_x + object_array[cnt].CollisionRectX > object_array[cnt0].pos_x && object_array[cnt].pos_x < object_array[cnt0].pos_x + object_array[cnt0].obj_instance.img.Width && object_array[cnt].pos_y + object_array[cnt].CollisionRectY > object_array[cnt0].pos_y && object_array[cnt].pos_y < object_array[cnt0].pos_y + object_array[cnt0].obj_instance.img.Height && object_array[cnt].depth == object_array[cnt0].depth)
                                             {
                                                 if (onCollision != null)
                                                 {
@@ -583,6 +595,7 @@ namespace Runtime
                 {
                     int cnt = sortedArray[cntr].index;
 
+                    if (object_array[cnt].Visibility)
                         if (object_array[cnt].obj_instance.img != null)
                         {
                             e.Graphics.DrawImage(new Bitmap(object_array[cnt].obj_instance.img, new Size(object_array[cnt].obj_instance.img.Size.Width + (int) object_array[cnt].GetScale(),object_array[cnt].obj_instance.img.Size.Height + (int) object_array[cnt].GetScale())), new Point(object_array[cnt].pos_x, object_array[cnt].pos_y));
