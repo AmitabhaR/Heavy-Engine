@@ -23,6 +23,8 @@ Release Notes (Beta 1.0.3)
 	13. Added Duplication of game objects in the editor.
 	14. Added Linux Platform as Build Target.
 	15. Added a Camera Manager in the API.
+	16. Added Visibility property to game objects.
+	17. Added CollisionRectangles for invisible colliders.
 	
 ### Fixes
 	1. Multi-threaded Animation not supported anymore.
@@ -44,6 +46,7 @@ Release Notes (Beta 1.0.3)
 	17. After saving a navigation file , sometimes the file is not viewed in the editor's file tree . Bug is fixed . Also same for Animation files.
 	18. Fixed rotation while animating bug.
 	19. Fixed package manager problem for not extracting header files.
+	20. Fixed collision problem with Native Windows.
 	
 ### Notice
 	1. Bosch Scripts are updated with latest features of the engine.

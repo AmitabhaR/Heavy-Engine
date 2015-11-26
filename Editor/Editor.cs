@@ -753,32 +753,46 @@ namespace Heavy_Engine
                     e.Graphics.DrawLine(new Pen(Brushes.Gray), new Point(0, lines_array[cnt].y), new Point(canvas.Width, lines_array[cnt].y));  // Left to right
                 }
 
-                if (sortedArray == null)
-                {
-                    return;
-                }
+                if (sortedArray == null) return;
 
                 for (int cnt = 0; cnt < sortedArray.Length; cnt++)
                 {
                     int cntr = sortedArray[cnt].index;
 
-                    if (gameObjectScene_list[cntr].mainObject.object_img != null)
+                    if (gameObjectScene_list[cntr].Visibility)
                     {
-                        e.Graphics.DrawImage(new Bitmap(gameObjectScene_list[cntr].mainObject.object_img, new Size(gameObjectScene_list[cntr].mainObject.object_img.Width + zoom_rate + (int) gameObjectScene_list[cntr].scaling_rate, gameObjectScene_list[cntr].mainObject.object_img.Height + zoom_rate + (int) gameObjectScene_list[cntr].scaling_rate)), new Point(gameObjectScene_list[cntr].position_scene_x, gameObjectScene_list[cntr].position_scene_y));
-                    }
-                    else if (gameObjectScene_list[cntr].mainObject.object_text != "")
-                    {
-                        e.Graphics.DrawString(gameObjectScene_list[cntr].mainObject.object_text, new Font("Verdana", 12 + (int)gameObjectScene_list[cntr].scaling_rate), Brushes.Black, new Point(gameObjectScene_list[cntr].position_scene_x, gameObjectScene_list[cntr].position_scene_y));
+                        if (gameObjectScene_list[cntr].mainObject.object_img != null)
+                        {
+                            e.Graphics.DrawImage(new Bitmap(gameObjectScene_list[cntr].mainObject.object_img, new Size(gameObjectScene_list[cntr].mainObject.object_img.Width + zoom_rate + (int)gameObjectScene_list[cntr].scaling_rate, gameObjectScene_list[cntr].mainObject.object_img.Height + zoom_rate + (int)gameObjectScene_list[cntr].scaling_rate)), new Point(gameObjectScene_list[cntr].position_scene_x, gameObjectScene_list[cntr].position_scene_y));
+                        }
+                        else if (gameObjectScene_list[cntr].mainObject.object_text != "")
+                        {
+                            e.Graphics.DrawString(gameObjectScene_list[cntr].mainObject.object_text, new Font("Verdana", 12 + (int)gameObjectScene_list[cntr].scaling_rate), Brushes.Black, new Point(gameObjectScene_list[cntr].position_scene_x, gameObjectScene_list[cntr].position_scene_y));
+                        }
+                        //else e.Graphics.DrawRectangle(Pens.White, gameObjectScene_list[cntr].position_scene_x, gameObjectScene_list[cntr].position_scene_y, 10, 10);
                     }
                 }
 
                 if (gameObject_editor.SelectedObject != null)
                 {
-                    if (((GameObject_Scene_EDITOR) gameObject_editor.SelectedObject).obj.mainObject.object_img != null)
+                    if (((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.mainObject.object_img != null && ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.Visibility)
                     {
                         GameObject_Scene_EDITOR handle = (GameObject_Scene_EDITOR)  gameObject_editor.SelectedObject;
 
                         e.Graphics.DrawRectangle(Pens.White, handle.obj.position_scene_x - ((int)handle.obj.scaling_rate + zoom_rate), handle.obj.position_scene_y - ((int)handle.obj.scaling_rate + zoom_rate), handle.obj.mainObject.object_img.Width + 7 / 2 * ((int)handle.obj.scaling_rate + zoom_rate), handle.obj.mainObject.object_img.Height + 7 / 2 * ((int)handle.obj.scaling_rate + zoom_rate));
+                    }
+                    else if (((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.mainObject.object_img != null && !((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.Visibility)
+                    {
+                        e.Graphics.DrawRectangle(Pens.White, ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.position_scene_x, ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.position_scene_y, ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.mainObject.object_img.Width, ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.mainObject.object_img.Height);  // Draw the edge lines of the object.
+                    }
+                    else if (((GameObject_Scene_EDITOR) gameObject_editor.SelectedObject).obj.mainObject.object_img == null && ((GameObject_Scene_EDITOR) gameObject_editor.SelectedObject).obj.mainObject.object_text == "")
+                    {
+                        if (((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.collision_rectX > 0 && ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.collision_rectY > 0) e.Graphics.DrawRectangle(Pens.White, ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.position_scene_x, ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.position_scene_y, ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.collision_rectX, ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.collision_rectY);
+                        else e.Graphics.DrawRectangle(Pens.White, ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.position_scene_x, ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.position_scene_y, 15, 15);
+                    }
+                    else if (((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.mainObject.object_text != "" && !((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.Visibility)
+                    {
+                        e.Graphics.DrawRectangle(Pens.White, ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.position_scene_x, ((GameObject_Scene_EDITOR)gameObject_editor.SelectedObject).obj.position_scene_y, 15, 15);
                     }
                 }
         }
@@ -1301,6 +1315,24 @@ namespace Heavy_Engine
                     {
                         gameObject.AllowCameraRotation = bool.Parse(str);
 
+                        cur_action = "Object_Visibility";
+                    }
+                    else if (cur_action == "Object_Visibility")
+                    {
+                        gameObject.Visibility = bool.Parse(str);
+
+                        cur_action = "Object_CollisionX";
+                    }
+                    else if (cur_action == "Object_CollisionX")
+                    {
+                        gameObject.collision_rectX = int.Parse(str);
+
+                        cur_action = "Object_CollisionY";
+                    }
+                    else if (cur_action == "Object_CollisionY")
+                    {
+                        gameObject.collision_rectY = int.Parse(str);
+
                         cur_action = "Object_Childs";
                     }
                     else if (cur_action == "Object_Childs")
@@ -1416,7 +1448,7 @@ namespace Heavy_Engine
             // Loop for printing object position.
             foreach(GameObject_Scene gameObject in gameObjectScene_list)
             {
-                string obj_line = "Object: @" + gameObject.mainObject.object_name + "@ @" + gameObject.instance_name + "@ " + gameObject.position_x + " " + gameObject.position_y + " " + gameObject.depth + " " + gameObject.isTile + " " + gameObject.rotation_angle + " " + gameObject.scaling_rate + " " + gameObject.AllowCameraTranslation + " " + gameObject.AllowCameraRotation;
+                string obj_line = "Object: @" + gameObject.mainObject.object_name + "@ @" + gameObject.instance_name + "@ " + gameObject.position_x + " " + gameObject.position_y + " " + gameObject.depth + " " + gameObject.isTile + " " + gameObject.rotation_angle + " " + gameObject.scaling_rate + " " + gameObject.AllowCameraTranslation + " " + gameObject.AllowCameraRotation + " " + gameObject.Visibility + " " + gameObject.collision_rectX + " " + gameObject.collision_rectY;
 
                 foreach(GameObject_Scene gameObj in gameObject.child_list)
                 {
@@ -1493,6 +1525,8 @@ namespace Heavy_Engine
             public List<GameObject_Scene> child_list;
             public bool AllowCameraTranslation;
             public bool AllowCameraRotation;
+            public bool Visibility;
+            public int collision_rectX, collision_rectY;
             private Image source_img;
 
             public void Initialize( )
@@ -1639,7 +1673,7 @@ namespace Heavy_Engine
 
         private void menuItem_AddObject_Click(object sender, EventArgs e)
         {
-            AddObject window_handle = new AddObject(this);
+            AddObject window_handle = new AddObject(this,mouse_PX,mouse_PY);
             window_handle.Show();
         }
 
@@ -1730,11 +1764,6 @@ namespace Heavy_Engine
             ResourceManager res_manager = new ResourceManager(this);
 
             res_manager.Show();
-        }
-
-        private void canvas_Click(object sender, EventArgs e)
-        {
-            
         }
 
         private void menuItem_NewScript_Click(object sender, EventArgs e)
@@ -2465,6 +2494,69 @@ namespace Heavy_Engine
             get { return obj.AllowCameraRotation; }
             set { obj.AllowCameraRotation = value; }
         }
+
+        public bool Visibility
+        {
+            get { return obj.Visibility; }
+            set 
+            { 
+                obj.Visibility = value; 
+
+                for(int cntr = 0;cntr < editor_handle.gameObjectScene_list.Count;cntr++)
+                {
+                    if (editor_handle.gameObjectScene_list[cntr].instance_name == _obj.instance_name)
+                    {
+                        Editor.GameObject_Scene gameObj = editor_handle.gameObjectScene_list[cntr];
+
+                        gameObj.Visibility = value;
+
+                        editor_handle.gameObjectScene_list[cntr] = gameObj;
+                    }
+                }
+            }
+        }
+
+        public int CollisionRectX
+        {
+            get { return obj.collision_rectX; }
+            set 
+            { 
+                obj.collision_rectX = value;
+
+                for (int cntr = 0; cntr < editor_handle.gameObjectScene_list.Count; cntr++)
+                {
+                    if (editor_handle.gameObjectScene_list[cntr].instance_name == _obj.instance_name)
+                    {
+                        Editor.GameObject_Scene gameObj = editor_handle.gameObjectScene_list[cntr];
+
+                        gameObj.collision_rectX = value;
+
+                        editor_handle.gameObjectScene_list[cntr] = gameObj;
+                    }
+                }
+            }
+        }
+
+        public int CollisionRectY
+        {
+            get { return obj.collision_rectY; }
+            set 
+            { 
+                obj.collision_rectY = value;
+
+                for (int cntr = 0; cntr < editor_handle.gameObjectScene_list.Count; cntr++)
+                {
+                    if (editor_handle.gameObjectScene_list[cntr].instance_name == _obj.instance_name)
+                    {
+                        Editor.GameObject_Scene gameObj = editor_handle.gameObjectScene_list[cntr];
+
+                        gameObj.collision_rectY = value;
+
+                        editor_handle.gameObjectScene_list[cntr] = gameObj;
+                    }
+                }
+            }
+        }
     }
 
     class GameBuilder
@@ -3054,6 +3146,24 @@ namespace Heavy_Engine
                     {
                         gameObject.AllowCameraRotation = bool.Parse(str);
 
+                        cur_action = "Object_Visibility";
+                    }
+                    else if (cur_action == "Object_Visibility")
+                    {
+                        gameObject.Visibility = bool.Parse(str);
+
+                        cur_action = "Object_CollisionX";
+                    }
+                    else if (cur_action == "Object_CollisionX")
+                    {
+                        gameObject.collision_rectX = int.Parse(str);
+
+                        cur_action = "Object_CollisionY";
+                    }
+                    else if (cur_action == "Object_CollisionY")
+                    {
+                        gameObject.collision_rectY = int.Parse(str);
+
                         cur_action = "Object_Childs";
                     }
                     else if (cur_action == "Object_Childs")
@@ -3196,6 +3306,9 @@ namespace Heavy_Engine
                         stm_wr.WriteLine("obj.SetRotationAngle(" + object_array[cntr].rotation_angle + ");");
                         stm_wr.WriteLine("obj.AllowCameraTranslation = " + object_array[cntr].AllowCameraTranslation.ToString().ToLower() + ";");
                         stm_wr.WriteLine("obj.AllowCameraRotation = " + object_array[cntr].AllowCameraRotation.ToString().ToLower() + ";");
+                        stm_wr.WriteLine("obj.Visibility = " + object_array[cntr].Visibility.ToString().ToLower() + ";");
+                        stm_wr.WriteLine("obj.CollisionRectX = " + object_array[cntr].collision_rectX.ToString() + ";");
+                        stm_wr.WriteLine("obj.CollisionRectY = " + object_array[cntr].collision_rectY.ToString() + ";");
 
                         for (int cnt = 0; cnt < object_array[cntr].child_list.Count;cnt++ )
                         {
@@ -3234,6 +3347,9 @@ namespace Heavy_Engine
                         stm_wr.WriteLine("obj->SetRotationAngle(" + object_array[cntr].rotation_angle + ");");
                         stm_wr.WriteLine("obj->AllowCameraTranslation = " + object_array[cntr].AllowCameraTranslation.ToString().ToLower( ) + ";");
                         stm_wr.WriteLine("obj->AllowCameraRotation = " + object_array[cntr].AllowCameraRotation.ToString().ToLower() + ";");
+                        stm_wr.WriteLine("obj->Visibility = " + object_array[cntr].Visibility.ToString().ToLower() + ";");
+                        stm_wr.WriteLine("obj->CollisionRectX = " + object_array[cntr].collision_rectX.ToString() + ";");
+                        stm_wr.WriteLine("obj->CollisionRectY = " + object_array[cntr].collision_rectY.ToString() + ";");
 
                         for (int cnt = 0; cnt < object_array[cntr].child_list.Count; cnt++)
                         {

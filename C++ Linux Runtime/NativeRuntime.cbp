@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="NativeRuntime" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/NativeRuntime" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj/Debug/" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/NativeRuntime" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj/Release/" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-std=c++98" />
+					<Add option="-Wall" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Unit filename="Animation.cpp" />
+		<Unit filename="Animation.h" />
+		<Unit filename="AnimationManager.cpp" />
+		<Unit filename="AnimationManager.h" />
+		<Unit filename="Audio.cpp" />
+		<Unit filename="Audio.h" />
+		<Unit filename="Camera.cpp">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="Camera.h">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="GameObject.h" />
+		<Unit filename="GameObject_Scene.cpp" />
+		<Unit filename="GameObject_Scene.h" />
+		<Unit filename="HApplication.cpp" />
+		<Unit filename="HApplication.h" />
+		<Unit filename="HExtra.h" />
+		<Unit filename="HeavyEngine.h" />
+		<Unit filename="HeavyScript.h" />
+		<Unit filename="NavigationManager.cpp" />
+		<Unit filename="NavigationManager.h" />
+		<Unit filename="Navigator.cpp" />
+		<Unit filename="Navigator.h" />
+		<Unit filename="NetworkManager.cpp" />
+		<Unit filename="NetworkManager.h" />
+		<Unit filename="ObjectManager.cpp" />
+		<Unit filename="ObjectManager.h" />
+		<Unit filename="Particle.h" />
+		<Unit filename="ParticleSystem.cpp" />
+		<Unit filename="ParticleSystem.h" />
+		<Unit filename="ResourceManager.cpp" />
+		<Unit filename="ResourceManager.h" />
+		<Unit filename="SDL2_rotozoom.h" />
+		<Unit filename="SDL_rotozoom.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Scene.cpp" />
+		<Unit filename="Scene.h" />
+		<Unit filename="SceneManager.cpp" />
+		<Unit filename="SceneManager.h" />
+		<Unit filename="Vector2.h" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

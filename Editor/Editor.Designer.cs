@@ -139,7 +139,7 @@
             this.canvas.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.canvas.TabIndex = 0;
             this.canvas.TabStop = false;
-            this.canvas.Click += new System.EventHandler(this.canvas_Click);
+            //this.canvas.Click += new System.EventHandler(this.canvas_Click);
             // 
             // gameObject_editor
             // 

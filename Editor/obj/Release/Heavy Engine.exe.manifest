@@ -43,14 +43,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Heavy Engine.exe" size="378880">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Heavy Engine.exe" size="381440">
       <assemblyIdentity name="Heavy Engine" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>LnpQbhBfZ5qcyc6kdLQXyHjdZLgIrXfZ743ym3YRLog=</dsig:DigestValue>
+        <dsig:DigestValue>JsOTPVeUx5gnQ4q7K3Om5UWlPvs2SB37eoQVa2J17iI=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

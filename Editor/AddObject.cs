@@ -13,7 +13,7 @@ namespace Heavy_Engine
     {
         Editor editor_handle;
 
-        public AddObject(Editor editor_handle)
+        public AddObject(Editor editor_handle,int pos_x,int pos_y)
         {
             this.editor_handle = editor_handle;
 
@@ -23,6 +23,9 @@ namespace Heavy_Engine
             {
                 lb_object.Items.Add(obj.object_name);
             }
+
+            txt_position_x.Text = pos_x.ToString();
+            txt_position_y.Text = pos_y.ToString();
         }
 
         private void txt_position_x_TextChanged(object sender, EventArgs e)
@@ -112,6 +115,11 @@ namespace Heavy_Engine
         private void btn_back_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void AddObject_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

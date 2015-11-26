@@ -16,7 +16,8 @@ For more information , please contact us at reo.studio@yahoo.com . Documentation
 	1. Windows PC (Managed)
 	2. Windows PC Native (x86)
 	3. Java Desktop
-	4. Java Mobiles 	
+	4. Java Mobiles
+    5. Linux Native. 	
 
 # Building the Engine
 
@@ -59,6 +60,12 @@ For more information , please contact us at reo.studio@yahoo.com . Documentation
 	1. Open VS2013 and create a new static library project for c++.
 	2. Add all the files present in the Windows Native Runtime folder.
 	3. Hit Build button to compile to the final .lib file.
+
+### Compile Linux Native Runtime
+	1. Download all the required SDL libraries (SDL2,SDL2_image,SDL2_mixer,SDL2_ttf,SDL2_net) using sudo if using linux
+	   or include all the .a SDL library files and all the header files and make sure all of them are stored inside a SDL2 folder.
+	2. Open the code-blocks project in linux or if using a cross-compiler , in windows.
+	3. Hit build and compiling should begin.
 	
 ### Compile Engine
 	1. Open the Heavy-Engine.sln in the visual studio editor.
@@ -78,7 +85,6 @@ For protection from decompilation , you can use Esiriz .NET Reactor for encrytin
 1.We are not providing the source code of FileZip and GameBuilder because according to the terms and conditions of the FileZip software , the software is free but not be shared it's source code . GameBuilder also contains the same license.
 2.We are providing the bos compiler with x64 Optimized executable , if you need to make one , please prefer microsoft compilers.
 
-
-Release Version : 2.0 Beta 1.1
+Release Version : 2.0 Beta 1.3
 
 #### 															Reo Studio 2015 - 2016
